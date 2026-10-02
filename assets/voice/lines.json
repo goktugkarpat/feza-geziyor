@@ -1,0 +1,408 @@
+{
+  "voice": "tr-TR-EmelNeural",
+  "rate": "-6%",
+  "pitch": "+0Hz",
+  "trimmed": true,
+  "lines": {
+    "intro": {
+      "text": "Feza ile uzaydayız! Dünyaya bak. Gitmek istediğin ülkenin resmine dokun.",
+      "duration": 7.18,
+      "hash": "65f153ffbd701bae2610ae62af14caec5022a27f74a15495c15193da3b6bab90"
+    },
+    "tr": {
+      "text": "Türkiye'ye geldik! Galata Kulesi'ni ve uçan balonları bulalım!",
+      "duration": 4.9,
+      "hash": "5c3f70f030150c6ac8717298e977e38a77facce07a5cb29e9f796b8bda4b973f"
+    },
+    "us": {
+      "text": "Amerika'ya geldik! Elinde meşale tutan büyük heykeli bulalım!",
+      "duration": 4.94,
+      "hash": "03c8fb0755b2627c73ac9758f65c290f81a056d3bff4da884fe433beb6013ac5"
+    },
+    "ca": {
+      "text": "Kanada'ya geldik! Şelaleyi ve uzun kuleyi bulalım!",
+      "duration": 4.42,
+      "hash": "1526a85cc622004eec10216f550a49b755e22303adc236cc0b8f0a169b6725ff"
+    },
+    "be": {
+      "text": "Belçika'ya geldik! Parlak topları ve tatlı vafılı bulalım!",
+      "duration": 4.68,
+      "hash": "d270bd3837856bedcd6b02f35c40f6b62a3cc62eeb36a83e570c420a2c6011cd"
+    },
+    "fr": {
+      "text": "Fransa'ya geldik! Eyfel Kulesi'ne doğru koşalım!",
+      "duration": 4.22,
+      "hash": "d6a1a811900c1d97f76cf0d0b7716b225f86863f4f41b5940433da3f9905eac6"
+    },
+    "ru": {
+      "text": "Rusya'ya geldik! Renkli kubbeleri ve kırmızı kuleleri bulalım!",
+      "duration": 4.99,
+      "hash": "e2e7cc3364de93376409bad401f7492483826f016491832903b020accf230816"
+    },
+    "jp": {
+      "text": "Japonya'ya geldik! Karlı dağı ve pembe çiçekleri bulalım!",
+      "duration": 4.7,
+      "hash": "6128ac006b5b6de30e1646a6015f9e21f337ba1ee0eb847fea352098f80a531b"
+    },
+    "cn": {
+      "text": "Çin'e geldik! Uzun duvarı ve mavi çatılı tapınağı bulalım!",
+      "duration": 4.68,
+      "hash": "5f733aaffea2274944fa8f548d0bd4cfe013875677a51a502052fc88104b4b71"
+    },
+    "eg": {
+      "text": "Mısır'a geldik! Üçgen piramitleri ve büyük Sfenks'i bulalım!",
+      "duration": 4.92,
+      "hash": "08b33f02f43f350becc89e711a14fa33e32b409fada9ac7ea213fac8e0309325"
+    },
+    "br": {
+      "text": "Brezilya'ya geldik! Büyük heykeli ve kumsalı bulalım!",
+      "duration": 4.44,
+      "hash": "a63508bf946c1d8e61b48845ebb9340aaa29a53d492aa285260816c668d2fe6f"
+    },
+    "found": {
+      "text": "Yeni bir yer buldun! Resmini gezi defterimize koyuyoruz.",
+      "duration": 4.68,
+      "hash": "72ace4f7c41a6291ab8d5d1d7aa035a108b82e873a0bb2e921ed4999a1dd5a24"
+    },
+    "travel": {
+      "text": "Şimşek gibi koş! Yeni bir ülkeye gidiyoruz!",
+      "duration": 3.98,
+      "hash": "c084876b65ef6a91a0355640d4dda248fece84d3eda4b6701468d0f34051607f"
+    },
+    "choose-tr": {
+      "text": "Türkiye! Galata Kulesi'ni ve uçan balonları görelim!",
+      "duration": 4.34,
+      "hash": "42192499376e6c138d9600e1acea33a85afaf45a36c9fe7347cd2e564c5ad93b"
+    },
+    "choose-us": {
+      "text": "Amerika! Büyük heykeli ve köprüyü görelim!",
+      "duration": 3.79,
+      "hash": "8174eb9934e60da32dc88727715cc5f09c642a8adbd7b36ce226de0d89c6bd68"
+    },
+    "choose-ca": {
+      "text": "Kanada! Şelaleyi ve uzun kuleyi görelim!",
+      "duration": 3.82,
+      "hash": "f59bb3e3a731c1428cd26a29000b23c894fe85aa43e734d083c1eea2cd634bbe"
+    },
+    "choose-be": {
+      "text": "Belçika! Parlak topları ve tatlı vafılı görelim!",
+      "duration": 4.08,
+      "hash": "4c16ddce7cd74f52134c186ce63b8c22a384665db8aa09bcb1d1ceb04311c39a"
+    },
+    "choose-fr": {
+      "text": "Fransa! Eyfel Kulesi'ni görelim!",
+      "duration": 3.19,
+      "hash": "bbafa3f5191f0843c79c7af0694e43df0fed0f501bbda152bed29e86077064fa"
+    },
+    "choose-ru": {
+      "text": "Rusya! Renkli kubbeleri görelim!",
+      "duration": 3.31,
+      "hash": "e6d3020340bb3371fec2502c84fc8f674d0a54239886932236ff879f9cb99ac3"
+    },
+    "choose-jp": {
+      "text": "Japonya! Karlı dağı ve pembe çiçekleri görelim!",
+      "duration": 4.22,
+      "hash": "fc5635823a889a610f8c6439e57210ee61681a4fa57b012bb2c65dae629fd6d5"
+    },
+    "choose-cn": {
+      "text": "Çin! Uzun duvarı ve mavi tapınağı görelim!",
+      "duration": 3.74,
+      "hash": "b03e683dc2a09af2746f0f9ef35ba6734d2418bed95075e4f5def3e26599148b"
+    },
+    "choose-eg": {
+      "text": "Mısır! Üçgen piramitleri görelim!",
+      "duration": 3.31,
+      "hash": "a3e661b7be27df2e180a49f2c8dd41c8622faa38576dc0ac18edd84cdbf3df67"
+    },
+    "choose-br": {
+      "text": "Brezilya! Büyük heykeli ve kumsalı görelim!",
+      "duration": 3.89,
+      "hash": "97b055ab857bdb5776543164c0aa4c66a46dd4b922499927582ba69cf94a54ab"
+    },
+    "place-tr-galata": {
+      "text": "Bu Galata Kulesi! İstanbul'da yükselen eski bir kule. Etrafında bir tur koş!",
+      "duration": 7.1,
+      "hash": "fae928e21e374e53d43ffed8f70c632bb85621519ece9637ca4bd61311ccdecf"
+    },
+    "place-tr-bosphorus": {
+      "text": "Bu İstanbul Boğazı! Bir kıyısı Avrupa, öbür kıyısı Asya. İki kıtaya el salla!",
+      "duration": 7.8,
+      "hash": "5b8b129950ba8e017bf64e1d33b429c3e11e1b8a01532bd03d57faf59a54e74a"
+    },
+    "place-tr-cappadocia": {
+      "text": "Burası Kapadokya! Rüzgâr ve su bu ilginç kayaları şekillendirmiş. Uçan balonları bul!",
+      "duration": 7.68,
+      "hash": "33a98c7ebe8c792b08591d0a06c1628d58e6d71207592f238e1f40605d9aaa53"
+    },
+    "place-us-liberty": {
+      "text": "Bu Özgürlük Heykeli! Elinde bir meşale tutuyor. Sen de bir kahraman pozu ver!",
+      "duration": 7.27,
+      "hash": "c7c47e908341a8ecf0434603ad70f2c42e358bc46207bc583e70639548140d98"
+    },
+    "place-us-brooklyn": {
+      "text": "Bu Bruklin Köprüsü! Şehrin iki yanını birbirine bağlıyor. İki büyük taş kulesini bul!",
+      "duration": 7.66,
+      "hash": "f06355eea1caf9b3185f6cb2ae6a7ed8dd49b71eb142d99c5194b218947b8970"
+    },
+    "place-us-centralpark": {
+      "text": "Burası Sentral Park! Büyük binaların arasında yemyeşil bir park. Ağaçların yanında koş!",
+      "duration": 7.78,
+      "hash": "7034677be3d52e0047077ceb20a02f9f719fa357052435436d140a057738481f"
+    },
+    "place-ca-niagara": {
+      "text": "Bu Niyagara Şelaleleri! Sular yüksekten köpürerek akıyor. Şelalenin yanında bir tur koş!",
+      "duration": 7.99,
+      "hash": "0f111b7ce732174a7ee18e0684669eb4daca96af1a9975cfcf61a428db5201d5"
+    },
+    "place-ca-cntower": {
+      "text": "Bu Toronto Kulesi! Çok yüksek bir kule. Yukarıdaki yuvarlak bölümü bul!",
+      "duration": 6.5,
+      "hash": "b676ea4e0ae7f778b7187c13100fc3fa12b8e2c2ca6c12b84c06108c4c97a53f"
+    },
+    "place-ca-hockey": {
+      "text": "Burada buz hokeyi oynanıyor! Hokey Kanada'nın kış sporu. Buz pistinin etrafında koş!",
+      "duration": 7.85,
+      "hash": "1e40d087c15f0cbde528ab570d8fe3680390165ba3c6658be7f063273edf4319"
+    },
+    "place-be-atomium": {
+      "text": "Bu Atomium! Dokuz parlak topu var. Topları birlikte sayalım!",
+      "duration": 6.0,
+      "hash": "df2172b706bae15285b0500525438d80d38059e6cb3cbde1b7895a02e313c730"
+    },
+    "place-be-grandplace": {
+      "text": "Burası Brüksel'in Büyük Meydanı! Etrafında süslü binalar var. Altın renkli çatıları bul!",
+      "duration": 7.9,
+      "hash": "f7a929cd52ba4748c8fd3b5e18857af2641d760fa3418c0309328e4e32bf53a2"
+    },
+    "place-be-waffle": {
+      "text": "Bu bir vafıl tezgâhı! Vafıl, Belçika'nın sevilen tatlılarından biri. Tatlı bir mola verelim!",
+      "duration": 7.82,
+      "hash": "229349aa6d519e8578cb288101ffb19d974d3c788a4cb243b3652b2432abf2ec"
+    },
+    "place-fr-eiffel": {
+      "text": "Bu Eyfel Kulesi! Paris'te demirden yapılmış yüksek bir kule. Dört ayağını bul!",
+      "duration": 6.98,
+      "hash": "6aa05c6b2c3b96da06188925a0e5203c799ad293dfa20e9ca0c265fd1fb5180c"
+    },
+    "place-fr-louvre": {
+      "text": "Bu Luvr Müzesi! Önünde camdan bir piramit var. Piramidin etrafında koş!",
+      "duration": 6.98,
+      "hash": "efee6d3a925c89f559092e13b4d78ac4ae2b5e90d2f8f787cd1cdfdaddf0aa8f"
+    },
+    "place-fr-seine": {
+      "text": "Bu Sen Nehri! Paris'in içinden akıyor. Suyun yanındaki küçük tekneyi bul!",
+      "duration": 6.94,
+      "hash": "c3b634331a3054b90bec8b7cbef645e61f9b0f89fcacd8f0a21eaa772012dcde"
+    },
+    "place-ru-basils": {
+      "text": "Bu Aziz Vasil Katedrali! Moskova'da rengârenk kubbeleri var. Kaç renk görebiliyorsun?",
+      "duration": 7.8,
+      "hash": "3c3d0e664e06f9402dd400358b0f53894b7f2170520d437f0e626bbfa7712672"
+    },
+    "place-ru-kremlin": {
+      "text": "Bu Kremlin! Moskova'da kırmızı duvarları ve kuleleri var. Kulelere doğru koş!",
+      "duration": 7.1,
+      "hash": "5d9aca1817932a95a4e88b5700174027364268bd34b4f10051ad8116a251449f"
+    },
+    "place-ru-redsquare": {
+      "text": "Burası Kızıl Meydan! Moskova'da kocaman bir meydan. Ortasında bir hız turu yap!",
+      "duration": 7.22,
+      "hash": "68fdb898e112eeb2cafe9491db898d472210690d8e9cb38134e7cae7a537045c"
+    },
+    "place-jp-fuji": {
+      "text": "Bu Fuji Dağı! Japonya'nın en yüksek dağı. Karlı zirvesini bul!",
+      "duration": 6.29,
+      "hash": "9f35ec19e4689f74d07ea7abeb169d31a383c3abed5109a8c81e9aac5a6e276c"
+    },
+    "place-jp-torii": {
+      "text": "Bu Torii Kapısı! Japonya'da tapınakların girişinde böyle kapılar var. Kırmızı kapıyı bul!",
+      "duration": 7.61,
+      "hash": "e5b08cfde61e5c5a5a725c6dbbd30c428926d460a4073b5fe911ff843bf07662"
+    },
+    "place-jp-sakura": {
+      "text": "Bunlar kiraz çiçekleri! Japonya'da ilkbaharda açıyorlar. Pembe ağaçların arasından koş!",
+      "duration": 8.11,
+      "hash": "c418ca17b9c888029103a0025ecd3b0ef011de4b779503cbbf154776010b6d53"
+    },
+    "place-cn-greatwall": {
+      "text": "Bu Çin Seddi! Uzun bir duvar ve birçok kulesi var. Kıvrılan duvarı izle!",
+      "duration": 6.94,
+      "hash": "7000cd1278d825b60853c2b6e401592e934e970047e71db663189bd89ad62390"
+    },
+    "place-cn-heaven": {
+      "text": "Bu Gök Tapınağı! Pekin'de yuvarlak bir tapınak. Üst üste duran mavi çatıları bul!",
+      "duration": 7.22,
+      "hash": "3a410023ecee908e0c56c76a20946ebcf46eee403b4852968aadbd2c505411e7"
+    },
+    "place-cn-bamboo": {
+      "text": "Bunlar bambular! Çin'de bahçelerde yetişirler. Uzun yeşil sapların arasındaki yolu bul!",
+      "duration": 7.8,
+      "hash": "aa4230fc8dd35b05af3ff1f108fbbef0ceeb17ea20bc44799cd7cdc9aac65deb"
+    },
+    "place-eg-pyramids": {
+      "text": "Bunlar Gize Piramitleri! Çok eski, kocaman taş yapılar. Üç piramidi de bul!",
+      "duration": 7.25,
+      "hash": "6a853046192b7fb556711f8e15a78f91e4ba32941e42c924dc4c621e50f8b7d1"
+    },
+    "place-eg-sphinx": {
+      "text": "Bu Büyük Sfenks! İnsan başı ve aslan gövdesi var. Kocaman patilerine bak!",
+      "duration": 7.27,
+      "hash": "fb6af69d835536ee6214c3adc9c8feae229b580430e9cf60ed27ff11642c15d2"
+    },
+    "place-eg-nile": {
+      "text": "Bu Nil Nehri! Mısır'daki tarlalara su veriyor. Küçük yelkenli tekneyi bul!",
+      "duration": 6.96,
+      "hash": "a731d2dcdd8ab33318b6e061ed03a554de88886a11d5ba4e5e125e8a44eb7569"
+    },
+    "place-br-christ": {
+      "text": "Bu Rio'nun büyük heykeli! Yüksek bir tepede kollarını açmış. Sen de kollarını aç!",
+      "duration": 7.22,
+      "hash": "f29afbbabcc5a87f1c35f28ee032afde6245675922260cd8e2489e5ffd51cbbf"
+    },
+    "place-br-sugarloaf": {
+      "text": "Bu Şeker Tepesi! Brezilya'da denizin yanında yükseliyor. Küçük teleferik kabinini bul!",
+      "duration": 7.56,
+      "hash": "bd7a6e1dc9e8cc8bc28aafc207cc8b94e52292d722c23ebef8392fddbb6bf84b"
+    },
+    "place-br-copacabana": {
+      "text": "Burası Kopakabana Sahili! Brezilya'da okyanusun yanında bir kumsal. Renkli şemsiyeleri bul!",
+      "duration": 8.21,
+      "hash": "39507b1c9ecf8f2ee9c1fbebc9fe57b8f99c1c5b4f1eb30a7f1c7e0471a50fd1"
+    },
+    "help-start": {
+      "text": "Uzaydayız! Dünyaya bak. Bir ülkenin resmine dokun, oraya inelim!",
+      "duration": 6.58,
+      "hash": "72ca3da38dc095dfe2cb190e26aab0621b64cda7db916578249216659606d3ff"
+    },
+    "help-map": {
+      "text": "Dünyayı çevir, iki parmakla büyüt. Gitmek istediğin ülkenin resmine dokun!",
+      "duration": 5.81,
+      "hash": "2180d599d807499445b1cbd171382633cc1eaa8d870ab5b06d065fd3ff012e4d"
+    },
+    "help-tour": {
+      "text": "Parmağını sürükle, Feza koşsun! Yaklaşınca oyun başlar. Dünya kapısından geç, yeni ülke seç.",
+      "duration": 8.83,
+      "hash": "c139f2a368e1ac46132ee02063823470e8875ed6243ed3ba171b4f15294039d9"
+    },
+    "help-speed": {
+      "text": "Daha hızlı koşmak için şimşek düğmesini basılı tut!",
+      "duration": 3.14,
+      "hash": "1bdfeb1a29e68d1a14b535d8362a7fe8f25e3ae02517d3f050cc673cbf715269"
+    },
+    "help-passport": {
+      "text": "Bu senin gezi defterin! Bulduğun yerlerin resimleri burada. Bir resme dokun, sana anlatayım!",
+      "duration": 7.9,
+      "hash": "cce1d9017968cf1f97d08c106ab5538fe65c286ccbb92512df7d4c289c575e8e"
+    },
+    "help-photo": {
+      "text": "Fotoğraf makinesine dokun. Feza'nın bu güzel yerdeki resmini çekelim!",
+      "duration": 5.42,
+      "hash": "501349cef7a483120779a78df79517811aa51af5421d08a6c8f09b515b6f4362"
+    },
+    "help-route": {
+      "text": "Resimdeki yere gidiyoruz. Yerdeki sarı çizgiyi takip et!",
+      "duration": 5.04,
+      "hash": "ca84dd9d6f2b3eec9df6b9025859add675e748a143a1338173da3b732056feb7"
+    },
+    "challenge-start": {
+      "text": "Şimşek avı başlıyor! Sarı halkaların içinden koş. Beşini de bul!",
+      "duration": 6.48,
+      "hash": "10fef6f2e9c9cb245ac5d9ed5266247ab40281799a4d3b0dbe56ed766db8b5a0"
+    },
+    "challenge-found": {
+      "text": "Bir şimşek daha buldun! Haydi, sıradakine koş!",
+      "duration": 4.37,
+      "hash": "4b1baeb97246d8c193b1b6b709c771d1589f11553d0f6016948b639c5d973354"
+    },
+    "challenge-done": {
+      "text": "Beş şimşeğin hepsini buldun! Harika bir hız turuydu!",
+      "duration": 4.61,
+      "hash": "a721bb9fff25460b2be96f9ddb83ba3123c04ca8fc7e007eaa3b4841d13f0531"
+    },
+    "travel-land": {
+      "text": "Şimdi karadayız! Ağaçların ve tepelerin yanından koşuyoruz.",
+      "duration": 4.92,
+      "hash": "578eaae68731f7ab8978e1f691f07b8339d71c5377043f2d53681ae450a6cf00"
+    },
+    "travel-water": {
+      "text": "Suya geldik! Feza dalgaların üstünde koşuyor.",
+      "duration": 4.46,
+      "hash": "99baf9492f8db7cabd142fc04085a138f3bdfb3c6ed8532e82ac27f0158c621e"
+    },
+    "travel-arrive": {
+      "text": "Yeni ülke göründü! Keşfe hazır ol.",
+      "duration": 3.62,
+      "hash": "1d697ca69efa7d981ce0c1a3619f4cf5a2381766e08d17944e8d09ffed598eeb"
+    },
+    "travel-space": {
+      "text": "Uzay mekiğimizle dünyaya iniyoruz! Pencereden bak, seçtiğin ülke bizi bekliyor.",
+      "duration": 6.36,
+      "hash": "8a0e3956845cdc524f01294595c7d9e1959987f163d57de573ea7d5fbd0f44ef"
+    },
+    "country-tap": {
+      "text": "Bir ülkenin resmine dokun, oraya gidelim!",
+      "duration": 2.71,
+      "hash": "a0f3213dabfc6dd76d638be22167a67f0381ad76a073f7bdbbbfebda6683ff87"
+    },
+    "activity-flowers": {
+      "text": "Haydi koş, çiçekler rengârenk açılsın!",
+      "duration": 2.78,
+      "hash": "09f6bb8a14fb5d069e46bba7e3829555f422c43f71488784fec0a1d9e312b4dc"
+    },
+    "activity-wind": {
+      "text": "Koş bakalım! Rüzgâr değirmenleri fırıl fırıl dönsün!",
+      "duration": 4.51,
+      "hash": "fc53c4fd1561d294dc063ce86b76759eda7febe3e95ae4aa1891bdf1632090cd"
+    },
+    "activity-splash": {
+      "text": "Su birikintilerine koş! Şıp şıp, sular sıçrasın!",
+      "duration": 4.51,
+      "hash": "6f130928a77c86125647243b686bf7ecc89affe723aabdd1da00293a8bfc1f9b"
+    },
+    "activity-balloons": {
+      "text": "Koşalım, renkli uçurtmaları uçuralım!",
+      "duration": 2.4,
+      "hash": "3d14c6c5ce88267029ce52c09227c949a7eb0284ab7ca6a207030ca8cf2369c0"
+    },
+    "activity-ball": {
+      "text": "Toplara doğru koş! Rengârenk toplar yuvarlansın!",
+      "duration": 4.46,
+      "hash": "ab97095fa18c8656e28a5a29013816a3c00525a1f790474e0ecdfcd481704398"
+    },
+    "activity-butterflies": {
+      "text": "Kelebeklere yaklaş! Renkli kanatlarını açsınlar!",
+      "duration": 4.34,
+      "hash": "2bc2f87835db31aee37aaa7e358e6868d42f169318cb9b6784653a7ffb226cec"
+    },
+    "activity-rings": {
+      "text": "Şimşek gibi koş! Sarı halkaların içinden geçelim!",
+      "duration": 4.34,
+      "hash": "7d97a2beb80ac14b17e6b2f2b920f7a2b1b867a7f873b021f8bf1dff4306f139"
+    },
+    "activity-done-1": {
+      "text": "Ne güzel oynadık! Şimdi gezmeye devam edelim.",
+      "duration": 4.15,
+      "hash": "7bfdbf008e735bb1702de32f2d3fc3e8104203f6de8a8cac53a5eeeadb76f699"
+    },
+    "activity-done-2": {
+      "text": "Bak, burası neşeyle doldu! Yeni bir oyun bulalım.",
+      "duration": 4.25,
+      "hash": "a8a51ca7fc41eb9767c4ce0824ec31e8856a68c405cf1f3b3d98f4a08056e674"
+    },
+    "activity-done-3": {
+      "text": "Harika bir turdu! Haydi, dünyayı gezmeye devam!",
+      "duration": 4.46,
+      "hash": "d68afc475aea47e3299182d45b534881209ea1d8596b55d591ef9a0cfd15fb2c"
+    },
+    "portal": {
+      "text": "Başka bir ülkeye gitmek için dünyalı kapının içinden koş.",
+      "duration": 3.6,
+      "hash": "b9b64289cf84855a735e9d24ed7df967ba95b4ce85dc998a4197cde3dc3fcb5c"
+    },
+    "portal-travel": {
+      "text": "Dünya bizi bekliyor! Bir ülkenin resmine dokun.",
+      "duration": 4.3,
+      "hash": "66838c1aed36581a9ed9b429a2cfda7f200717759d1a11956d13e645848b7f24"
+    }
+  }
+}

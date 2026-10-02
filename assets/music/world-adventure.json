@@ -1,0 +1,3865 @@
+{
+  "title": "Feza Dünya Yolu",
+  "original": true,
+  "sampleBased": false,
+  "instrumental": true,
+  "tempoBpm": 100,
+  "meter": "4/4",
+  "bars": 32,
+  "loopSeconds": 76.8,
+  "sampleRate": 44100,
+  "channels": 2,
+  "mp3BitrateKbps": 128,
+  "gaplessLameMetadata": true,
+  "instruments": [
+    "marimba",
+    "glockenspiel",
+    "pizzicato",
+    "felt kick",
+    "woodblock",
+    "shaker"
+  ],
+  "sections": [
+    "warm main motif",
+    "bell response",
+    "marimba variation",
+    "soft returning motif"
+  ],
+  "notesAndHits": 764,
+  "integratedLufs": -20.45,
+  "truePeakDbtp": -7.84,
+  "loudnessRangeLu": 5.3,
+  "rmsDbfs": -22.808,
+  "samplePeakDbfs": -7.843,
+  "clippedSamples": 0,
+  "loopSeamJumpDbfs": -58.556,
+  "adjacentSampleDeltaP99Dbfs": -33.28,
+  "first100msRmsDbfs": -17.204,
+  "last100msRmsDbfs": -34.483,
+  "sizeBytes": 1229745,
+  "sha256": "61b16468daaa777f25b3ab41166a1ff2c63f4f787fbe7d2a5b5acda9c9d9a5b0",
+  "loopDesign": "Circular note tails, short room echoes and frequency shaping. No intro/end silence or fade-out.",
+  "source": "Handwritten melody and mathematical instruments in tools/gen_music.py; no borrowed recordings.",
+  "score": [
+    {
+      "time": 0.0,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 0.5967,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 0.9031,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 1.2002,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 1.7997,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 2.0967,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 0.012,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 0.312,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 0.612,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 0.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 1.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 1.512,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 1.812,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 2.112,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 0.0,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 0.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 1.2,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 1.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 0.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 1.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 0.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 0.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 1.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 2.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 2.4,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 2.8516,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 3.2989,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 3.8987,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 4.2023,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 2.412,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 2.712,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 3.012,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 3.312,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 3.612,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 3.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 4.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 4.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 2.4,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 2.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 3.6,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 3.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 3.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 4.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 2.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 3.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 3.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 4.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 4.8,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 5.3981,
+      "instrument": "marimba",
+      "note": 81
+    },
+    {
+      "time": 5.7009,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 6.0018,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 6.4513,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 6.897,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 4.812,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 5.112,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 5.412,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 5.712,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 6.012,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 6.312,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 6.612,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 6.912,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 4.8,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 4.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 6.0,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 6.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 5.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 6.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 5.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 5.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 6.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 6.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 7.2,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 7.647,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 8.1007,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 8.3977,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 9.0015,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 7.212,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 7.512,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 7.812,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 8.112,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 8.412,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 8.712,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 9.012,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 9.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 7.2,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 7.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 8.4,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 8.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 7.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 9.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 7.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 8.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 8.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 9.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 9.6,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 9.8998,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 10.1996,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 10.8038,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 11.3993,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 9.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 9.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 10.212,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 10.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 10.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 11.112,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 11.412,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 11.712,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 9.6,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 9.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 10.8,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 10.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 10.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 11.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 9.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 10.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 11.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 11.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 12.0,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 12.5978,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 13.0495,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 13.6476,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 14.1033,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 12.012,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 12.312,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 12.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 12.912,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 13.212,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 13.512,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 13.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 14.112,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 12.0,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 12.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 13.2,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 13.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 12.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 13.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 12.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 12.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 13.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 14.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 14.4,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 14.9976,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 15.2991,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 15.6001,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 16.1994,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 14.412,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 14.712,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 15.012,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 15.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 15.612,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 15.912,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 16.212,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 16.512,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 14.4,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 14.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 15.6,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 15.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 15.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 16.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 14.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 15.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 15.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 16.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 16.8,
+      "instrument": "marimba",
+      "note": 71
+    },
+    {
+      "time": 17.2523,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 17.703,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 18.3027,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 18.5961,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 16.812,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 17.112,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 17.412,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 17.712,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 18.012,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 18.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 18.612,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 18.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 16.8,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 16.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 18.0,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 18.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 17.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 18.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 17.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 17.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 18.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 18.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 19.2,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 19.8025,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 20.1016,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 20.3962,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 20.9979,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 21.3029,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 19.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 19.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 19.812,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 20.112,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 20.412,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 20.712,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 21.012,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 21.312,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 19.2,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 19.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 20.4,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 20.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 19.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 21.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 19.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 20.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 20.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 21.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 21.6,
+      "instrument": "glock",
+      "note": 69
+    },
+    {
+      "time": 22.0523,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 22.4974,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 23.0971,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 23.3973,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 21.612,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 21.912,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 22.212,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 22.512,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 22.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 23.112,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 23.412,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 23.712,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 21.6,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 21.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 22.8,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 22.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 22.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 23.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 21.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 22.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 23.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 23.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 24.0,
+      "instrument": "glock",
+      "note": 77
+    },
+    {
+      "time": 24.5997,
+      "instrument": "glock",
+      "note": 81
+    },
+    {
+      "time": 24.896,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 25.1993,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 25.6499,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 26.0966,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 24.012,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 24.312,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 24.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 24.912,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 25.212,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 25.512,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 25.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 26.112,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 24.0,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 24.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 25.2,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 25.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 24.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 25.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 24.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 24.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 25.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 26.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 26.4,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 26.846,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 27.302,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 27.6023,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 28.1989,
+      "instrument": "glock",
+      "note": 67
+    },
+    {
+      "time": 26.412,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 26.712,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 27.012,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 27.312,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 27.612,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 27.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 28.212,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 28.512,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 26.4,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 26.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 27.6,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 27.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 27.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 28.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 26.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 27.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 27.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 28.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 28.8,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 29.0979,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 29.4017,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 30.0021,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 30.6023,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 28.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 29.112,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 29.412,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 29.712,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 30.012,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 30.312,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 30.612,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 30.912,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 28.8,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 28.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 30.0,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 30.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 29.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 30.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 29.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 29.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 30.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 30.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 31.2,
+      "instrument": "glock",
+      "note": 69
+    },
+    {
+      "time": 31.8021,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 32.249,
+      "instrument": "glock",
+      "note": 77
+    },
+    {
+      "time": 32.8518,
+      "instrument": "glock",
+      "note": 76
+    },
+    {
+      "time": 33.301,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 31.212,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 31.512,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 31.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 32.112,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 32.412,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 32.712,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 33.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 33.312,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 31.2,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 31.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 32.4,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 32.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 31.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 33.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 31.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 32.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 32.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 33.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 33.6,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 34.2002,
+      "instrument": "glock",
+      "note": 77
+    },
+    {
+      "time": 34.5,
+      "instrument": "glock",
+      "note": 69
+    },
+    {
+      "time": 34.8023,
+      "instrument": "glock",
+      "note": 72
+    },
+    {
+      "time": 35.3992,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 33.612,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 33.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 34.212,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 34.512,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 34.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 35.112,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 35.412,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 35.712,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 33.6,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 33.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 34.8,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 34.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 34.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 35.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 33.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 34.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 35.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 35.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 36.0,
+      "instrument": "glock",
+      "note": 71
+    },
+    {
+      "time": 36.4482,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 36.9009,
+      "instrument": "glock",
+      "note": 79
+    },
+    {
+      "time": 37.4978,
+      "instrument": "glock",
+      "note": 74
+    },
+    {
+      "time": 37.7962,
+      "instrument": "glock",
+      "note": 67
+    },
+    {
+      "time": 36.012,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 36.312,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 36.612,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 36.912,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 37.212,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 37.512,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 37.812,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 38.112,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 36.0,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 36.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 37.2,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 37.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 36.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 37.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 36.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 36.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 37.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 38.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 38.4,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 38.45,
+      "instrument": "glock",
+      "note": 84
+    },
+    {
+      "time": 38.9983,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 39.2967,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 39.6036,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 39.65,
+      "instrument": "glock",
+      "note": 88
+    },
+    {
+      "time": 40.203,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 40.5012,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 38.412,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 38.712,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 39.012,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 39.312,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 39.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 39.912,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 40.212,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 40.512,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 38.4,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 38.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 39.6,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 39.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 39.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 40.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 38.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 39.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 39.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 40.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 40.8,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 40.85,
+      "instrument": "glock",
+      "note": 81
+    },
+    {
+      "time": 41.2509,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 41.6974,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 42.2974,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 42.35,
+      "instrument": "glock",
+      "note": 91
+    },
+    {
+      "time": 42.601,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 40.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 41.112,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 41.412,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 41.712,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 42.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 42.312,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 42.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 42.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 40.8,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 40.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 42.0,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 42.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 41.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 42.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 41.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 41.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 42.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 42.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 43.2,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 43.25,
+      "instrument": "glock",
+      "note": 89
+    },
+    {
+      "time": 43.7983,
+      "instrument": "marimba",
+      "note": 81
+    },
+    {
+      "time": 44.1021,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 44.399,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 44.45,
+      "instrument": "glock",
+      "note": 88
+    },
+    {
+      "time": 44.8532,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 45.2973,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 43.212,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 43.512,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 43.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 44.112,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 44.412,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 44.712,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 45.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 45.312,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 43.2,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 43.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 44.4,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 44.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 43.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 45.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 43.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 44.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 44.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 45.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 45.6,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 45.65,
+      "instrument": "glock",
+      "note": 86
+    },
+    {
+      "time": 46.0524,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 46.4995,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 46.8035,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 46.85,
+      "instrument": "glock",
+      "note": 86
+    },
+    {
+      "time": 47.3986,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 45.612,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 45.912,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 46.212,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 46.512,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 46.812,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 47.112,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 47.412,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 47.712,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 45.6,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 45.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 46.8,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 46.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 46.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 47.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 45.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 46.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 47.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 47.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 48.0,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 48.05,
+      "instrument": "glock",
+      "note": 84
+    },
+    {
+      "time": 48.2974,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 48.6024,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 49.2014,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 49.25,
+      "instrument": "glock",
+      "note": 91
+    },
+    {
+      "time": 49.8003,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 48.012,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 48.312,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 48.612,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 48.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 49.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 49.512,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 49.812,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 50.112,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 48.0,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 48.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 49.2,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 49.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 48.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 49.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 48.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 48.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 49.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 50.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 50.4,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 50.45,
+      "instrument": "glock",
+      "note": 81
+    },
+    {
+      "time": 50.9975,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 51.4513,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 52.047,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 52.1,
+      "instrument": "glock",
+      "note": 88
+    },
+    {
+      "time": 52.4966,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 50.412,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 50.712,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 51.012,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 51.312,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 51.612,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 51.912,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 52.212,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 52.512,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 50.4,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 50.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 51.6,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 51.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 51.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 52.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 50.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 51.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 51.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 52.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 52.8,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 52.85,
+      "instrument": "glock",
+      "note": 86
+    },
+    {
+      "time": 53.3978,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 53.6994,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 53.9983,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 54.05,
+      "instrument": "glock",
+      "note": 84
+    },
+    {
+      "time": 54.6029,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 52.812,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 53.112,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 53.412,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 53.712,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 54.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 54.312,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 54.612,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 54.912,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 52.8,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 52.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 54.0,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 54.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 53.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 54.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 53.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 53.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 54.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 54.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 55.2,
+      "instrument": "marimba",
+      "note": 71
+    },
+    {
+      "time": 55.25,
+      "instrument": "glock",
+      "note": 83
+    },
+    {
+      "time": 55.6504,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 56.0989,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 56.7024,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 56.75,
+      "instrument": "glock",
+      "note": 86
+    },
+    {
+      "time": 56.9998,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 55.212,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 55.512,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 55.812,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 56.112,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 56.412,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 56.712,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 57.012,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 57.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 55.2,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 55.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 56.4,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 56.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 55.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 57.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 55.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 56.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 56.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 57.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 57.6,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 58.2007,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 58.5029,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 58.8014,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 59.4022,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 59.6993,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 57.612,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 57.912,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 58.212,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 58.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 58.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 59.112,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 59.412,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 59.712,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 57.6,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 57.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 58.8,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 58.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 58.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 59.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 57.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 58.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 59.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 59.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 59.1,
+      "instrument": "glock-response",
+      "note": 76
+    },
+    {
+      "time": 60.0,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 60.4533,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 60.9008,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 61.501,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 61.803,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 60.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 60.312,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 60.612,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 60.912,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 61.212,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 61.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 61.812,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 62.112,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 60.0,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 60.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 61.2,
+      "instrument": "bass-pizzicato",
+      "note": 45
+    },
+    {
+      "time": 61.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 60.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 61.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 60.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 60.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 61.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 62.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 62.4,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 63.0021,
+      "instrument": "marimba",
+      "note": 81
+    },
+    {
+      "time": 63.2998,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 63.5984,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 64.051,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 64.5039,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 62.412,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 62.712,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 63.012,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 63.312,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 63.612,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 63.912,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 64.212,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 64.512,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 62.4,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 62.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 63.6,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 63.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 63.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 64.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 62.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 63.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 63.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 64.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 63.9,
+      "instrument": "glock-response",
+      "note": 69
+    },
+    {
+      "time": 64.8,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 65.2532,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 65.6971,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 66.0023,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 66.6034,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 64.812,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 65.112,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 65.412,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 65.712,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 66.012,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 66.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 66.612,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 66.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 64.8,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 64.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 66.0,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 66.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 65.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 66.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 65.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 65.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 66.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 66.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 67.2,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 67.4988,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 67.8032,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 68.401,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 68.9988,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 67.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 67.512,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 67.812,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 68.112,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 68.412,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 68.712,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 69.012,
+      "instrument": "pizzicato",
+      "note": 64
+    },
+    {
+      "time": 69.312,
+      "instrument": "pizzicato",
+      "note": 67
+    },
+    {
+      "time": 67.2,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 67.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 68.4,
+      "instrument": "bass-pizzicato",
+      "note": 48
+    },
+    {
+      "time": 68.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 67.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 69.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 67.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 68.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 68.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 69.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 68.7,
+      "instrument": "glock-response",
+      "note": 76
+    },
+    {
+      "time": 69.6,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 70.2038,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 70.6521,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 71.2485,
+      "instrument": "marimba",
+      "note": 76
+    },
+    {
+      "time": 71.697,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 69.612,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 69.912,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 70.212,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 70.512,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 70.812,
+      "instrument": "pizzicato",
+      "note": 53
+    },
+    {
+      "time": 71.112,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 71.412,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 71.712,
+      "instrument": "pizzicato",
+      "note": 60
+    },
+    {
+      "time": 69.6,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 69.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 70.8,
+      "instrument": "bass-pizzicato",
+      "note": 41
+    },
+    {
+      "time": 70.8,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 70.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 71.409,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 69.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 70.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 71.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 71.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 72.0,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 72.5973,
+      "instrument": "marimba",
+      "note": 77
+    },
+    {
+      "time": 72.8968,
+      "instrument": "marimba",
+      "note": 69
+    },
+    {
+      "time": 73.1995,
+      "instrument": "marimba",
+      "note": 72
+    },
+    {
+      "time": 73.8035,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 72.012,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 72.312,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 72.612,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 72.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 73.212,
+      "instrument": "pizzicato",
+      "note": 57
+    },
+    {
+      "time": 73.512,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 73.812,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 74.112,
+      "instrument": "pizzicato",
+      "note": 65
+    },
+    {
+      "time": 72.0,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 72.0,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 73.2,
+      "instrument": "bass-pizzicato",
+      "note": 50
+    },
+    {
+      "time": 73.2,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 72.609,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 73.809,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 72.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 72.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 73.5,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 74.1,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 73.5,
+      "instrument": "glock-response",
+      "note": 74
+    },
+    {
+      "time": 74.4,
+      "instrument": "marimba",
+      "note": 71
+    },
+    {
+      "time": 74.8485,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 75.3021,
+      "instrument": "marimba",
+      "note": 79
+    },
+    {
+      "time": 75.8988,
+      "instrument": "marimba",
+      "note": 74
+    },
+    {
+      "time": 76.1995,
+      "instrument": "marimba",
+      "note": 67
+    },
+    {
+      "time": 74.412,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 74.712,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 75.012,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 75.312,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 75.612,
+      "instrument": "pizzicato",
+      "note": 55
+    },
+    {
+      "time": 75.912,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 76.212,
+      "instrument": "pizzicato",
+      "note": 59
+    },
+    {
+      "time": 76.512,
+      "instrument": "pizzicato",
+      "note": 62
+    },
+    {
+      "time": 74.4,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 74.4,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 75.6,
+      "instrument": "bass-pizzicato",
+      "note": 43
+    },
+    {
+      "time": 75.6,
+      "instrument": "felt-kick",
+      "note": null
+    },
+    {
+      "time": 75.009,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 76.209,
+      "instrument": "woodblock",
+      "note": null
+    },
+    {
+      "time": 74.7,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 75.3,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 75.9,
+      "instrument": "shaker",
+      "note": null
+    },
+    {
+      "time": 76.5,
+      "instrument": "shaker",
+      "note": null
+    }
+  ]
+}

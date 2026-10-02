@@ -1,0 +1,238 @@
+/* Akış içinde görünen küçük ipuçları: oyun alanını ve parmağı kapatmaz. */
+#discovery{left:auto;right:var(--pad);top:auto;bottom:135px;width:254px;height:auto;max-height:none;overflow:visible;padding:9px;border-radius:22px;display:grid;grid-template-columns:65px 1fr;grid-template-rows:auto auto;gap:4px 9px;pointer-events:none;box-shadow:0 4px 22px #33577820;background:#fffdf3ed}
+#discovery .discovery-picture{grid-column:1;grid-row:1/3;align-self:center;height:65px;min-height:0}
+#discovery .discovery-picture>img{width:65px;height:65px;border-radius:13px;object-fit:contain}
+#discovery h2{grid-column:2;grid-row:1;margin:1px 0;padding-right:18px;font-size:13px;line-height:1.3;align-self:end}
+#discovery-fact{grid-column:2;grid-row:2;font-size:10px;line-height:1.35;margin:0;align-self:start}
+#discovery-close{width:30px;height:30px;min-width:30px;min-height:30px;padding:5px;right:-7px;top:-10px;pointer-events:auto;background:#fffdf3}
+#discovery-close [data-picto]{width:18px;height:18px}
+.discovery-stamp{width:25px;height:25px;left:-5px;top:-5px}
+#discovery-speak{display:none}
+#challenge{top:auto;bottom:max(27px,env(safe-area-inset-bottom));left:50%;max-width:none;padding:10px 16px;gap:11px;pointer-events:none}
+#challenge-icon{width:35px;height:35px;display:flex;color:#dc6d46}
+#challenge-icon>.pictogram{width:100%;height:100%}
+#challenge-count{display:flex;gap:8px}
+#challenge-count>.pictogram{width:30px;height:30px;color:#b8c8c5;transition:color .25s,transform .25s}
+#challenge-count>.earned{color:#eaad31;transform:scale(1.08)}
+#challenge-count>.earned svg{fill:#ffe096}
+#control-hint{transition:opacity .3s}
+.parent-photo{margin:18px auto 0;gap:10px;font-size:13px}
+.parent-photo>[data-picto]{width:25px;height:25px}
+.country-choice{min-height:129px}
+#celebration{top:28%;gap:12px}
+#celebration>.pictogram{width:49px;height:49px;animation:little-cheer .65s ease-in-out alternate 2}
+#celebration>.pictogram:nth-child(2){width:67px;height:67px}
+@keyframes little-cheer{to{transform:translateY(-12px) rotate(9deg)}}
+@media(max-width:1000px){.country-choice{min-height:118px}}
+@media(max-width:620px){
+  .country-panel{height:41%;min-height:280px}.country-choice{min-height:101px}
+  #discovery{right:var(--pad);left:auto;bottom:122px;width:200px;padding:7px;grid-template-columns:49px 1fr;gap:4px 7px}
+  #discovery .discovery-picture{height:49px}#discovery .discovery-picture>img{width:49px;height:49px;border-radius:11px}
+  #discovery h2{font-size:10px;padding-right:9px}#discovery-fact{font-size:9px;line-height:1.3}
+  #challenge{bottom:32px;padding:9px;gap:7px}#challenge-icon{width:25px;height:25px}#challenge-count{gap:5px}#challenge-count>.pictogram{width:21px;height:21px}
+  #celebration{top:29%}#celebration>.pictogram{width:36px;height:36px}#celebration>.pictogram:nth-child(2){width:51px;height:51px}
+}
+@media(max-height:600px) and (min-width:621px){
+  .country-choice{min-height:92px}.country-panel{bottom:18px}.country-choice .country-picture{height:65px}
+  #discovery{left:auto;right:var(--pad);top:auto;bottom:115px;width:238px;grid-template-columns:55px 1fr;grid-template-rows:auto auto;padding:8px;gap:3px 7px}
+  #discovery .discovery-picture{height:55px}#discovery .discovery-picture>img{width:55px;height:55px}#discovery h2{font-size:11px}#discovery-fact{font-size:9px}
+  #challenge{top:auto;bottom:23px;padding:7px 13px}#challenge-count>.pictogram{width:24px;height:24px}#challenge-icon{width:28px;height:28px}
+}
+@media(prefers-reduced-motion:reduce){#celebration>.pictogram{animation:none}#challenge-count>.pictogram{transition:none}}
+
+.has-activity #control-hint{opacity:0}
+.touch-controls #boost{display:none}
+#challenge-icon{display:none}
+.place-row.inviting{animation:come-play 1.5s ease-in-out 2}
+@keyframes come-play{50%{border-color:#ffd16b;box-shadow:0 0 0 5px #ffda824d}}
+@media(prefers-reduced-motion:reduce){.place-row.inviting{animation:none;border-color:#eec66b}}
+
+/* Feza'nın diğer oyunundaki yuvarlak, parlak ve altın kenarlı oyuncak dili. */
+.welcome{background:radial-gradient(ellipse at 50% 45%,#623dad30 0%,#18366200 65%),linear-gradient(0deg,#26174a95,#25144000 55%);font-family:'Avenir Next Rounded',ui-rounded,'SF Pro Rounded','Arial Rounded MT Bold',system-ui,sans-serif}
+.welcome-copy{inset:0;left:0;top:0;bottom:0;width:100%;max-width:none;text-align:center;pointer-events:none}
+.welcome-badge{display:none}
+.welcome h1{position:absolute;left:8%;right:8%;top:10%;margin:0;font-size:clamp(42px,6.6vw,88px);font-weight:950;letter-spacing:1px;color:#ffe086;-webkit-text-stroke:2px #6f324c;paint-order:stroke fill;text-shadow:0 5px 0 #542e67,0 9px 20px #17244270;line-height:1.08}
+.welcome h1>span{margin:12px auto 0;font-size:.3em;letter-spacing:2px;color:#fff4cf;-webkit-text-stroke:0;text-shadow:0 3px 0 #44336d;background:#493479b0;padding:8px 20px;border:2px solid #dba86190;border-radius:999px;display:table}
+.welcome .play-button{position:absolute;left:50%;top:55%;width:270px;min-height:134px;border:7px solid transparent;border-radius:999px;padding:12px 22px;transform:translate(-50%,-50%);pointer-events:auto;background:linear-gradient(180deg,#b2f397,#5ed475 49%,#239d4d) padding-box,linear-gradient(145deg,#fff7cf,#ffcc57 25%,#ca8a29 49%,#fff0a4 68%,#b77724 90%) border-box;box-shadow:inset 0 5px 0 #fff7,inset 0 -8px 0 #147b3230,0 9px 0 #1e774b,0 17px 30px #101d4560;gap:1px}
+.welcome .play-button::before{content:'';position:absolute;left:12%;right:12%;top:6%;height:41%;border-radius:999px;background:linear-gradient(#fff9,#fff0);pointer-events:none}
+.welcome .play-button>span,.welcome .play-button>small{position:relative}
+.welcome .play-button [data-picto]{width:58px;height:58px;color:#fffad8;filter:drop-shadow(0 3px 0 #328444)}
+.welcome .play-button small{font-size:21px;letter-spacing:1px;font-weight:950;color:#fffdf1;text-shadow:0 2px 0 #298349}
+.welcome .play-button:active{transform:translate(-50%,-50%) translateY(5px) scale(.98);box-shadow:inset 0 4px 0 #fff6,inset 0 -5px 0 #147b3230,0 4px 0 #1e774b,0 9px 20px #101d4560}
+.welcome-pictures{display:flex;position:absolute;left:50%;top:calc(55% + 115px);transform:translateX(-50%);margin:0;gap:22px;color:#ffe4a0;filter:drop-shadow(0 3px 0 #324d76)}
+.welcome-pictures>span{width:37px;height:37px}
+.welcome-spark{position:absolute;pointer-events:none;color:#fff0a5;filter:drop-shadow(0 3px 0 #775173);width:37px;height:37px;animation:soft-star 4s ease-in-out infinite alternate}
+.welcome-spark.s1{left:30%;top:35%;transform:rotate(-13deg)}.welcome-spark.s2{right:30%;top:34%;width:25px;height:25px;animation-delay:-2s}.welcome-spark.s3{left:18%;bottom:16%;width:25px;height:25px;animation-delay:-1s}.welcome-spark.s4{right:15%;top:26%;transform:rotate(14deg);animation-delay:-3s}
+@keyframes soft-star{50%{opacity:.7;translate:0 -5px}}
+@media(max-width:620px){
+  .welcome h1{top:10%;left:3%;right:3%;font-size:45px;letter-spacing:0;-webkit-text-stroke:1.5px #6f324c}.welcome h1>span{font-size:15px;letter-spacing:.7px;padding:7px 13px;margin-top:11px}
+  .welcome .play-button{top:64%;width:242px;min-height:127px}.welcome-pictures{top:calc(64% + 100px)}
+  .welcome-spark.s1{left:10%;top:39%}.welcome-spark.s2{right:12%;top:35%}.welcome-spark.s3{left:13%;bottom:12%}.welcome-spark.s4{right:14%;top:23%;width:22px;height:22px}
+}
+@media(max-height:600px) and (min-width:621px){
+  .welcome h1{top:7%;font-size:42px}.welcome h1>span{font-size:14px;padding:5px 17px;margin-top:8px}
+  .welcome .play-button{top:57%;width:231px;min-height:108px;padding:7px 18px}.welcome .play-button [data-picto]{width:45px;height:45px}.welcome .play-button small{font-size:18px}.welcome-pictures{top:calc(57% + 80px)}.welcome-pictures>span{width:26px;height:26px}
+}
+@media(prefers-reduced-motion:reduce){.welcome-spark{animation:none}.welcome .play-button:active{transform:translate(-50%,-50%)}}
+
+#portal-transition{position:fixed;inset:0;z-index:35;pointer-events:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#c2f5ebd9,#3db7d440);animation:world-door .55s ease-in both}#portal-transition>[data-picto]{width:120px;height:120px;padding:15px;background:#fffdf1;border:6px solid #ffdc77;color:#52b6c6;border-radius:50%;box-shadow:0 0 60px #c5f8f4}
+@keyframes world-door{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1.05)}}
+@media(prefers-reduced-motion:reduce){#portal-transition{animation:none}}
+
+#target-cue{position:absolute;z-index:17;width:72px;height:72px;transform:translate(-50%,-50%);border:4px solid #fffdf0;border-radius:24px;background:#ffdf85;color:#a87529;box-shadow:0 4px 0 #bd974f90,0 8px 18px #5a887f30;display:flex;align-items:center;justify-content:center;touch-action:manipulation}#target-cue-icon{display:block;width:43px;height:43px}#target-cue-arrow{position:absolute;width:27px;height:27px;right:-9px;bottom:-7px;padding:3px;background:#fffdf0;color:#52aa8e;border-radius:50%}#target-cue:active{transform:translate(-50%,-50%) translateY(3px)}
+@media(max-width:620px){#target-cue{width:61px;height:61px;border-radius:21px}#target-cue-icon{width:35px;height:35px}#target-cue-arrow{width:24px;height:24px}}
+
+/* The album pictures scroll; its two ways back to the game stay visible. */
+.passport-card{display:flex;flex-direction:column;overflow:hidden}
+.passport-card>h2,.passport-card>p,.passport-card>.primary{flex:none}
+#passport-grid{flex:1;min-height:0;overflow:auto;touch-action:pan-y;scrollbar-width:thin;margin-bottom:18px;padding-right:4px}
+button,canvas{-webkit-tap-highlight-color:transparent}
+@media(max-height:600px) and (min-width:621px){#toast{top:auto;bottom:100px}}
+
+/* 3–5 yaş: büyük resimler, büyük isimler ve parmağın rahatça bulduğu oyuncak düğmeler. */
+.welcome .play-button{width:320px;min-height:174px;border-width:8px;gap:0;padding:10px 30px}
+.welcome .play-button .play-label{position:relative;font-size:46px;line-height:1.1;letter-spacing:1px;color:#fffdf0;text-shadow:0 3px 0 #257c46,0 5px 8px #17533140}
+.welcome .play-button>[data-picto="play"]{width:70px;height:70px}
+.welcome .play-button .play-star{position:absolute;width:33px;height:33px;color:#ffe788;filter:drop-shadow(0 3px 0 #358e44);pointer-events:none}
+.welcome .play-button .play-star svg{fill:#ffe788}
+.welcome .play-button .play-star.left{left:17px;top:54px;rotate:-15deg}
+.welcome .play-button .play-star.right{right:17px;top:54px;rotate:15deg}
+.welcome-pictures{top:calc(55% + 140px);gap:26px}.welcome-pictures>span{width:43px;height:43px}
+.icon-button{min-width:76px;min-height:74px;border-radius:25px;border-width:4px;background:linear-gradient(#fffdf6,#f1f6ef);box-shadow:0 5px 0 #739faf65}
+.icon-button [data-picto]{width:45px;height:45px}.help-button{background:linear-gradient(#fff2be,#ffdd79);color:#9b6622}
+.round{min-width:58px;min-height:58px;width:58px;height:58px;padding:12px;border-width:4px}.round [data-picto]{width:30px;height:30px}
+.hud-actions{gap:12px}.brand span{font-size:19px}.brand small{font-size:14px}.brand>b{width:54px;height:54px}
+#stamp-count{font-size:14px;padding:3px 7px;bottom:-10px}.atlas-heading{top:120px}.atlas-heading h2{font-size:36px;text-shadow:0 3px 0 #1c365c}.map-gesture [data-picto]{width:48px;height:48px}
+.country-panel{top:116px;bottom:24px;width:min(450px,43%);padding:16px;border-radius:34px;border-color:#fff8e1}
+.panel-heading{font-size:26px;gap:12px;margin-bottom:14px}.panel-heading [data-picto]{width:37px;height:37px}
+#country-list{gap:13px;padding:4px 6px 10px}.country-choice{min-height:180px;padding:7px;gap:7px;border-width:4px;border-radius:25px;box-shadow:0 4px 0 #93bca533;background:linear-gradient(#ffffff,#f4fbf2)}
+.country-choice:nth-child(3n+2){background:linear-gradient(#ffffff,#fff4df)}.country-choice:nth-child(3n){background:linear-gradient(#ffffff,#eef6ff)}
+.country-choice .country-picture{height:112px;border-radius:17px}.country-choice .country-flag{width:39px;height:27px;left:13px;top:13px;border-radius:5px}
+.country-choice strong{display:flex;align-items:center;justify-content:center;min-height:43px;width:100%;font-size:28px;line-height:1.1;white-space:normal;text-overflow:clip;overflow:visible;padding:5px 4px;text-wrap:balance;background:#fff0b7;border-radius:17px;color:#855332;text-shadow:0 1px 0 #fff9}.country-choice:nth-child(3n+2) strong{background:#def3d1;color:#36744d}.country-choice:nth-child(3n) strong{background:#e7e1fc;color:#75549d}.picture-stars .pictogram{width:23px;height:23px}
+.map-zoom .round{min-width:65px;min-height:65px;width:65px;height:65px}.atlas-back{min-height:70px}
+/* Üç yer resmi daha az alan kaplar; adlar ve parmak hedefleri büyük kalır. */
+.tour-card{top:116px;width:158px;padding:8px;border-radius:30px;border-color:#fff8e1}.tour-card h2{font-size:22px;margin-bottom:8px;line-height:1.15;padding:5px 0;background:#e6f2df;border-radius:16px}.tour-card h2 .country-flag{width:31px;height:22px}
+#place-list{gap:9px}.place-row{padding:4px;border-width:4px;border-radius:23px;background:linear-gradient(#fff,#f8faf0);box-shadow:0 4px 0 #94bdaa35}.place-row>img{height:82px;border-radius:15px}.place-row>span{font-size:15px;line-height:1.12;padding:2px 2px 4px;text-wrap:balance}.place-row>.pictogram{width:36px;height:36px;padding:4px}
+.speed-card>#speed-number{font-size:25px}.speed-card{width:130px}#navigation>img{width:70px;height:70px}#navigation-arrow{width:46px;height:46px}#navigation{border-radius:27px}
+.travel-top{top:110px}.travel-top h2{display:table;margin:14px auto 0;padding:9px 22px;border:3px solid #fff8d2;border-radius:999px;background:#fff7ddeb;color:#76558b;font-size:30px;line-height:1.15;box-shadow:0 4px 0 #52678c40;text-wrap:balance}
+#travel-pictures{gap:28px}#travel-pictures>img,.travel-country>img{width:110px;height:110px;object-fit:contain;border:5px solid #fff5d8;border-radius:28px;box-shadow:0 5px 0 #6a94a950;background:#d8edf0}
+.travel-country{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:145px;max-width:36%}.travel-country>.pictogram{width:110px;height:110px;padding:13px;border:5px solid #fff5d8;border-radius:28px;background:#ede4ff;color:#8065ad;box-shadow:0 5px 0 #6a94a950}.travel-country-name{font-size:32px;line-height:1.1;color:#fff0ad;text-shadow:0 3px 0 #51375e,0 4px 8px #153753;-webkit-text-stroke:1px #543a62;paint-order:stroke fill;text-wrap:balance}
+#travel-pictures>.pictogram{width:54px;height:54px;color:#ffde86}#travel-distance{font-size:17px;font-weight:800}.travel-meter small{font-size:18px;font-weight:850}.travel-meter{left:27%;right:27%;padding:12px 20px 16px;border-radius:30px}#travel-terrain{width:46px;height:46px}
+#discovery{width:294px;padding:11px;grid-template-columns:77px 1fr;gap:5px 11px;border-radius:26px}.discovery-picture{min-width:0}#discovery .discovery-picture{height:77px}#discovery .discovery-picture>img{width:77px;height:77px;border-radius:17px}#discovery h2{font-size:17px;padding-right:16px}#discovery-fact{font-size:13px;line-height:1.35}#discovery-close{width:44px;height:44px;min-width:44px;min-height:44px;padding:8px;right:-8px;top:-14px}#discovery-close [data-picto]{width:24px;height:24px}
+#challenge{padding:12px 18px;border-radius:27px}#challenge-count{gap:10px}#challenge-count>.pictogram{width:36px;height:36px}#target-cue{width:80px;height:80px;border-radius:28px;border-color:#fff4d6}#target-cue-icon{width:49px;height:49px}
+#toast{font-size:16px;line-height:1.25;padding:11px 18px;border-radius:23px;top:105px;max-width:70%}
+.modal-card{border-radius:34px;padding:32px}.modal-card h2{font-size:30px;padding-right:38px}.modal-card label{font-size:19px;gap:12px}.pill{font-size:18px;min-height:58px;border-radius:20px;min-width:96px}.modal-card select{font-size:18px;border-radius:17px;padding:12px;border-width:2px}.settings-help{font-size:15px;line-height:1.55}.modal-card>small{font-size:13px}.parent-photo{font-size:18px;gap:12px}.parent-photo>[data-picto]{width:36px;height:36px}
+.passport-card{width:min(890px,100%)}.passport-card>p{font-size:17px;line-height:1.25;margin-bottom:17px}#passport-grid{gap:15px}.passport-stamp{padding:7px;border-width:4px;border-radius:25px}.passport-stamp>.country-picture{height:114px;border-radius:17px}.passport-stamp b{font-size:19px;line-height:1.15;margin:7px 2px}.passport-stamp>.country-flag{width:35px;height:24px}.passport-card>.primary{width:220px;min-height:75px;border-radius:25px}.passport-card>.primary [data-picto]{width:51px;height:51px}
+@media(max-width:1000px) and (min-height:601px){.country-panel{width:46%;padding:12px}.country-choice .country-picture{height:100px}.country-choice strong{font-size:26px}.country-choice{min-height:172px}.tour-card{width:154px}.place-row>img{height:80px}.atlas-heading h2{font-size:31px}#passport-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:620px){
+  :root{--pad:max(10px,env(safe-area-inset-left))}.hud-actions{gap:8px}.icon-button{min-width:63px;min-height:62px;padding:9px;border-radius:21px}.icon-button [data-picto]{width:36px;height:36px}.round{min-width:49px;min-height:49px;width:49px;height:49px;padding:9px}.round [data-picto]{width:25px;height:25px}.brand>b{width:44px;height:44px}#stamp-count{font-size:11px;padding:2px 5px;bottom:-8px}
+  .welcome .play-button{width:min(280px,86vw);min-height:156px;padding:8px 24px}.welcome .play-button .play-label{font-size:40px}.welcome .play-button>[data-picto="play"]{width:61px;height:61px}.welcome .play-button .play-star{width:27px;height:27px;top:51px}.welcome .play-button .play-star.left{left:12px}.welcome .play-button .play-star.right{right:12px}.welcome-pictures{top:calc(64% + 118px)}.welcome-pictures>span{width:36px;height:36px}.welcome h1{font-size:clamp(36px,11.5vw,46px)}.welcome h1>span{font-size:17px;padding:8px 12px}
+  .atlas-heading{top:92px;left:var(--pad)}.atlas-heading h2{font-size:27px}.map-zoom{top:92px;gap:7px}.map-zoom .round{min-width:48px;min-height:48px;width:48px;height:48px}.country-panel{left:var(--pad);right:var(--pad);width:auto;top:auto;bottom:14px;height:42%;min-height:288px;max-height:410px;padding:10px;border-radius:28px}.panel-heading{font-size:23px;gap:9px;margin:0 4px 9px}.panel-heading [data-picto]{width:31px;height:31px}#country-list{grid-template-columns:repeat(2,1fr);gap:10px;padding:4px 3px 8px}.country-choice{min-height:153px;padding:5px;border-radius:21px;gap:5px}.country-choice .country-picture{height:96px;border-radius:14px}.country-choice strong{font-size:24px;min-height:38px;border-radius:14px;padding:4px 2px}.country-choice .country-flag{width:31px;height:22px;left:9px;top:9px}.country-choice .picture-stars .pictogram{width:19px;height:19px}.atlas-back{bottom:calc(42% + 26px);min-height:57px}
+  .tour-card{top:93px;width:114px;padding:7px;border-radius:24px}.tour-card h2{font-size:17px;margin-bottom:8px;padding:5px 0}.tour-card h2 .country-flag{width:23px;height:17px}#place-list{gap:9px}.place-row{padding:3px;border-width:3px;border-radius:18px}.place-row>img{height:77px;border-radius:12px}.place-row>span{font-size:12px;line-height:1.12;padding:2px 1px 3px}.place-row>.pictogram{width:29px;height:29px;border-width:3px}.speed-card{width:95px;padding:8px}.speed-card>#speed-number{font-size:20px}#navigation>img{width:56px;height:56px}#navigation-arrow{width:33px;height:33px}#navigation{bottom:119px;border-radius:22px}
+  .travel-top{top:96px;left:8px;right:8px}.travel-top h2{font-size:23px;padding:8px 14px;margin-top:12px}#travel-pictures{gap:13px}.travel-country{min-width:104px;max-width:40%;gap:8px}#travel-pictures>img,.travel-country>img,.travel-country>.pictogram{width:83px;height:83px;border-radius:23px;border-width:4px}.travel-country-name{font-size:24px;line-height:1.13}#travel-pictures>.pictogram{width:34px;height:34px}.travel-meter{left:10%;right:10%;bottom:23px;padding:9px 14px 13px;border-radius:26px}.travel-meter small{font-size:16px}#travel-distance{font-size:15px}#travel-terrain{width:35px;height:35px}
+  #discovery{width:250px;bottom:128px;padding:9px;grid-template-columns:61px 1fr;gap:4px 9px}#discovery .discovery-picture{height:61px}#discovery .discovery-picture>img{width:61px;height:61px;border-radius:14px}#discovery h2{font-size:14px}#discovery-fact{font-size:12px}#challenge{bottom:29px;padding:10px 13px}#challenge-count{gap:6px}#challenge-count>.pictogram{width:27px;height:27px}#target-cue{width:68px;height:68px;border-radius:24px}#target-cue-icon{width:40px;height:40px}#toast{top:85px;font-size:14px;max-width:84%}
+  .modal{padding:14px}.modal-card{padding:24px 16px}.modal-card h2{font-size:25px;margin-top:16px}.modal-card label{font-size:17px}.pill{font-size:16px;min-height:55px;min-width:82px}.modal-card select{font-size:16px;padding:10px}.settings-help{font-size:14px}.parent-photo{font-size:16px}.passport-card>p{font-size:14px}#passport-grid{grid-template-columns:repeat(2,1fr);gap:11px}.passport-stamp>.country-picture{height:102px}.passport-stamp b{font-size:18px}.passport-card>.primary{min-height:70px;width:190px}.passport-card>.primary [data-picto]{width:45px;height:45px}
+}
+@media(max-width:350px){.tour-card{width:106px}.place-row>img{height:69px}.country-choice strong{font-size:22px}.country-choice .country-picture{height:89px}.travel-country-name{font-size:22px}.travel-country{min-width:94px}#travel-pictures{gap:9px}#discovery{width:231px}#discovery-fact{font-size:11px}.welcome .play-button .play-label{font-size:38px}}
+@media(max-height:600px) and (min-width:621px){
+  #hud{top:9px}.brand>b{width:42px;height:42px}.brand span{font-size:17px}.hud-actions{gap:10px}.hud-actions .icon-button{min-width:59px;min-height:57px;padding:8px}.hud-actions .icon-button [data-picto]{width:33px;height:33px}.hud-actions .round{min-width:49px;min-height:49px;width:49px;height:49px;padding:9px}#stamp-count{font-size:11px}
+  .welcome .play-button{top:59%;width:276px;min-height:130px;padding:5px 22px}.welcome .play-button .play-label{font-size:38px}.welcome .play-button>[data-picto="play"]{width:52px;height:52px}.welcome .play-button .play-star{top:40px;width:27px;height:27px}.welcome-pictures{top:calc(59% + 88px)}.welcome-pictures>span{width:29px;height:29px}.welcome h1{font-size:43px;top:5%}.welcome h1>span{font-size:16px}
+  .country-panel{top:78px;bottom:14px;width:41%;padding:10px}.panel-heading{font-size:23px;margin-bottom:8px}.panel-heading [data-picto]{width:30px;height:30px}.country-choice{min-height:127px;padding:5px;gap:4px}.country-choice .country-picture{height:72px}.country-choice strong{font-size:22px;min-height:35px;padding:4px 2px}.country-choice .picture-stars .pictogram{width:17px;height:17px}.atlas-heading{top:87px}.atlas-heading h2{font-size:27px}.map-zoom .round{min-width:54px;min-height:54px;width:54px;height:54px}
+  .tour-card{top:77px;width:139px;padding:7px}.tour-card h2{font-size:17px;padding:4px 0;margin-bottom:6px}#place-list{gap:6px}.place-row{padding:3px;border-width:3px;border-radius:17px}.place-row>img{height:48px;border-radius:11px}.place-row>span{font-size:12px;padding:1px 1px 2px;line-height:1.05}.place-row>.pictogram{width:27px;height:27px}.speed-card{margin-left:150px;width:96px;padding:8px}.speed-card>#speed-number{font-size:19px}
+  .travel-top{top:78px}.travel-top h2{font-size:22px;padding:6px 16px;margin-top:8px}.travel-country{min-width:134px;gap:5px}.travel-country>img,#travel-pictures>img,.travel-country>.pictogram{width:73px;height:73px;border-radius:21px}.travel-country-name{font-size:25px}#travel-pictures{gap:23px}#travel-pictures>.pictogram{width:37px;height:37px}.travel-meter{left:29%;right:29%;bottom:15px;padding:7px 15px 12px}#travel-terrain{width:31px;height:31px}.travel-meter small{font-size:15px}#travel-distance{font-size:14px}
+  #discovery{width:271px;bottom:110px;padding:9px;grid-template-columns:66px 1fr}#discovery .discovery-picture{height:66px}#discovery .discovery-picture>img{width:66px;height:66px}#discovery h2{font-size:15px}#discovery-fact{font-size:12px}#challenge{bottom:21px;padding:9px 14px}#challenge-count>.pictogram{width:29px;height:29px}#navigation{bottom:99px}#navigation>img{width:54px;height:54px}#toast{top:auto;bottom:103px;font-size:14px;max-width:52%}
+  .modal-card{max-height:94dvh;padding:18px 25px}.modal-card h2{font-size:25px;margin:9px 0 12px}.passport-card>p{font-size:14px;margin-bottom:12px}#passport-grid{grid-template-columns:repeat(4,1fr);gap:10px}.passport-stamp>.country-picture{height:83px}.passport-stamp b{font-size:17px}.passport-card>.primary{min-height:62px;width:187px}.passport-card>.primary [data-picto]{width:39px;height:39px}
+}
+
+/* Yer adları da resimlerin yanında açıkça görünür; kısa telefonda kartlar yan yana içeriklidir. */
+.place-row>span{font-size:20px;line-height:1.14;max-width:100%;overflow-wrap:anywhere}
+#discovery h2{font-size:20px;line-height:1.15}#discovery-fact{font-size:14px}
+#stamp-count{font-size:16px}.passport-card>p{font-size:18px}
+@media(max-width:620px){
+  .tour-card{width:126px}.tour-card h2{font-size:20px}.place-row>img{height:84px}.place-row>span{font-size:17px;padding:2px 0 3px;width:calc(100% + 4px);max-width:calc(100% + 4px);margin-inline:-2px}
+  #discovery h2{font-size:20px;align-self:center;padding-right:6px}#discovery-fact{display:none}#discovery{grid-template-rows:auto;grid-template-columns:66px 1fr}#discovery .discovery-picture{height:66px}#discovery .discovery-picture>img{width:66px;height:66px}
+  #stamp-count{font-size:14px}.passport-card>p{font-size:17px}.settings-help{font-size:16px}
+}
+@media(max-width:350px){.tour-card{width:116px;padding:6px}.place-row{padding:2px}.place-row>img{height:76px}.place-row>span{font-size:16px;letter-spacing:-.2px}}
+@media(max-height:600px) and (min-width:621px){
+  .tour-card{width:182px}.tour-card h2{font-size:22px}.place-row{display:grid;grid-template-columns:44px 1fr;gap:7px;align-items:center;min-height:60px;padding:4px}.place-row>img{width:44px;height:44px;grid-column:1}.place-row>span{grid-column:2;font-size:17px;line-height:1.13;text-align:left;padding:3px 0}.place-row>.pictogram{position:absolute;left:30px;right:auto;top:-5px}
+  .tour-bottom{justify-content:flex-end;gap:16px}.speed-card{margin-left:0}.passport-card>p{font-size:16px}#stamp-count{font-size:14px}#discovery h2{font-size:20px}#discovery-fact{display:none}#discovery{grid-template-rows:auto}
+}
+/* Mekik penceresinin ortası Feza'ya kalır; tablet başlığı kartların üstündedir. */
+@media(min-width:621px) and (min-height:601px){
+  .travel-top{display:flex;flex-direction:column;align-items:center}.travel-top h2{order:-1;margin:0 auto 16px}
+  #travel-pictures>.pictogram{align-self:flex-start;margin-top:24px}
+}
+@media(max-width:620px){#toast{display:none}}
+@media(min-width:621px) and (min-height:601px){
+  .place-row>span{padding-left:0;padding-right:0}
+  .speed-card{position:fixed;top:112px;right:var(--pad);left:auto;bottom:auto;margin:0}
+  .tour-bottom{justify-content:flex-end;gap:20px}
+}
+
+/* Haritaya dönüşte yazı okumadan ülke resimlerini bulduran kısa dokunma daveti. */
+.country-panel .panel-heading{padding-right:108px}
+#atlas-hint{position:absolute;right:14px;top:12px;width:98px;height:66px;display:flex;align-items:center;justify-content:center;gap:4px;padding:7px;border:4px solid #fff9d8;border-radius:24px;background:linear-gradient(#fff4c8,#ffdc79);color:#9b642f;box-shadow:0 4px 0 #c8945150;pointer-events:none;z-index:2}
+#atlas-hint .atlas-hint-hand{width:48px;height:48px;rotate:180deg;color:#bd7351;filter:drop-shadow(0 2px 0 #fff9)}
+#atlas-hint .atlas-hint-arrow{width:34px;height:34px;rotate:90deg;color:#7e58a2}
+.country-panel.choose-invitation #atlas-hint{animation:point-to-picture 1.4s ease-in-out 3}
+.country-panel.choose-invitation .country-choice:nth-child(-n+2){animation:picture-invitation 1.4s ease-in-out 3}
+@keyframes point-to-picture{0%,100%{translate:0 0}45%{translate:0 7px}}
+@keyframes picture-invitation{0%,100%{box-shadow:0 4px 0 #93bca533}45%{border-color:#f1b844;box-shadow:0 0 0 4px #ffd66880,0 4px 0 #d3af4b50}}
+@media(max-height:600px) and (min-width:621px){#atlas-hint{top:8px;width:91px;height:59px;padding:5px;border-radius:22px}#atlas-hint .atlas-hint-hand{width:44px;height:44px}#atlas-hint .atlas-hint-arrow{width:30px;height:30px}.country-panel .panel-heading{padding-right:96px}}
+@media(max-width:620px){.atlas-heading h2{max-width:calc(100vw - 145px);line-height:1.1}}
+@media(prefers-reduced-motion:reduce){.country-panel.choose-invitation #atlas-hint,.country-panel.choose-invitation .country-choice:nth-child(-n+2){animation:none}.country-panel.choose-invitation .country-choice:nth-child(-n+2){border-color:#f1b844}}
+
+/* Uzayda büyük Dünya ve mekik penceresi açık kalır; yolculuk ince bir şerittir. */
+.space-flight .travel-top{display:flex;flex-direction:column;align-items:center}
+.space-flight .travel-top h2{order:-1;margin:0 auto 12px}
+.space-flight .travel-meter{left:50%;right:auto;bottom:max(12px,env(safe-area-inset-bottom));width:min(600px,calc(100% - 2*var(--pad)));transform:translateX(-50%);padding:9px 16px;border-radius:23px;display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:auto 8px;gap:7px 12px;align-items:center}
+.space-flight #travel-terrain{grid-column:1;grid-row:1 / 3;width:32px;height:32px}
+.space-flight #travel-distance{display:none}
+.space-flight #travel-caption{grid-column:2;grid-row:1;font-size:18px;line-height:1.15}
+.space-flight .route-track{grid-column:2;grid-row:2;height:8px;margin:0 8px}
+.space-flight #travel-runner{width:28px;height:28px;top:-10px}
+@media(min-width:621px) and (min-height:601px) and (orientation:landscape){
+  .space-flight .travel-top{left:var(--pad);right:auto;width:min(380px,39vw)}
+  .space-flight #travel-pictures{gap:18px}
+  .space-flight .travel-country{min-width:110px;max-width:none}
+  .space-flight #travel-pictures>.pictogram{width:44px;height:44px}
+}
+@media(min-width:621px) and (orientation:portrait){
+  .space-flight .travel-top{top:102px}
+  .space-flight .travel-top h2{font-size:26px;padding:8px 20px;margin-bottom:10px}
+  .space-flight .travel-country{gap:8px}
+  .space-flight .travel-country>img,.space-flight .travel-country>.pictogram{width:83px;height:83px;border-radius:23px}
+}
+@media(max-width:620px){
+  .space-flight .travel-top{top:86px}
+  .space-flight .travel-top h2{margin-bottom:10px}
+  .space-flight #travel-caption{font-size:16px}
+}
+@media(max-height:600px) and (min-width:621px){
+  .space-flight .travel-top{top:70px;left:var(--pad);right:auto;width:330px}
+  .space-flight .travel-top h2{margin-bottom:8px}
+  .space-flight #travel-pictures{gap:23px}
+  .space-flight .travel-meter{width:min(600px,calc(100% - 2*var(--pad)));padding:8px 16px}
+}
+
+/* Dar ekranda durum kutusu hedeflere, keşif resmi de yer kartlarına binmez. */
+@media(max-width:620px){
+  .speed-card{position:fixed;top:96px;right:var(--pad);left:auto;bottom:auto;margin:0}
+  #discovery{width:min(250px,calc(100vw - 2*var(--pad) - 138px));grid-template-columns:66px minmax(0,1fr)}
+}
+@media(max-width:350px){
+  #discovery{width:calc(100vw - 2*var(--pad) - 128px);display:flex;flex-direction:column;gap:7px;padding:10px 9px}
+  #discovery .discovery-picture{height:60px;align-self:center}
+  #discovery .discovery-picture>img{width:60px;height:60px}
+  #discovery h2{width:100%;padding-right:0;align-self:center;text-align:center}
+}
+/* Telefon yataya döndüğünde üç resim de 60 px dokunma alanıyla içeride kalır. */
+@media(max-height:350px) and (min-width:621px){
+  .space-flight .travel-top h2{display:none}
+  .tour-card{top:72px;padding:5px}
+  .tour-card h2{font-size:22px;line-height:1;padding:0;margin-bottom:5px}
+  #place-list{gap:4px}
+  .place-row{min-height:60px;padding:4px;grid-template-columns:44px 1fr;gap:7px}
+  .place-row>img{width:44px;height:44px}
+}

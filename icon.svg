@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs><linearGradient id="sea" x2="0" y2="1"><stop stop-color="#17355a"/><stop offset="1" stop-color="#07182d"/></linearGradient><linearGradient id="planet" x2="1" y2="1"><stop stop-color="#4ccedf"/><stop offset="1" stop-color="#1478a1"/></linearGradient></defs>
+  <rect width="512" height="512" rx="108" fill="url(#sea)"/>
+  <circle cx="260" cy="262" r="170" fill="url(#planet)"/>
+  <path d="M155 145l52-18 45 28-15 35-50 4-3 29-36 20-30-34 7-37zm145 12 41-21 45 29 22 62-48 27-20-42-45-8zm-17 118 52-18 38 27-27 52-19 58-39-29-20-55zm-118 12 40 18 20 56-41 24-50-26-18-45z" fill="#77d58a"/>
+  <path d="M85 336c49 42 121 49 200 16 78-32 136-91 140-136" fill="none" stroke="#ffe275" stroke-width="13" stroke-linecap="round"/>
+  <path d="M77 295h95m-84 26h58m-35-73h70" stroke="#ffd75d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M281 167l42 22-40 53 14 33-32 13-38-55z" fill="#c81c35"/>
+  <circle cx="308" cy="151" r="26" fill="#e83246"/>
+  <path d="M309 137l18 7-12 15-14-7z" fill="#f4bf90"/>
+  <path d="M277 151l-20-9 14 22m68-27 14-13-3 22" fill="#ffde50"/>
+  <path d="M279 192l-21 20 13 3-17 28 28-23-14-2z" fill="#ffde50"/>
+  <path d="M296 200l40 21 30-28m-108 20-33 31-35-15" fill="none" stroke="#e83246" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M276 271l-34 48-55 9m89-57 40 31 40-18" fill="none" stroke="#c81c35" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M184 328l-19 5m191-49 13-9" stroke="#ffde50" stroke-width="23" stroke-linecap="round"/>
+  <path d="M359 351l-23 38 20-4-15 31 44-49-20 5 12-21z" fill="#ffe275"/>
+</svg>
