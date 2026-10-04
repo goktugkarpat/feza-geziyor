@@ -1,7 +1,7 @@
 /* Flaş Feza'nın çevrimdışı kopyası. Diğer oyunların önbelleklerine dokunmaz. */
 'use strict';
 const PREFIX = 'flash-feza-geziyor-';
-const CACHE = PREFIX + 'v3-b20f1e0d4b97';
+const CACHE = PREFIX + 'v3-ad8a80343925';
 const CORE = [
   'index.html',
   'manifest.webmanifest',

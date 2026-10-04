@@ -1,5 +1,5 @@
 'use strict';
-window.FLASH_GAME = (() => {
+(() => {
   const C=FLASH_CORE,{renderer,scene,camera}=C,$=id=>document.getElementById(id);
   const P=FLASH_PICTO;
   document.body.classList.toggle('touch-controls',navigator.maxTouchPoints>0||C.touch);
@@ -308,6 +308,4 @@ window.FLASH_GAME = (() => {
     if(!$('toast').hidden&&time>toastUntil)$('toast').hidden=true;if(spaceStars.visible)space.update(dt,time,camera);renderer.render(scene,camera);
   }
   save();soundUI();updateAtlas();showMode('welcome');resetTrail();space.update(0,time,camera);renderer.compile(scene,camera);renderer.render(scene,camera);$('boot').hidden=true;requestAnimationFrame(frame);
-  // Read-only state also makes whole-trip browser checks possible without altering normal saves.
-  return {get mode(){return mode;},get current(){return current?.id||null;},get climate(){return current?{...current.environment,particles:weather?.count||0,active:mode==='tour'&&!!weather?.root.visible}:null;},get position(){return hero.root.position.clone();},get visited(){return [...data.visited];},get activityCount(){return data.activities.length;},get activity(){return challenge?challenge.stage.getState():null;},get discovery(){return discoveryPlace?.id||null;},get portal(){return portal?{x:portal.root.position.x,z:portal.root.position.z,armed:portalArmed,available:mode==='tour'}:null;},get country(){return current;},get drawCalls(){return renderer.info.render.calls;},get memory(){return {...renderer.info.memory};},get journey(){return{from:fromCountry?.id||'space',to:selected.id,progress:Math.min(1,travelTime/travelDuration),samples:routeSamples.map(s=>({...s})),terrain:spaceArrival?'space':travelStage?.sample(Math.min(1,travelTime/travelDuration)).terrain||null};},get autoRoute(){return autoPath.map(p=>({...p}));},get mapZoom(){return mapDistance;}};
 })();
