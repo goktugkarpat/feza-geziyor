@@ -685,10 +685,10 @@
       const fast = clamp(Number(boost) || 0, 0, 1);
       clock = Number.isFinite(time) ? time : clock + dt;
       move += (speed01 - move) * (dt === 0 ? 1 : 1 - Math.exp(-16 * dt));
-      phase = (phase + dt * (7 + 7 * speed01 + 4 * fast) * (move > 0.02 ? 1 : 0)) % TAU;
+      phase = (phase + dt * (7 + 7 * speed01 + 4 * fast) * (move > 0.02 ? Math.min(1, move * 1.7) : 0)) % TAU;
       idlePose(P, clock);
       if (move > 0.001) {
-        runPose(Q, phase, Math.max(move, 0.35));
+        runPose(Q, phase, Math.max(move, 0.08));
         Q[C.aRY] = 0;
         Q[C.bRX] += .10 * fast; Q[C.kRX] -= .08 * fast;
         const blend = Math.min(1, move * 2.5);

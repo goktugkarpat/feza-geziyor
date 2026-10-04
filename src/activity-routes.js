@@ -2,8 +2,8 @@
 'use strict';
 window.FLASH_ACTIVITY_ROUTES=(()=>{
   function layout(country,colliders){
-    const size=67,point=i=>({x:i%size-33,z:Math.floor(i/size)-33});
-    const free=(x,z,margin)=>Math.abs(x)<32&&Math.abs(z)<32&&!colliders.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+margin);
+    const size=119,point=i=>({x:i%size-59,z:Math.floor(i/size)-59});
+    const free=(x,z,margin)=>Math.abs(x)<58&&Math.abs(z)<58&&!colliders.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+margin);
     const linked=(a,b)=>{for(let t=0;t<=1;t+=.25)if(!free(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t,1.05))return false;return true;};
     let start=-1,best=Infinity;
     for(let i=0;i<size*size;i++){const p=point(i),d=Math.hypot(p.x,p.z-25);if(d<best&&free(p.x,p.z,1.05)){best=d;start=i;}}

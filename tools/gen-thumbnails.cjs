@@ -1,5 +1,5 @@
 /* Okuma gerektirmeyen düğmeler için oyunun gerçek 3B yerlerinden resimler üretir.
- * node tools/gen-thumbnails.cjs              -> 30 yer + 10 ülke resmi
+ * node tools/gen-thumbnails.cjs              -> 48 yer + 16 ülke resmi
  * node tools/gen-thumbnails.cjs --country tr -> yalnız Türkiye
  * PLAYWRIGHT_MODULE / EDGE_EXECUTABLE ile kurulu araç yolları verilebilir.
  * FLASH_THUMBNAIL_OUT alternatif önizleme klasörünü belirtir.

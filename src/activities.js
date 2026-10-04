@@ -6,6 +6,11 @@
   // The child only moves. These are generous, playful encounters rather than
   // tasks with a timer, a jump button, a required speed, or a losing condition.
   var TYPES = {
+    music: { id: 'music', icon: 'music', title: 'Müzik bahçesi', voiceKey: 'activity-music', doneKey: 'activity-music-done' },
+    train: { id: 'train', icon: 'train', title: 'Oyuncak tren', voiceKey: 'activity-train', doneKey: 'activity-train-done' },
+    painting: { id: 'painting', icon: 'paint', title: 'Renkli resim', voiceKey: 'activity-painting', doneKey: 'activity-painting-done' },
+    lanterns: { id: 'lanterns', icon: 'lantern', title: 'Fener şenliği', voiceKey: 'activity-lanterns', doneKey: 'activity-lanterns-done' },
+    picnic: { id: 'picnic', icon: 'picnic', title: 'Ayıcık pikniği', voiceKey: 'activity-picnic', doneKey: 'activity-picnic-done' },
     rings: { id: 'rings', icon: 'ring', title: 'Hız halkaları', voiceKey: 'activity-rings' },
     flowers: { id: 'flowers', icon: 'flowers', title: 'Renkli çiçek yolu', voiceKey: 'activity-flowers' },
     windmills: { id: 'windmills', icon: 'windmills', title: 'Rüzgâr değirmenleri', voiceKey: 'activity-wind' },
@@ -33,10 +38,18 @@
 
   function typeFor(country, place) {
     var id = typeof place === 'string' ? place : place && (place.id || place.kind);
-    return PLACE_TYPES[id] || ({ falls: 'splashes', river: 'splashes', suspension: 'splashes', park: 'flowers', beach: 'balls', square: 'rings' })[id] || 'rings';
+    return (place && place.activityType) || PLACE_TYPES[id] || ({ falls: 'splashes', river: 'splashes', suspension: 'splashes', park: 'flowers', beach: 'balls', square: 'rings' })[id] || 'rings';
   }
 
-  // A country prewarms three activities. They share geometry and material GPU
+
+  function choicesFor(country, place) {
+    var original = typeFor(country, place), all = ['music', 'train', 'painting', 'lanterns', 'picnic'];
+    var id = (country && country.id || '') + ':' + (place && place.id || place || '');
+    var hash = 0; for (var i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    return [all[hash % all.length], original, all[(hash + 2) % all.length]];
+  }
+
+  // A country prewarms the rotating activity choices for its three places. They share geometry and material GPU
   // resources, while each stage owns its instance buffers and logical poses.
   function acquire() {
     if (!shared) shared = { users: 0, geometry: new Map(), material: new Map() };
@@ -334,7 +347,71 @@
       };
     }
 
-    var builders = { flowers: flowers, windmills: windmills, splashes: splashes, kites: kites, balls: balls, butterflies: butterflies, rings: rings };
+
+    function music(target) {
+      var arch = node(target.base, 0, 0, 0), bells = [];
+      rod(arch, 0xe2b57c, [-.9,0,0],[-.9,2.1,0],.09); rod(arch, 0xe2b57c, [.9,0,0],[.9,2.1,0],.09);
+      rod(arch, 0xe2b57c, [-.9,2.1,0],[.9,2.1,0],.09);
+      for(var b=0;b<3;b++) {
+        var bell=node(arch,(b-1)*.55,1.65,0); bells.push(bell);
+        part(bell,'cone',PALETTE[(target.index+b)%6],0,-.18,0,.24,.45,.24,Math.PI);
+        part(bell,'sphere',0xffd567,0,-.4,0,.07,.07,.07);
+        rod(arch,0xffefd6,[(b-1)*.55,2.1,0],[(b-1)*.55,1.65,0],.016);
+      }
+      var note=node(target.base,0,.9,.3);
+      part(note,'sphere',target.color,-.16,0,0,.23,.16,.12); part(note,'box',target.color,.03,.35,0,.07,.72,.07);
+      part(note,'box',target.color,.2,.67,0,.4,.12,.08,0,0,-.3);
+      target.animate=function(age,idle){
+        note.visible=!target.collected;
+        bells.forEach(function(b,i){b.rotation.z=target.collected?Math.sin(idle*7+i+target.index)*.35*motion:Math.sin(idle+i)*.04*motion;});
+      };
+    }
+    function train(target) {
+      for(var side=0;side<2;side++) part(target.base,'box',0x9c8878,side?-.62:.62,.09,0,.07,.08,3.1);
+      for(var t=0;t<6;t++) part(target.base,'box',0xc8a681,0,.055,-1.4+t*.55,1.55,.07,.15);
+      var wagon=node(target.base,0,.55,0), wheels=[];
+      part(wagon,'box',target.color,0,.14,0,1.3,.62,1.6); part(wagon,'box',0xffefbd,0,.5,0,1.4,.12,1.7);
+      if(!target.index){part(wagon,'cylinder',0xffdb64,0,.81,-.45,.19,.6,.19);part(wagon,'box',0x6ecdf1,0,.95,.4,1,.8,.65);part(wagon,'box',0xffe5ad,0,1.4,.4,1.2,.14,.85);}
+      else {part(wagon,'sphere',0xffe6aa,0,.8,0,.38,.4,.35);part(wagon,'cone',0xff8da3,0,1.27,0,.33,.5,.33);}
+      for(var w=0;w<4;w++) wheels.push(part(wagon,'cylinder',0x485b75,w%2?-.72:.72,-.25,w<2?-.5:.5,.25,.12,.25,0,0,Math.PI/2));
+      target.animate=function(age,idle){var e=target.collected?smooth(age):0;wagon.position.z=complete?Math.sin(idle*1.5+target.index*.35)*.75*motion:0;wagon.position.y=.55+e*.06+ (target.collected?Math.abs(Math.sin(idle*3+target.index))*.08*motion:0);wheels.forEach(function(w){w.rotation.x=complete?idle*3*motion:0;});};
+    }
+    function painting(target) {
+      var canvas=node(target.base,0,1.5,0);
+      part(canvas,'box',0xc6996a,0,0,-.07,2.1,1.85,.12);part(canvas,'box',0xfff9df,0,0,.01,1.91,1.66,.08);
+      rod(target.base,0xc6996a,[-.8,0,.15],[0,2.6,-.12],.065);rod(target.base,0xc6996a,[.8,0,.15],[0,2.6,-.12],.065);
+      var drawing=node(canvas,0,0,.09), kind=target.index%5;
+      if(kind===0){part(drawing,'sphere',0xffd35e,0,0,0,.43,.43,.035);for(var i=0;i<8;i++){var a=i*TAU/8;part(drawing,'box',0xffd35e,Math.sin(a)*.64,Math.cos(a)*.64,0,.07,.25,.035,0,0,-a);}}
+      else if(kind===1){for(var i=0;i<5;i++)part(drawing,'sphere',PALETTE[i],Math.sin(i*TAU/5)*.3,Math.cos(i*TAU/5)*.3,0,.28,.28,.025);part(drawing,'sphere',0xffd35e,0,0,.025,.18,.18,.03);}
+      else if(kind===2){for(var i=0;i<4;i++)part(drawing,'torus',PALETTE[i],0,-.35,0,.7-i*.12,.7-i*.12,.025);part(drawing,'box',0xfff9df,0,-.63,.06,1.7,.55,.04);}
+      else if(kind===3){part(drawing,'cone',0x75d5a0,0,.05,0,.63,1.1,.025);part(drawing,'box',0xb58762,0,-.5,0,.14,.35,.025);}
+      else {part(drawing,'box',0xffac8d,0,-.16,0,.85,.68,.035);part(drawing,'cone',0xa68bf4,0,.4,0,.68,.6,.035);part(drawing,'box',0x6ecdf1,0,-.23,.04,.22,.38,.02);}
+      var brush=node(target.base,.85,.6,.7);part(brush,'cylinder',0xb98b64,0,0,0,.055,.75,.055,0,0,-.4);part(brush,'sphere',target.color,.16,.4,0,.14,.22,.12);
+      target.animate=function(age,idle){drawing.visible=target.collected;drawing.scale.setScalar(target.collected?Math.max(.01,smooth(age/.65)): .01);brush.visible=!target.collected;canvas.rotation.z=complete?Math.sin(idle*2+target.index)*.04*motion:0;};
+    }
+    function lanterns(target) {
+      var lantern=node(target.base,0,.9,0);
+      part(lantern,'sphere',target.color,0,0,0,.57,.65,.57);
+      for(var i=0;i<6;i++)part(lantern,'torus',0xffe9a8,0,0,0,.56,.64,.56,0,i*Math.PI/6);
+      part(lantern,'cylinder',0xffd369,0,-.62,0,.22,.09,.22);part(lantern,'cylinder',0xffd369,0,.62,0,.22,.09,.22);
+      part(lantern,'sphere',0xffed94,0,0,0,.7,.76,.7,0,0,0,'glow');
+      target.animate=function(age,idle){var e=target.collected?smooth(age/1.5):0;lantern.position.y=.9+e*2.7+Math.sin(idle*1.7+target.index)*.12*motion;lantern.position.x=Math.sin(idle+target.index)*e*.45*motion;lantern.rotation.z=Math.sin(idle*1.4+target.index)*.1*motion;};
+    }
+    function picnic(target) {
+      var spread=node(target.base,0,0,0);
+      for(var x=0;x<4;x++)for(var z=0;z<4;z++)part(spread,'box',(x+z)%2?0xfff3d9:target.color,(x-1.5)*.5,.045,(z-1.5)*.5,.5,.035,.5);
+      var bear=node(target.base,0,.65,-.65);
+      part(bear,'sphere',0xcfa574,0,0,0,.38,.46,.3);part(bear,'sphere',0xe1b985,0,.55,0,.35,.32,.3);
+      for(var i=0;i<2;i++){part(bear,'sphere',0xcfa574,i?-.28:.28,.78,0,.14,.14,.11);part(bear,'sphere',0x465064,i?-.12:.12,.59,.28,.035,.045,.025);}
+      part(bear,'sphere',0xffe8bc,0,.43,.27,.16,.12,.09);part(bear,'sphere',0x735a4b,0,.47,.35,.05,.04,.025);
+      var arms=[];for(var i=0;i<2;i++)arms.push(part(bear,'sphere',0xcfa574,i?-.4:.4,.14,0,.14,.3,.14,0,0,i?-.5:.5));
+      var food=node(target.base,0,.15,.32);
+      part(food,'cylinder',0xfff6df,0,0,0,.55,.045,.55);
+      for(var i=0;i<3;i++){part(food,'sphere',PALETTE[(target.index+i)%6],(i-1)*.24,.17,0,.17,.19,.17);part(food,'cylinder',0x77ac71,(i-1)*.24,.37,0,.018,.1,.018);}
+      target.animate=function(age,idle){food.visible=target.collected;food.scale.setScalar(target.collected?Math.max(.01,smooth(age/.65)):.01);bear.rotation.y=Math.sin(idle+target.index)*.1*motion;arms.forEach(function(a,i){a.rotation.z=(i?-1:1)*(.5+(target.collected?(Math.sin(idle*5+target.index)+1)*.5*motion:0));});};
+    }
+
+    var builders = { music: music, train: train, painting: painting, lanterns: lanterns, picnic: picnic, flowers: flowers, windmills: windmills, splashes: splashes, kites: kites, balls: balls, butterflies: butterflies, rings: rings };
     points.forEach(function (point, index) {
       var base = node(root, point.x, 0, point.z); base.name = 'hedef-' + index;
       var target = { index: index, base: base, x: point.x, z: point.z, color: PALETTE[index % PALETTE.length], collected: false, at: -Infinity, angle: 0 };
@@ -432,6 +509,6 @@
     return { root: root, update: update, getState: getState, reset: reset, dispose: dispose };
   }
 
-  window.FLASH_ACTIVITIES = { types: TYPES, typeIds: Object.keys(TYPES), typeFor: typeFor, create: create,
+  window.FLASH_ACTIVITIES = { types: TYPES, typeIds: Object.keys(TYPES), typeFor: typeFor, choicesFor: choicesFor, create: create,
     captureRadius: CAPTURE_RADIUS, rewardSeconds: REWARD_SECONDS };
 }());

@@ -110,6 +110,55 @@ LINES = {
     "activity-done-2": "Bak, burası neşeyle doldu! Yeni bir oyun bulalım.",
     "activity-done-3": "Harika bir turdu! Haydi, dünyayı gezmeye devam!",
 }
+LINES.update({
+    "activity-music": "Notalara koş! Renkli çanlarla kendi şarkımızı yapalım.",
+    "activity-music-done": "Bak, bütün çanlar dans ediyor! Neşeli şarkımız hazır.",
+    "activity-train": "Vagonlara koş! Oyuncak trenimizi birlikte hazırlayalım.",
+    "activity-train-done": "Çuf çuf! Bütün vagonlar hazır, trenimiz yola çıkıyor!",
+    "activity-painting": "Fırçalara koş! Büyük resmimizde neler çıkacak bakalım?",
+    "activity-painting-done": "Resmimiz tamamlandı! Güneş, çiçekler ve rengârenk bir gökkuşağı!",
+    "activity-lanterns": "Renkli fenerlere yaklaş! Işıklarımız gökyüzünde dans etsin.",
+    "activity-lanterns-done": "Bütün fenerler ışıldıyor! Gökyüzü neşeyle doldu.",
+    "activity-picnic": "Ayıcıklara koş! Piknik örtülerini birlikte hazırlayalım.",
+    "activity-picnic-done": "Ayıcıkların pikniği hazır! Hep birlikte el sallıyorlar."
+})
+LINES.update({
+  "gb": "İngiltere’ye geldik! Big Ben, Tower Bridge, Stonehenge seni bekliyor!",
+  "choose-gb": "İngiltere! Büyük saati ve sivri çatıyı bul!",
+  "place-gb-bigben": "Big Ben! Londra’nın ünlü saat kulesinin dört yüzünde saatler bulunur. Büyük saati ve sivri çatıyı bul!",
+  "place-gb-towerbridge": "Tower Bridge! Londra’daki Tower Bridge, Thames Nehri üzerinde iki kuleyle yükselir. Mavi köprünün iki kulesini bul!",
+  "place-gb-stonehenge": "Stonehenge! Stonehenge, İngiltere’de büyük taşların oluşturduğu tarihî bir anıttır. Taş çemberin etrafında koş!",
+  "it": "İtalya’ya geldik! Kolezyum, Pisa Kulesi, Venedik Kanalları seni bekliyor!",
+  "choose-it": "İtalya! Büyük kemerli yapının etrafında koş!",
+  "place-it-colosseum": "Kolezyum! Roma’daki Kolezyum, kat kat kemerleri olan tarihî bir amfitiyatrodur. Büyük kemerli yapının etrafında koş!",
+  "place-it-pisa": "Pisa Kulesi! Pisa Kulesi, yana eğilmiş görüntüsüyle tanınır. Eğik kuleyi bul!",
+  "place-it-venice": "Venedik Kanalları! Venedik’te kanalların üzerinde köprüler ve suda gondollar bulunur. Siyah gondolu bul!",
+  "es": "İspanya’ya geldik! Sagrada Familia, Elhamra, Park Güell seni bekliyor!",
+  "choose-es": "İspanya! Uzun kulelere bak!",
+  "place-es-sagrada": "Sagrada Familia! Barselona’daki Sagrada Familia, uzun ve süslü kuleleriyle tanınır. Uzun kulelere bak!",
+  "place-es-alhambra": "Elhamra! Granada’daki Elhamra, avluları ve süslü kemerleri olan bir saray topluluğudur. Sarayın havuzunu ve kemerlerini bul!",
+  "place-es-parkguell": "Park Güell! Barselona’daki Park Güell, renkli mozaikleri ve kıvrımlı biçimleriyle tanınır. Mozaik bankı ve renkli kertenkeleyi bul!",
+  "nl": "Hollanda’ya geldik! Yel Değirmenleri, Amsterdam Kanalları, Lale Bahçesi seni bekliyor!",
+  "choose-nl": "Hollanda! Dönen değirmen kanatlarını izle!",
+  "place-nl-windmills": "Yel Değirmenleri! Hollanda’nın yel değirmenleri, rüzgârla dönen büyük kanatlarıyla tanınır. Dönen değirmen kanatlarını izle!",
+  "place-nl-canals": "Amsterdam Kanalları! Amsterdam’da kanalların kıyısında dar ve yüksek evler bulunur. Kanalın köprüsünden koş!",
+  "place-nl-tulips": "Lale Bahçesi! Hollanda’nın lale bahçeleri ilkbaharda renk renk çiçeklerle dolar. Rengârenk lale sıralarını bul!",
+  "au": "Avustralya’ya geldik! Sidney Opera Binası, Uluru, Mercan Kıyısı seni bekliyor!",
+  "choose-au": "Avustralya! Beyaz yelken biçimli çatıları bul!",
+  "place-au-opera": "Sidney Opera Binası! Sidney Opera Binası, limanın yanında beyaz yelkenlere benzeyen çatılar taşır. Beyaz yelken biçimli çatıları bul!",
+  "place-au-uluru": "Uluru! Uluru, Avustralya’da kızıl tonlarıyla tanınan büyük bir kaya oluşumudur. Kızıl kayanın etrafında koş!",
+  "place-au-reef": "Mercan Kıyısı! Avustralya’nın Büyük Set Resifi, çok sayıda mercan ve deniz canlısının yaşadığı bir yerdir. Renkli mercanları ve küçük balıkları bul!",
+  "in": "Hindistan’a geldik! Tac Mahal, Rüzgâr Sarayı, Basamaklı Kuyu seni bekliyor!",
+  "choose-in": "Hindistan! Beyaz kubbeyi ve uzun havuzu bul!",
+  "place-in-taj": "Tac Mahal! Agra’daki Tac Mahal, beyaz kubbesi ve dört ince minaresiyle tanınır. Beyaz kubbeyi ve uzun havuzu bul!",
+  "place-in-hawa": "Rüzgâr Sarayı! Jaipur’daki Rüzgâr Sarayı, pembe cephesi ve çok sayıda küçük penceresiyle tanınır. Pembe sarayın küçük pencerelerine bak!",
+  "place-in-stepwell": "Basamaklı Kuyu! Hindistan’da bazı tarihî kuyulara basamaklarla inilir. Basamakları ve kemerleri bul!"
+})
+
+for _key in list(LINES):
+    for _written, _spoken in {"Big Ben":"Big Ben","Tower Bridge":"Tavır Briç","Stonehenge":"Stonhenc","Thames":"Temz","Hawa Mahal":"Hava Mahal","Park Güell":"Park Güel","Sagrada Familia":"Sagrada Familya","Uluru":"Uluru"}.items():
+        LINES[_key] = LINES[_key].replace(_written, _spoken)
+
 TRIM = (
     "silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.035:detection=peak,"
     "areverse,silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.12:detection=peak,areverse,"

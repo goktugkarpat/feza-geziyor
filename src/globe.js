@@ -45,7 +45,7 @@ window.FLASH_GLOBE = (() => {
       const ring = new THREE.Mesh(ringGeometry, ringMaterial); ring.position.copy(latLon(country.lat, country.lon, 4.575)); ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), ring.position.clone().normalize()); root.add(ring); rings.push(ring);
     });
     const laterGeometry = new THREE.SphereGeometry(0.065, 8, 6), laterMaterial = new THREE.MeshBasicMaterial({ color: 0x709c9e });
-    [[-33, 151], [-41, 174], [-34, 18], [20, -100], [22, 79]].forEach(([lat, lon]) => { const marker = new THREE.Mesh(laterGeometry, laterMaterial); marker.position.copy(latLon(lat, lon, 4.57)); root.add(marker); });
+    [[-41, 174], [-34, 18], [20, -100]].forEach(([lat, lon]) => { const marker = new THREE.Mesh(laterGeometry, laterMaterial); marker.position.copy(latLon(lat, lon, 4.57)); root.add(marker); });
     let desired = -0.5, desiredTilt = 0.25, selected = null;
     const wrapped = angle => Math.atan2(Math.sin(angle), Math.cos(angle));
     function focus(country, immediate = false) {

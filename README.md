@@ -1,14 +1,14 @@
-# Flaş Feza Dünyayı Geziyor ⚡🌍
+# Feza Geziyor ⚡🌍
 
 4,5 yaşındaki Feza'nın Flash kıyafetiyle şimşek gibi koştuğu, Türkçe seslendirmeli üç boyutlu dünya gezisi. **3–5 yaş için, okuma bilmeden oynanabilir:** büyük resimler, tanınabilir simgeler ve doğal Türkçe sesler yol gösterir.
 Feza uzaydan bir mekikle bir ülkeye iner, ünlü yerleri keşfeder, koşarken küçük oyunlar oynar ve Dünya kapısından geçerek başka ülkeye gider.
 
-Oyunda **10 ülke, 30 keşif noktası, 7 çeşit koşu oyunu, 80 Türkçe ses kaydı** ve neşeli sözsüz müzik var. Şiddet, kaybetme ya da süre baskısı yoktur.
+Oyunda **16 ülke, 48 keşif noktası, 12 çeşit koşu oyunu, 120 Türkçe ses kaydı** ve neşeli sözsüz müzik var. Şiddet, kaybetme ya da süre baskısı yoktur.
 
 ## Nasıl açılır
 
 - **Bilgisayarda:** `index.html` dosyasına çift tıklamanız yeterli. Kurulum ya da internet gerekmez. Mac'te `OYNA.command` da oyunu tarayıcıda açar.
-- **iPad'de / internette:** https://goktugkarpat.github.io/flash-feza-geziyor/ adresini Safari ile açıp Paylaş › **Ana Ekrana Ekle** deyin. Oyun kendi simgesiyle, tam ekran bir uygulama gibi açılır; ilk açılıştan sonra **internet olmadan da** çalışır (`sw.js` her şeyi cihaza kaydeder).
+- **iPad'de / internette:** https://goktugkarpat.github.io/feza-geziyor/ adresini Safari ile açıp Paylaş › **Ana Ekrana Ekle** deyin. Oyun kendi simgesiyle, tam ekran bir uygulama gibi açılır; ilk açılıştan sonra **internet olmadan da** çalışır (`sw.js` her şeyi cihaza kaydeder).
 
 ## Nasıl oynanır
 
@@ -49,3 +49,13 @@ python3 tools/gen_voice.py
 ## Kaynaklar
 
 Modellerin tamamı kodla yapılmış stilize yorumlardır. Dünya küresi [Natural Earth](https://www.naturalearthdata.com/) Admin-0 Countries 1:50m (v5.1.1) verisini kullanır; veri kamu malıdır (public domain). Three.js MIT lisanslıdır; lisans bilgisi `vendor/three.js` içinde korunur.
+
+## Genişletilmiş dünya
+
+İngiltere, İtalya, İspanya, Hollanda, Avustralya ve Hindistan eklendi. Ülke sahnelerinin zemini 72 × 72 yerine 124 × 124 birimdir; yaklaşık üç kat yüzölçümü vardır. Yerler geniş çevreleriyle gezilir. Central Park gölet, kemerli köprü, teras ve çeşme, çim alanları, ağaç sıraları, banklar ve şehir silueti içerir. Tarihî yapılarda pencere ve kemer detayları, yüzey kabartması ve farklı malzemeler bulunur. Değirmen kanatları, tekneler, balıklar, bitkiler ve su hafifçe hareket eder; azaltılmış hareket tercihi korunur.
+
+Sahneler gerçek yerlerin tanınabilir özelliklerinden esinlenen stilize gezilerdir; gerçek ölçekli şehir veya coğrafya kopyası değildir. Central Park ayrıntıları: [Bow Bridge](https://www.centralparknyc.org/locations/bow-bridge), [Bethesda Terrace](https://www.centralparknyc.org/locations/bethesda-terrace). Yeni destinasyon kaynakları: [Tourism Australia](https://www.australia.com/en-us/places.html), [Incredible India](https://www.incredibleindia.gov.in/en/uttar-pradesh/agra).
+
+- Her yer üç farklı etkinlik arasında sırayla değişir; aynı yere yeniden gelişte ve ülkeye dönüşte sıradaki oyun açılır. Sıra yalnız oturumda tutulur. Yeni oyunlarda çanlar dans eder, vagonlar hazırlanır, resimler belirir, fenerler yükselir ve ayıcık piknikleri kurulur. Bitiriş dört saniye görünür; koşmak serbesttir.
+
+Mini oyunlarda beş özgün çan notası ve kısa bitiriş melodisi kullanılır (`tools/gen_chimes.py`). Müzik tercihi kapalıysa çanlar da susar; anlatıcıdan bağımsızdır.

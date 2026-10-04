@@ -8,6 +8,7 @@
   var musicReady = false;
   var player = null;
   var music = null;
+  var effect = null;
   var musicContext = null;
   var musicGain = null;
   var musicLevel = 0;
@@ -35,10 +36,12 @@
     jp: ['fuji', 'torii', 'sakura'], cn: ['greatwall', 'heaven', 'bamboo'],
     eg: ['pyramids', 'sphinx', 'nile'], br: ['christ', 'sugarloaf', 'copacabana']
   };
+  Object.assign(countryPlaces, {"gb":["bigben","towerbridge","stonehenge"],"it":["colosseum","pisa","venice"],"es":["sagrada","alhambra","parkguell"],"nl":["windmills","canals","tulips"],"au":["opera","uluru","reef"],"in":["taj","hawa","stepwell"]});
   var keys = ['intro', 'found', 'travel', 'travel-space', 'travel-land', 'travel-water', 'travel-arrive', 'help-start', 'help-map', 'help-tour', 'help-speed',
     'help-passport', 'help-photo', 'help-route', 'country-tap', 'portal', 'portal-travel', 'challenge-start', 'challenge-found', 'challenge-done',
     'activity-flowers', 'activity-wind', 'activity-splash', 'activity-balloons', 'activity-ball',
     'activity-butterflies', 'activity-rings', 'activity-done-1', 'activity-done-2', 'activity-done-3'];
+  keys.push("activity-music","activity-music-done","activity-train","activity-train-done","activity-painting","activity-painting-done","activity-lanterns","activity-lanterns-done","activity-picnic","activity-picnic-done");
   Object.keys(countryPlaces).forEach(function (id) {
     keys.push(id, 'choose-' + id);
     countryPlaces[id].forEach(function (place) { keys.push('place-' + id + '-' + place); });
@@ -255,7 +258,14 @@
       if (playing) resumeNarrator();
       else { next(); if (!playing) unlockNarrator(); }
     }
-    if (musicEnabled) { ensureMusic(); playMusic(); }
+    if (musicEnabled) {
+      ensureMusic(); playMusic();
+      if (!effect) {
+        effect = new Audio(); effect.preload = 'auto'; effect.volume = .36;
+        effect.src = unlockSound;
+        try { var unlock = effect.play(); if (unlock && unlock.catch) unlock.catch(function () {}); } catch (_) {}
+      }
+    }
     return ready || musicReady;
   }
 
@@ -274,7 +284,7 @@
 
   function setMusicEnabled(value) {
     musicEnabled = !silent && !!value;
-    if (!musicEnabled) pauseMusic();
+    if (!musicEnabled) { pauseMusic(); if (effect) effect.pause(); }
     else if (musicReady) playMusic();
     return musicEnabled;
   }
@@ -289,7 +299,7 @@
         unlocking = false;
         player.pause();
       }
-      pauseMusic();
+      pauseMusic(); if (effect) effect.pause();
     } else {
       if (enabled) { if (playing) resumeNarrator(); else next(); }
       if (musicEnabled) playMusic();
@@ -317,6 +327,13 @@
       if (queue.length >= 3) queue.shift();
       queue.push(key);
       next();
+      return true;
+    },
+    chime: function (index, finale) {
+      if (silent || hidden || !musicEnabled || !effect) return false;
+      effect.src = 'assets/music/chime-' + (finale ? 'finale' : (Math.max(0, index || 0) % 5 + 1)) + '.wav';
+      effect.volume = playing ? .18 : .36;
+      try { var result = effect.play(); if (result && result.catch) result.catch(function () {}); } catch (_) { return false; }
       return true;
     },
     clearPending: clearPending,

@@ -89,7 +89,7 @@
     var result=new T.BufferGeometry();result.setAttribute('position',new T.Float32BufferAttribute(positions,3));result.setAttribute('normal',new T.Float32BufferAttribute(normals,3));result.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));return result;
   }
   function sidesGeometry(environment) {
-    var pos=[],normals=[],colors=[],heights=[-.05,-.22,-.76,-1.65],corners=[[-36,-36],[36,-36],[36,36],[-36,36]],snow=environment.ground==='snow',sand=environment.ground==='sand';
+    var pos=[],normals=[],colors=[],heights=[-.05,-.22,-.76,-1.65],corners=[[-62,-62],[62,-62],[62,62],[-62,62]],snow=environment.ground==='snow',sand=environment.ground==='sand';
     var shades=snow?[0xe7eff5,0x928570,0x726650]:sand?[0xd1ad6b,0xb79159,0x98784c]:[0x657f43,0x9b7953,0x796046];
     for(var side=0;side<4;side++)for(var layer=0;layer<3;layer++){
       var a=corners[side],b=corners[(side+1)%4],color=new T.Color(shades[layer]),normal=[0,0,0];normal[side%2?0:2]=side<2?-1:1;if(side===1)normal[0]=1;if(side===3)normal[0]=-1;
@@ -110,7 +110,7 @@
     var geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.computeVertexNormals();
     var mat=new T.MeshStandardMaterial({color:0xffffff,roughness:.95,side:T.DoubleSide}),mesh=new T.InstancedMesh(geo,mat,1700),dummy=new T.Object3D(),tint=new T.Color(environment.groundTint),color=new T.Color(),count=0;
     for(var attempt=0;attempt<7000&&count<1700;attempt++){
-      var x=(r()-.5)*70,z=(r()-.5)*70;if(Math.hypot(x,z-25)<4||country.places.some(function(p){return Math.hypot(x-p.x,z-p.z)<(p.radius||6)+1||distanceToPath(x,z,p)<2;}))continue;
+      var x=(r()-.5)*120,z=(r()-.5)*120;if(Math.hypot(x,z-25)<4||country.places.some(function(p){return Math.hypot(x-p.x,z-p.z)<(p.radius||6)+1||distanceToPath(x,z,p)<2;}))continue;
       dummy.position.set(x,-.047,z);dummy.rotation.y=r()*Math.PI*2;dummy.scale.setScalar(.6+r()*.9);dummy.updateMatrix();mesh.setMatrixAt(count,dummy.matrix);color.copy(tint).multiplyScalar(.78+r()*.4);mesh.setColorAt(count,color);count++;
     }
     mesh.count=count;mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.name='nabızsız küçük çim tutamları';mesh.receiveShadow=false;mesh.castShadow=false;mesh.computeBoundingSphere();return mesh;
@@ -119,10 +119,10 @@
   function create(country,renderer) {
     var environment=Object.assign({ground:'grass',weather:'clear',season:'ilkbahar',groundTint:0x8fb073,path:'paving',moisture:0,waterColor:0x54afbe},country.environment||{}),root=new T.Group(),disposed=false;
     root.name='zemin-'+country.id;var seed=seedFor(country.id),anisotropy=renderer?Math.min(4,renderer.capabilities.getMaxAnisotropy()):1;
-    var source=groundCanvas(environment,seed),repeat=environment.ground==='grass'?10:8,groundMap=texture(source,repeat,repeat,true,anisotropy),bumpMap=texture(bumpCanvas(source),repeat,repeat,false,anisotropy),pavingMap=texture(pathCanvas(environment,seed),1,12,true,anisotropy);
+    var source=groundCanvas(environment,seed),repeat=environment.ground==='grass'?17:14,groundMap=texture(source,repeat,repeat,true,anisotropy),bumpMap=texture(bumpCanvas(source),repeat,repeat,false,anisotropy),pavingMap=texture(pathCanvas(environment,seed),1,12,true,anisotropy);
     var roughness=environment.ground==='snow'?.88:environment.ground==='sand'?.98:.96-environment.moisture*.20;
     var material=new T.MeshStandardMaterial({color:0xffffff,map:groundMap,bumpMap:bumpMap,bumpScale:environment.ground==='snow'?.09:environment.ground==='sand'?.045:.055,roughness:roughness});
-    var top=new T.Mesh(new T.PlaneGeometry(72,72),material);top.rotation.x=-Math.PI/2;top.position.y=-.05;top.receiveShadow=true;top.name='yürüme yüzeyi';root.add(top);
+    var top=new T.Mesh(new T.PlaneGeometry(124,124),material);top.rotation.x=-Math.PI/2;top.position.y=-.05;top.receiveShadow=true;top.name='yürüme yüzeyi';root.add(top);
     var sides=new T.Mesh(sidesGeometry(environment),new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1}));sides.name='toprak katmanları';root.add(sides);
     var water=new T.Mesh(new T.PlaneGeometry(210,210),new T.MeshStandardMaterial({color:environment.waterColor,roughness:.5}));water.rotation.x=-Math.PI/2;water.position.y=-1.5;water.name='dış su yüzeyi';root.add(water);
     var pathParts=[];country.places.forEach(function(p){var a=new T.Vector3(0,0,23),b=new T.Vector3(p.x,0,p.z),d=b.clone().sub(a),g=new T.PlaneGeometry(3.2,d.length()),matrix=new T.Matrix4(),q=new T.Quaternion().setFromEuler(new T.Euler(-Math.PI/2,0,Math.atan2(d.x,d.z)));matrix.compose(a.add(b).multiplyScalar(.5).setY(-.01),q,new T.Vector3(1,1,1));g.applyMatrix4(matrix);pathParts.push(g);});

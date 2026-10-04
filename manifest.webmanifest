@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Flaş Feza Dünyayı Geziyor",
-  "short_name": "Flaş Feza",
+  "name": "Feza Geziyor",
+  "short_name": "Feza Geziyor",
   "description": "Feza ile şimşek gibi koş, okyanusları aş ve on ülkeyi keşfet.",
   "lang": "tr",
   "start_url": "./index.html",

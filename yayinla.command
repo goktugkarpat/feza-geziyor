@@ -25,22 +25,22 @@ if ! git diff --cached --quiet; then
   git commit -m 'Flash Feza: dunyayi kesfet'
 fi
 if ! git remote get-url origin >/dev/null 2>&1; then
-  if gh repo view goktugkarpat/flash-feza-geziyor >/dev/null 2>&1; then
-    git remote add origin https://github.com/goktugkarpat/flash-feza-geziyor.git
+  if gh repo view goktugkarpat/feza-geziyor >/dev/null 2>&1; then
+    git remote add origin https://github.com/goktugkarpat/feza-geziyor.git
     git push -u origin main
   else
-    gh repo create goktugkarpat/flash-feza-geziyor --public --source . --remote origin --push \
-      --description 'Feza ile şimşek gibi koşarak on ülkeyi keşfettiğin Türkçe seslendirmeli üç boyutlu oyun (3–5 yaş).'
+    gh repo create goktugkarpat/feza-geziyor --public --source . --remote origin --push \
+      --description 'Feza ile şimşek gibi koşarak on altı ülkeyi keşfettiğin Türkçe seslendirmeli üç boyutlu oyun (3–5 yaş).'
   fi
 else
-  if [[ "$(git remote get-url origin)" != 'https://github.com/goktugkarpat/flash-feza-geziyor.git' ]]; then
-    print 'origin adresi Flaş Feza deposuyla eşleşmiyor.'
+  if [[ "$(git remote get-url origin)" != 'https://github.com/goktugkarpat/feza-geziyor.git' ]]; then
+    print 'origin adresi Feza Geziyor deposuyla eşleşmiyor.'
     exit 1
   fi
   git push -u origin main
 fi
-if ! gh api repos/goktugkarpat/flash-feza-geziyor/pages >/dev/null 2>&1; then
-  gh api -X POST repos/goktugkarpat/flash-feza-geziyor/pages -f 'source[branch]=main' -f 'source[path]=/' >/dev/null
+if ! gh api repos/goktugkarpat/feza-geziyor/pages >/dev/null 2>&1; then
+  gh api -X POST repos/goktugkarpat/feza-geziyor/pages -f 'source[branch]=main' -f 'source[path]=/' >/dev/null
 fi
-print 'Oyun gönderildi: https://goktugkarpat.github.io/flash-feza-geziyor/'
+print 'Oyun gönderildi: https://goktugkarpat.github.io/feza-geziyor/'
 print 'İlk yayın birkaç dakika sürebilir.'

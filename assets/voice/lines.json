@@ -403,6 +403,206 @@
       "text": "Dünya bizi bekliyor! Bir ülkenin resmine dokun.",
       "duration": 4.3,
       "hash": "66838c1aed36581a9ed9b429a2cfda7f200717759d1a11956d13e645848b7f24"
+    },
+    "gb": {
+      "text": "İngiltere’ye geldik! Big Ben, Tavır Briç, Stonhenc seni bekliyor!",
+      "duration": 5.43,
+      "hash": "f90e845905f3a06382020673de2c09b8e37cc34f9cb29f03d6c00c1041adf069"
+    },
+    "choose-gb": {
+      "text": "İngiltere! Büyük saati ve sivri çatıyı bul!",
+      "duration": 4.02,
+      "hash": "fdde5a1aaa14d464c2801a20c7da4f7188458cb6c78c54fce262df5c2b3b32ba"
+    },
+    "place-gb-bigben": {
+      "text": "Big Ben! Londra’nın ünlü saat kulesinin dört yüzünde saatler bulunur. Büyük saati ve sivri çatıyı bul!",
+      "duration": 8.48,
+      "hash": "41e55322fea35b11371c05c4eca5367d9e4f435cf0b49e93df3bb416deba031b"
+    },
+    "place-gb-towerbridge": {
+      "text": "Tavır Briç! Londra’daki Tavır Briç, Temz Nehri üzerinde iki kuleyle yükselir. Mavi köprünün iki kulesini bul!",
+      "duration": 9.09,
+      "hash": "8564bf2d1e5e78f39599cc18534b494aba33b1280a336c7897b9ff6d88cc417c"
+    },
+    "place-gb-stonehenge": {
+      "text": "Stonhenc! Stonhenc, İngiltere’de büyük taşların oluşturduğu tarihî bir anıttır. Taş çemberin etrafında koş!",
+      "duration": 9.0,
+      "hash": "c61e6377282b2f000bb3e2f08dccfe698a52fbe9fd4d041af70b6ebe90c7cebb"
+    },
+    "it": {
+      "text": "İtalya’ya geldik! Kolezyum, Pisa Kulesi, Venedik Kanalları seni bekliyor!",
+      "duration": 5.88,
+      "hash": "4d6c33f79a5e82d6da52f0a417951fe8641e85a7613af7298918783cbb13abc8"
+    },
+    "choose-it": {
+      "text": "İtalya! Büyük kemerli yapının etrafında koş!",
+      "duration": 4.03,
+      "hash": "cec5ba2157a48761d847b8f6aaaaa6df44a135585d1565d95b6854d90175bd88"
+    },
+    "place-it-colosseum": {
+      "text": "Kolezyum! Roma’daki Kolezyum, kat kat kemerleri olan tarihî bir amfitiyatrodur. Büyük kemerli yapının etrafında koş!",
+      "duration": 9.39,
+      "hash": "e13934d2a82cef8f41a7a3f7f0fd4b0b30b72dec54fe6ab18f195c0d0457fcc1"
+    },
+    "place-it-pisa": {
+      "text": "Pisa Kulesi! Pisa Kulesi, yana eğilmiş görüntüsüyle tanınır. Eğik kuleyi bul!",
+      "duration": 6.95,
+      "hash": "0fa65712aa70908994160081686762618cfa66668493082e3ce65bd0edeb35e0"
+    },
+    "place-it-venice": {
+      "text": "Venedik Kanalları! Venedik’te kanalların üzerinde köprüler ve suda gondollar bulunur. Siyah gondolu bul!",
+      "duration": 8.59,
+      "hash": "2e61831f553fda53c91ff81b315209365b0d9e4d18562bba83e168aed8b3a380"
+    },
+    "es": {
+      "text": "İspanya’ya geldik! Sagrada Familya, Elhamra, Park Güel seni bekliyor!",
+      "duration": 5.83,
+      "hash": "7ede29e85833488218c29b6a55405653b3ce18c19fc37e77e049b1ee4911849a"
+    },
+    "choose-es": {
+      "text": "İspanya! Uzun kulelere bak!",
+      "duration": 3.04,
+      "hash": "4431bd95c7fd33487e2aa7e81316b6297d778177e5b822a0b9b8e93e128048f7"
+    },
+    "place-es-sagrada": {
+      "text": "Sagrada Familya! Barselona’daki Sagrada Familya, uzun ve süslü kuleleriyle tanınır. Uzun kulelere bak!",
+      "duration": 8.97,
+      "hash": "6b22bf5d0fa0e3508db40096072b20a3c6d2137fedc2594e6421185ae1b44246"
+    },
+    "place-es-alhambra": {
+      "text": "Elhamra! Granada’daki Elhamra, avluları ve süslü kemerleri olan bir saray topluluğudur. Sarayın havuzunu ve kemerlerini bul!",
+      "duration": 9.94,
+      "hash": "e5ea2fd03cad174b4c1af9e4db112f6d3cde20a828f620585d1e9122e342d945"
+    },
+    "place-es-parkguell": {
+      "text": "Park Güel! Barselona’daki Park Güel, renkli mozaikleri ve kıvrımlı biçimleriyle tanınır. Mozaik bankı ve renkli kertenkeleyi bul!",
+      "duration": 10.39,
+      "hash": "f97882bfe88b095e04bab5a34266ab5618c6b32dc58c92e394e8ed619670b3f3"
+    },
+    "nl": {
+      "text": "Hollanda’ya geldik! Yel Değirmenleri, Amsterdam Kanalları, Lale Bahçesi seni bekliyor!",
+      "duration": 6.87,
+      "hash": "6ae88b2a04c33184a5f81349de08a9ffdd0d78c6b01ab111f28fc9608ad75453"
+    },
+    "choose-nl": {
+      "text": "Hollanda! Dönen değirmen kanatlarını izle!",
+      "duration": 3.82,
+      "hash": "20351fedad39a1712a26cb911e69a585a80178388446ff5344015e42b094e970"
+    },
+    "place-nl-windmills": {
+      "text": "Yel Değirmenleri! Hollanda’nın yel değirmenleri, rüzgârla dönen büyük kanatlarıyla tanınır. Dönen değirmen kanatlarını izle!",
+      "duration": 10.09,
+      "hash": "132801eb18ae55f3782796e6acc8fa17f43e7dd13832623e2c48f2c90e681a28"
+    },
+    "place-nl-canals": {
+      "text": "Amsterdam Kanalları! Amsterdam’da kanalların kıyısında dar ve yüksek evler bulunur. Kanalın köprüsünden koş!",
+      "duration": 9.0,
+      "hash": "c53ac7041be351f9dec4f20c48acdd98790abda1bd677e682ba0b6f0d9e744c6"
+    },
+    "place-nl-tulips": {
+      "text": "Lale Bahçesi! Hollanda’nın lale bahçeleri ilkbaharda renk renk çiçeklerle dolar. Rengârenk lale sıralarını bul!",
+      "duration": 9.54,
+      "hash": "e93c18c34677f835156af280d36ee493ee399e74c859f84a372085921a397d73"
+    },
+    "au": {
+      "text": "Avustralya’ya geldik! Sidney Opera Binası, Uluru, Mercan Kıyısı seni bekliyor!",
+      "duration": 6.43,
+      "hash": "4875665681cb508d19500a1d5bcf781dbb4c20b7f63c57baf60809a9f9b1d7b6"
+    },
+    "choose-au": {
+      "text": "Avustralya! Beyaz yelken biçimli çatıları bul!",
+      "duration": 4.17,
+      "hash": "7ea3b5b4ae54fca6850ba14328c0b2f951a993acfe8afb0c0e54618ca4085e46"
+    },
+    "place-au-opera": {
+      "text": "Sidney Opera Binası! Sidney Opera Binası, limanın yanında beyaz yelkenlere benzeyen çatılar taşır. Beyaz yelken biçimli çatıları bul!",
+      "duration": 11.05,
+      "hash": "381dbd4b30e9ec283d79990ba2592d27b94c0b0201540b01fd0519cf9ec7f6ba"
+    },
+    "place-au-uluru": {
+      "text": "Uluru! Uluru, Avustralya’da kızıl tonlarıyla tanınan büyük bir kaya oluşumudur. Kızıl kayanın etrafında koş!",
+      "duration": 8.42,
+      "hash": "6ff8c9cba206aa086d45530924d23a6366656840d92a3e6885fe32fd25ca6da9"
+    },
+    "place-au-reef": {
+      "text": "Mercan Kıyısı! Avustralya’nın Büyük Set Resifi, çok sayıda mercan ve deniz canlısının yaşadığı bir yerdir. Renkli mercanları ve küçük balıkları bul!",
+      "duration": 12.16,
+      "hash": "eeb54124699c2c665cf6e5860982d16535ff7272ad52386dd9fabe8414eee036"
+    },
+    "in": {
+      "text": "Hindistan’a geldik! Tac Mahal, Rüzgâr Sarayı, Basamaklı Kuyu seni bekliyor!",
+      "duration": 5.93,
+      "hash": "d862fd3ffa56fae5f36a361a2618e0b198947f87dcb5e9e3072499daf1295f29"
+    },
+    "choose-in": {
+      "text": "Hindistan! Beyaz kubbeyi ve uzun havuzu bul!",
+      "duration": 4.11,
+      "hash": "5d58710419acd48d4240c29d62e38978057526d81bb48ad179f27a1c1ab190af"
+    },
+    "place-in-taj": {
+      "text": "Tac Mahal! Agra’daki Tac Mahal, beyaz kubbesi ve dört ince minaresiyle tanınır. Beyaz kubbeyi ve uzun havuzu bul!",
+      "duration": 9.72,
+      "hash": "47b5e06736665faa76deb4107eacc9da6ee461bae628d76e044fca6d680097f9"
+    },
+    "place-in-hawa": {
+      "text": "Rüzgâr Sarayı! Jaipur’daki Rüzgâr Sarayı, pembe cephesi ve çok sayıda küçük penceresiyle tanınır. Pembe sarayın küçük pencerelerine bak!",
+      "duration": 11.03,
+      "hash": "bf44e7a996a98772a024df613c869a2c3fa4bc1f49418863b313ec8a3430e7e0"
+    },
+    "place-in-stepwell": {
+      "text": "Basamaklı Kuyu! Hindistan’da bazı tarihî kuyulara basamaklarla inilir. Basamakları ve kemerleri bul!",
+      "duration": 8.27,
+      "hash": "52058165b92833f068c70bf8567ffc3c507a4c59ea5cf47a11bac74f92baecae"
+    },
+    "activity-music": {
+      "text": "Notalara koş! Renkli çanlarla kendi şarkımızı yapalım.",
+      "duration": 4.65,
+      "hash": "fb87f2f9275804f7f4bac72f5cee4606bc00762e0e3ef97a30b2c1601800e466"
+    },
+    "activity-music-done": {
+      "text": "Bak, bütün çanlar dans ediyor! Neşeli şarkımız hazır.",
+      "duration": 4.7,
+      "hash": "b3f784f537994558133ee0d5b11967f35f1b40a593a4f9af225f8e8d36c57535"
+    },
+    "activity-train": {
+      "text": "Vagonlara koş! Oyuncak trenimizi birlikte hazırlayalım.",
+      "duration": 4.56,
+      "hash": "a5be7842c4babbaeb0d86f904c4a9dadfac282b8828bee6cd24cdb04cd7365d4"
+    },
+    "activity-train-done": {
+      "text": "Çuf çuf! Bütün vagonlar hazır, trenimiz yola çıkıyor!",
+      "duration": 4.46,
+      "hash": "a7ff637e9dd59af3844b872b006a297715fe275b8e0fbae67faea6a000fef226"
+    },
+    "activity-painting": {
+      "text": "Fırçalara koş! Büyük resmimizde neler çıkacak bakalım?",
+      "duration": 4.53,
+      "hash": "56abec01d733eafb6be58bf6a052c4abbea55fa18ecb3dc78bb8935470fffd55"
+    },
+    "activity-painting-done": {
+      "text": "Resmimiz tamamlandı! Güneş, çiçekler ve rengârenk bir gökkuşağı!",
+      "duration": 5.34,
+      "hash": "14ead3dbe10d6b78732dfc396bd1fcd8c118c7285720f2ab4b5cc40ba2c60dd9"
+    },
+    "activity-lanterns": {
+      "text": "Renkli fenerlere yaklaş! Işıklarımız gökyüzünde dans etsin.",
+      "duration": 5.13,
+      "hash": "4b9bfabcc401d25624dd480fdf933652dc381b5c88f33c046abcd964fc7a55cb"
+    },
+    "activity-lanterns-done": {
+      "text": "Bütün fenerler ışıldıyor! Gökyüzü neşeyle doldu.",
+      "duration": 4.42,
+      "hash": "774906ce4402a24459e319fcd901513984069da47a5ff78cbd3cd967aebdfeab"
+    },
+    "activity-picnic": {
+      "text": "Ayıcıklara koş! Piknik örtülerini birlikte hazırlayalım.",
+      "duration": 4.61,
+      "hash": "e5f6d378ff78fef2f905f029b397de558ab82f4a4339823eae1c3592afd4bae3"
+    },
+    "activity-picnic-done": {
+      "text": "Ayıcıkların pikniği hazır! Hep birlikte el sallıyorlar.",
+      "duration": 4.63,
+      "hash": "8e9af02b68dd4ac5e9aa7c90b52a6fa400fd99ba2eb433e4ef2d2d799decd404"
     }
   }
 }

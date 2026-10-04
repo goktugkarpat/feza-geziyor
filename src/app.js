@@ -28,6 +28,7 @@
   let lastFrame=0,nextDraw=0,lastUI=0,toastUntil=0,sceneReady=true,hadTour=false;
   let travelStage=null,routeSamples=[],travelDuration=9,lastTerrain=null,lastTerrainVoice=-20,autoPath=[],celebrateUntil=0,mapDistance=19;
   let hasSelection=false,spaceArrival=false,departAt=0,discoveryUntil=0,activityEndAt=0,hopUntil=0;
+  const activityRounds=new Map();
   let activityStages=new Map(),lastActivityPlace=null,activityCooldown=0;
   let lastFocusPlace=null;
   let portal=null,portalArmed=false,portalReadyAt=0,portalTravelAt=0,cueTarget=null,guideUIAt=0,lastTravelUI=0;
@@ -49,7 +50,14 @@
   const flagCache={};
   function flag(c){const image=document.createElement('img');image.className='country-flag';image.alt=c.name+' bayrağı';image.width=30;image.height=20;
     if(!flagCache[c.id]){const rect=(x,y,w,h,color)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+color+'"/>',star=(x,y,r,color)=>{let points='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.4:r;points+=(x+Math.cos(a)*rr)+','+(y+Math.sin(a)*rr)+' ';}return '<polygon points="'+points+'" fill="'+color+'"/>';};let shapes='';
-      if(['be','fr','ca'].includes(c.id)){const colors=c.id==='be'?['#181818','#f7cf32','#e3343b']:c.id==='fr'?['#255da1','#fff','#df3a48']:['#d8353c','#fff','#d8353c'];colors.forEach((color,i)=>shapes+=rect(i*20,0,20,40,color));if(c.id==='ca')shapes+='<path d="M30 6l3 10 4-3-1 8 6-1-3 9-7 1v6h-4v-6l-7-1-3-9 6 1-1-8 4 3z" fill="#d8353c"/>';}
+      if(['it','nl','in','es'].includes(c.id)){
+        const cols={it:['#29985b','#fff','#dc4f4d'],nl:['#d65352','#fff','#3964a2'],in:['#ee9d48','#fff','#3c9960'],es:['#c84742','#f1c34d','#c84742']}[c.id];
+        cols.forEach((col,i)=>shapes+=c.id==='it'?rect(i*20,0,20,40,col):rect(0,i*40/3,60,40/3+.1,col));
+        if(c.id==='in')shapes+='<circle cx="30" cy="20" r="5" fill="none" stroke="#335b9a" stroke-width="1.4"/>'+star(30,20,4,'#335b9a');
+      }else if(c.id==='gb'||c.id==='au'){
+        shapes=rect(0,0,60,40,'#294b86')+'<path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="9"/><path d="M0 0L60 40M60 0L0 40" stroke="#d04749" stroke-width="3"/><path d="M30 0V40M0 20H60" stroke="#fff" stroke-width="12"/><path d="M30 0V40M0 20H60" stroke="#d04749" stroke-width="7"/>';
+        if(c.id==='au')shapes='<g transform="scale(.5)">'+shapes+'</g>'+star(14,30,5,'#fff')+star(45,12,4,'#fff')+star(44,32,4,'#fff')+star(35,22,3,'#fff')+star(54,20,3,'#fff');
+      }else if(['be','fr','ca'].includes(c.id)){const colors=c.id==='be'?['#181818','#f7cf32','#e3343b']:c.id==='fr'?['#255da1','#fff','#df3a48']:['#d8353c','#fff','#d8353c'];colors.forEach((color,i)=>shapes+=rect(i*20,0,20,40,color));if(c.id==='ca')shapes+='<path d="M30 6l3 10 4-3-1 8 6-1-3 9-7 1v6h-4v-6l-7-1-3-9 6 1-1-8 4 3z" fill="#d8353c"/>';}
       else if(c.id==='ru'){['#fff','#3464b8','#d84140'].forEach((color,i)=>shapes+=rect(0,i*40/3,60,40/3+.1,color));}
       else if(c.id==='jp'){shapes=rect(0,0,60,40,'#fff')+'<circle cx="30" cy="20" r="11" fill="#d9404b"/>';}
       else if(c.id==='eg'){shapes=rect(0,0,60,14,'#d9423b')+rect(0,14,60,13,'#fff')+rect(0,27,60,13,'#222')+'<path d="M30 15l-5 4 2 6h6l2-6z" fill="#cfad40"/>';}
@@ -110,7 +118,7 @@
     const scroll=$('country-list').scrollTop;$('country-list').replaceChildren();countries.forEach(c=>{const b=document.createElement('button');b.className='country-choice'+(hasSelection&&c===selected?' selected':'');b.setAttribute('aria-pressed',String(hasSelection&&c===selected));
       const strong=document.createElement('strong');strong.textContent=c.id==='us'?'Amerika':c.name;b.setAttribute('aria-label',c.name+' ülkesini seç');b.dataset.country=c.id;b.append(picture(c),flag(c),strong,P.stars(stamps(c)));b.onclick=()=>selectCountry(c);$('country-list').append(b);
     });$('country-list').scrollTop=scroll;$('selected-city').textContent=hasSelection?selected.city:'Bir resme dokun.';$('selected-description').textContent=selected.intro;$('depart').disabled=!hasSelection;
-    $('depart').replaceChildren(P.node('bolt'),P.node('arrow'));$('depart').setAttribute('aria-label',selected.name+' ülkesine koş');$('stamp-count').textContent=data.visited.length+' / 30';
+    $('depart').replaceChildren(P.node('bolt'),P.node('arrow'));$('depart').setAttribute('aria-label',selected.name+' ülkesine koş');$('stamp-count').textContent=data.visited.length+' / '+FLASH_COUNTRIES.reduce((n,c)=>n+c.places.length,0);
   }
   function selectCountry(c){if(mode!=='atlas'||!sceneReady)return;endCountriesInvitation();selected=c;hasSelection=true;globe.focus(c);updateAtlas();departAt=time+.75;FLASH_AUDIO.init();FLASH_AUDIO.play('choose-'+c.id,{replacePending:true});}
   function makeGround(c){
@@ -130,7 +138,7 @@
     sceneReady=false;$('boot').hidden=false;if(travelStage)travelStage.root.visible=false;setTimeout(()=>{
       const oldCity=city,oldGround=ground,oldWeather=weather,oldStages=activityStages,oldPortal=portal;city=FLASH_PLACES.create(selected);world.add(city.root);ground=makeGround(selected);weather=FLASH_WEATHER.create(selected,{touch:C.touch,reduced});world.add(weather.root);weather.update(0,time,tmp.set(0,0,25));
       const layouts=FLASH_ACTIVITY_ROUTES.layout(selected,city.colliders);activityStages=new Map();
-      selected.places.forEach(place=>{const stage=FLASH_ACTIVITIES.create({country:selected,place,targets:layouts[place.id]});world.add(stage.root);activityStages.set(place.id,{stage,place});});
+      selected.places.forEach(place=>{const stages=FLASH_ACTIVITIES.choicesFor(selected,place).map(type=>{const stage=FLASH_ACTIVITIES.create({country:selected,place,type,targets:layouts[place.id]});world.add(stage.root);return stage;});activityStages.set(place.id,{stages,place});});
       const portalPoint=[{x:-.75,z:19},{x:-1,z:19},{x:0,z:20},{x:2,z:28}].find(p=>!collides(p.x,p.z,3.4));
       portal=FLASH_PORTAL.create({...portalPoint,map:globe.root.children[0].material.map});world.add(portal.root);
       // Prewarm with the actual tour lights/fog, not an unlit temporary group.
@@ -148,28 +156,28 @@
           renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);world.visible=true;hero.root.position.set(0,0,25);hero.root.rotation.y=Math.PI;hero.root.scale.setScalar(1.42);trail.visible=sparks.visible=guide.visible=true;C.shadowsAt(0,25);warmCamera.fov=camera.fov;warmCamera.updateProjectionMatrix();warmCamera.position.set(8,13,40);warmCamera.lookAt(0,1,24);renderer.render(scene,warmCamera);
           // Space uses different fog/shadow shaders. Prime its first visible frame too.
           if(spaceArrival){world.visible=false;scene.fog=null;C.sun.color.setHex(0xffecd5);C.sun.intensity=2.7;C.sun.castShadow=false;globe.root.visible=spaceStars.visible=hero.root.visible=shuttle.root.visible=true;guide.visible=false;globe.focus(selected,true);poseSpaceShuttle(0,0);space.update(0,time,camera);resetTrail();renderer.render(scene,camera);}
-        }finally{renderer.setRenderTarget(oldTarget);renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);world.visible=false;restoreEnvironment();visible.forEach(([o,v])=>o.visible=v);activityStages.forEach(a=>a.stage.root.visible=false);portal.root.visible=false;}
-        oldStages.forEach(a=>a.stage.dispose());oldPortal?.dispose();oldCity?.dispose();oldGround?.dispose();oldWeather?.dispose();sceneReady=true;$('boot').hidden=true;showMode('travel');FLASH_AUDIO.play(spaceArrival?'travel-space':'travel',{replacePending:true});
+        }finally{renderer.setRenderTarget(oldTarget);renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);world.visible=false;restoreEnvironment();visible.forEach(([o,v])=>o.visible=v);activityStages.forEach(a=>a.stages.forEach(stage=>stage.root.visible=false));portal.root.visible=false;}
+        oldStages.forEach(a=>a.stages.forEach(stage=>stage.dispose()));oldPortal?.dispose();oldCity?.dispose();oldGround?.dispose();oldWeather?.dispose();sceneReady=true;$('boot').hidden=true;showMode('travel');FLASH_AUDIO.play(spaceArrival?'travel-space':'travel',{replacePending:true});
       }
       ready.then(finishPreparation,finishPreparation);
     },60);
   }
   function arrive(){const firstArrival=!hadTour;current=selected;data.current=current.id;if(!data.countries.includes(current.id))data.countries.push(current.id);save();hadTour=true;tourPose.position.set(0,0,25);tourPose.rotation=Math.PI;hero.root.position.copy(tourPose.position);hero.root.rotation.y=Math.PI;navPlace=null;showMode('tour');portalArmed=false;portalReadyAt=time+8;
     lastFocusPlace=lastActivityPlace=null;activityCooldown=0;if(travelStage){travelStage.dispose();travelStage=null;}cameraAim.set(0,1,24);camera.position.set(8,13,40);camera.lookAt(cameraAim);FLASH_AUDIO.play(current.id,{replacePending:true});if(firstArrival)FLASH_AUDIO.play('help-tour');const first=$('place-list').querySelector('.place-row:not(.done)')||$('place-list').firstElementChild;if(first)first.classList.add('inviting');announce(current.name+' gezisi başlıyor. Üç durağı keşfet!');}
-  function updateTourUI(){if(!current)return;$('location-label').textContent=current.name+' · '+stamps(current)+'/3 keşif';$('city-label').textContent=current.city;$('country-title').replaceChildren(flag(current),document.createTextNode(' '+(current.id==='us'?'Amerika':current.name)));$('stamp-count').textContent=data.visited.length+' / 30';
+  function updateTourUI(){if(!current)return;$('location-label').textContent=current.name+' · '+stamps(current)+'/3 keşif';$('city-label').textContent=current.city;$('country-title').replaceChildren(flag(current),document.createTextNode(' '+(current.id==='us'?'Amerika':current.name)));$('stamp-count').textContent=data.visited.length+' / '+FLASH_COUNTRIES.reduce((n,c)=>n+c.places.length,0);
     $('place-list').replaceChildren();current.places.forEach(p=>{const b=document.createElement('button');b.className='place-row'+(seen(current,p)?' done':'');b.setAttribute('aria-label',p.name+' yerine git');b.dataset.place=p.id;const text=document.createElement('span');text.textContent=p.name;b.append(picture(current,p),text,P.node(seen(current,p)?'check':'arrow'));b.onclick=()=>{closeDiscovery();cancelChallenge();navPlace=p;lastActivityPlace=null;guide.visible=true;guide.position.set(p.x,0,p.z);autoPath=frontPath(p);$('navigation-picture').src=picture(current,p).src;FLASH_AUDIO.play('help-tour',{replacePending:true});};$('place-list').append(b);});$('photo').disabled=false;
   }
   // Keep a short landmark context for narration and camera focus, without a popup.
   function rememberDiscovery(p){discoveryPlace=p;lastFocusPlace=p;discoveryUntil=time+7;$('discovery').hidden=true;}
-  function discover(p){const id=current.id+':'+p.id,isNew=!seen(current,p);if(isNew){data.visited.push(id);save();updateTourUI();celebrate(1.3);}rememberDiscovery(p);startChallenge(p);FLASH_AUDIO.play('place-'+current.id+'-'+p.id);if(navPlace===p){navPlace=null;guide.visible=false;$('navigation').hidden=true;}if(isNew&&data.visited.length===30){celebrate(3);announce('Dünya turunu tamamladın!');}}
+  function discover(p){const id=current.id+':'+p.id,isNew=!seen(current,p);if(isNew){data.visited.push(id);save();updateTourUI();celebrate(1.3);}rememberDiscovery(p);startChallenge(p);FLASH_AUDIO.play('place-'+current.id+'-'+p.id);if(navPlace===p){navPlace=null;guide.visible=false;$('navigation').hidden=true;}if(isNew&&data.visited.length===countries.reduce((n,c)=>n+c.places.length,0)){celebrate(3);announce('Dünya turunu tamamladın!');}}
   function closeDiscovery(){discoveryPlace=null;$('discovery').hidden=true;discoveryUntil=0;}
   function collides(x,z,margin=.45){return city&&city.colliders.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+margin);}
-  function frontPath(p){for(const angle of [.46,.8,0,1.2,-.4,1.6,-.8]){const r=p.radius-1.5,goal={x:p.x+Math.sin(angle)*r,z:p.z+Math.cos(angle)*r};if(Math.abs(goal.x)>32||Math.abs(goal.z)>32||collides(goal.x,goal.z,1))continue;const route=planPath(goal,.7);if(route.length)return route;}return planPath(p,p.radius-.9);}
+  function frontPath(p){for(const angle of [.46,.8,0,1.2,-.4,1.6,-.8]){const r=p.radius-1.5,goal={x:p.x+Math.sin(angle)*r,z:p.z+Math.cos(angle)*r};if(Math.abs(goal.x)>58||Math.abs(goal.z)>58||collides(goal.x,goal.z,1))continue;const route=planPath(goal,.7);if(route.length)return route;}return planPath(p,p.radius-.9);}
   function planPath(goal,radius){
     // A tiny grid routes around buildings, so a child only needs to tap a picture.
-    const size=67,step=1,startPos=hero.root.position,point=id=>({x:-33+id%size,z:-33+Math.floor(id/size)});
+    const size=119,step=1,startPos=hero.root.position,point=id=>({x:-59+id%size,z:-59+Math.floor(id/size)});
     const door=portal?.root.position,avoidDoor=door&&Math.hypot(goal.x-door.x,goal.z-door.z)>=1.8,doorGap=p=>door?Math.hypot(p.x-door.x,p.z-door.z):Infinity;
-    const cityBlocked=p=>Math.abs(p.x)>33||Math.abs(p.z)>33||collides(p.x,p.z,.8);
+    const cityBlocked=p=>Math.abs(p.x)>59||Math.abs(p.z)>59||collides(p.x,p.z,.8);
     // Normal picture/target routes skirt the door; an intentional door tap enters it.
     const blocked=p=>cityBlocked(p)||avoidDoor&&doorGap(p)<2.5;
     const free=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.4);let leavingDoor=avoidDoor&&doorGap(a)<2.5,lastGap=doorGap(a);for(let i=0;i<=n;i++){const t=n?i/n:0,p={x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t};if(cityBlocked(p))return false;if(avoidDoor){const gap=doorGap(p);if(leavingDoor){if(gap<lastGap-.001)return false;lastGap=gap;if(gap>=2.5)leavingDoor=false;}else if(gap<2.5)return false;}}return true;};
@@ -183,13 +191,13 @@
   }
   function celebrate(seconds){$('celebration').replaceChildren(P.node('star'),P.node('star'),P.node('star'));$('celebration').hidden=false;celebrateUntil=time+seconds;}
   function challengePictures(state){const meta=FLASH_ACTIVITIES.types[state.type];$('challenge-icon').replaceChildren(P.node(meta.icon));$('challenge-count').replaceChildren();for(let i=0;i<state.total;i++){const icon=P.node(meta.icon);icon.classList.toggle('earned',i<state.collected);$('challenge-count').append(icon);}$('challenge').setAttribute('aria-label',meta.title+' · '+state.collected+' / '+state.total);}
-  function move(dx,dz){const pos=hero.root.position,nx=Math.max(-34,Math.min(34,pos.x+dx)),nz=Math.max(-34,Math.min(34,pos.z+dz));
+  function move(dx,dz){const pos=hero.root.position,nx=Math.max(-60,Math.min(60,pos.x+dx)),nz=Math.max(-60,Math.min(60,pos.z+dz));
     if(!collides(nx,nz)){pos.x=nx;pos.z=nz;return;}if(!collides(nx,pos.z))pos.x=nx;if(!collides(pos.x,nz))pos.z=nz;
   }
   function cancelChallenge(){if(challenge)challenge.root.visible=false;challenge=null;activityEndAt=0;cueTarget=null;$('target-cue').hidden=true;$('challenge').hidden=true;document.body.classList.remove('has-activity');}
-  function startChallenge(place){if(!place||challenge?.place===place)return;cancelChallenge();const prepared=activityStages.get(place.id);if(!prepared)return;const stage=prepared.stage;if(stage.getState().complete)stage.reset();else stage.update(0,time,null,0);challenge={stage,place,root:stage.root};stage.root.visible=true;lastActivityPlace=place;activityEndAt=0;challengePictures(stage.getState());$('challenge').hidden=false;document.body.classList.add('has-activity');FLASH_AUDIO.play(FLASH_ACTIVITIES.types[stage.getState().type].voiceKey,{replacePending:true});}
-  function updateChallenge(dt){if(!challenge)return;const event=challenge.stage.update(dt,time,hero.root.position,velocity.length());if(event.collected.length){challengePictures(challenge.stage.getState());guideUIAt=-1;if(challenge.stage.getState().type==='splashes')hopUntil=time+.48;}
-    if(event.complete){const id=current.id+':'+challenge.place.id;if(!data.activities.includes(id))data.activities.push(id);save();celebrate(1.8);activityEndAt=time+2;activityCooldown=time+8;FLASH_AUDIO.play('activity-done-'+(data.activities.length%3+1),{replacePending:true});}
+  function startChallenge(place){if(!place||challenge?.place===place)return;cancelChallenge();const prepared=activityStages.get(place.id);if(!prepared)return;const key=current.id+':'+place.id,round=activityRounds.get(key)||0;const stage=prepared.stages[round%prepared.stages.length];activityRounds.set(key,round+1);stage.reset();challenge={stage,place,root:stage.root};stage.root.visible=true;lastActivityPlace=place;activityEndAt=0;challengePictures(stage.getState());$('challenge').hidden=false;document.body.classList.add('has-activity');FLASH_AUDIO.play(FLASH_ACTIVITIES.types[stage.getState().type].voiceKey,{replacePending:true});}
+  function updateChallenge(dt){if(!challenge)return;const event=challenge.stage.update(dt,time,hero.root.position,velocity.length());if(event.collected.length){FLASH_AUDIO.chime(challenge.stage.getState().collected-1,event.complete);challengePictures(challenge.stage.getState());guideUIAt=-1;if(challenge.stage.getState().type==='splashes')hopUntil=time+.48;}
+    if(event.complete){const id=current.id+':'+challenge.place.id;if(!data.activities.includes(id))data.activities.push(id);save();celebrate(1.8);activityEndAt=time+4;activityCooldown=time+8;FLASH_AUDIO.play(FLASH_ACTIVITIES.types[challenge.stage.getState().type].doneKey||'activity-done-'+((activityRounds.get(id)||0)%3+1),{replacePending:true});}
     if(activityEndAt&&time>=activityEndAt)cancelChallenge();}
   function targetGuide(){
     if(mode!=='tour'||navPlace||modal||portalTravelAt){$('target-cue').hidden=true;cueTarget=null;return;}
@@ -226,7 +234,7 @@
     countries.forEach(c=>{const div=document.createElement('button');div.className='passport-stamp'+(stamps(c)===3?' complete':'');div.setAttribute('aria-label',c.name);const b=document.createElement('b');b.textContent=c.id==='us'?'Amerika':c.name;div.append(picture(c),flag(c),b,P.stars(stamps(c)));div.onclick=()=>FLASH_AUDIO.play('choose-'+c.id,{replacePending:true});$('passport-grid').append(div);});FLASH_AUDIO.play('help-passport',{replacePending:true});}
   function closeModal(){if(modal)$(modal).hidden=true;modal=null;resetInput();}
   function soundUI(){const silent=C.query.has('sessiz'),enabled=data.sound&&!silent;$('audio-toggle').textContent=silent?'Sessiz açılış':enabled?'Açık':'Kapalı';$('audio-toggle').setAttribute('aria-pressed',String(enabled));$('audio-toggle').disabled=silent;$('music-toggle').textContent=silent?'Sessiz açılış':data.music?'Açık':'Kapalı';$('music-toggle').setAttribute('aria-pressed',String(data.music&&!silent));$('music-toggle').disabled=silent;}
-  function photo(){if(!current)return;renderer.render(scene,camera);const cv=document.createElement('canvas');cv.width=1200;cv.height=800;const g=cv.getContext('2d');g.fillStyle='#fff9eb';g.fillRect(0,0,1200,800);g.drawImage(C.canvas,30,30,1140,642);g.fillStyle='#bf3039';g.font='bold 35px system-ui';g.fillText('FLAŞ FEZA · '+current.name,40,730);g.fillStyle='#193b49';g.font='18px system-ui';g.fillText(current.city+' · Dünya turumdan bir anı',40,765);const a=document.createElement('a');a.download='feza-'+current.id+'-kartpostal.png';a.href=cv.toDataURL('image/png');a.click();announce('Kartpostalın hazır!');}
+  function photo(){if(!current)return;renderer.render(scene,camera);const cv=document.createElement('canvas');cv.width=1200;cv.height=800;const g=cv.getContext('2d');g.fillStyle='#fff9eb';g.fillRect(0,0,1200,800);g.drawImage(C.canvas,30,30,1140,642);g.fillStyle='#bf3039';g.font='bold 35px system-ui';g.fillText('FEZA GEZİYOR · '+current.name,40,730);g.fillStyle='#193b49';g.font='18px system-ui';g.fillText(current.city+' · Dünya turumdan bir anı',40,765);const a=document.createElement('a');a.download='feza-'+current.id+'-kartpostal.png';a.href=cv.toDataURL('image/png');a.click();announce('Kartpostalın hazır!');}
   $('start').onclick=()=>{FLASH_AUDIO.init();FLASH_AUDIO.play('intro');showMode('atlas');updateAtlas();};$('depart').onclick=depart;
   $('map-open').onclick=()=>{if(mode==='tour'){closeDiscovery();showMode('atlas');updateAtlas();FLASH_AUDIO.play('help-map',{replacePending:true});}};$('atlas-back').onclick=()=>showMode('tour');
   $('passport-open').onclick=passport;$('passport-close').onclick=closeModal;$('passport-done').onclick=closeModal;
