@@ -122,6 +122,7 @@ Müzik bahçesinde beş özgün çan notası (**do–re–mi–sol–la** aralı
 - **Görüntü:** **Otomatik**, **Akıcı** (gölgesiz, daha hafif) ya da **Ayrıntılı**. Otomatik, dokunmatik cihazlarda iPad'e uygun hafif profili seçer.
 - **Kartpostal kaydet:** O anki sahneden, altında "FEZA GEZİYOR", ülke adı ve şehir yazan bir kartpostal resmi (`feza-<ülke>-kartpostal.png`) indirir. Yalnızca ülke sahnesindeyken çalışır.
 - Ayarlar penceresinde ayrıca oyunun nasıl oynandığını anlatan kısa bir yardım yazısı bulunur.
+- **FPS göstergesi (yalnız klavyeli bilgisayarda):** Nokta (`.`) tuşu sol altta FPS ve çizim çözünürlüğünü açıp kapatır; çocuğun ekranında görünmez. Kare hızı: iPad, dokunmatik cihaz ve Mac 60 FPS; masaüstü PC en fazla 120 FPS çalışır (60 Hz ekranda 60).
 
 Adresin sonuna `?sessiz` eklenirse anlatıcı ve müzik düğmeleri devre dışı kalır ve "Sessiz açılış" yazar.
 

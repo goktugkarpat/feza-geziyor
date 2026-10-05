@@ -1,6 +1,8 @@
 'use strict';
 (() => {
   const C=FLASH_CORE,{renderer,scene,camera}=C,$=id=>document.getElementById(id);
+  // iPad, dokunmatik cihaz ve Mac 60 kareye sabit kalır; masaüstü PC en fazla 120 FPS çalışır.
+  const FRAME_HZ=C.touch||C.profile.appleMobile||/Mac/i.test(navigator.userAgentData?.platform||navigator.platform||navigator.userAgent)?60:120;
   const P=FLASH_PICTO;
   document.body.classList.toggle('touch-controls',navigator.maxTouchPoints>0||C.touch);
   document.querySelectorAll('[data-picto]').forEach(el=>el.innerHTML=P.svg(el.dataset.picto));
@@ -309,11 +311,11 @@
   function frame(now){requestAnimationFrame(frame);if(document.hidden||C.lost){lastFrame=now;nextDraw=now;return;}
     // Keep the 60-frame phase without dropping a 60 Hz frame that arrives a
     // little early. Two milliseconds still reject extra 120/180/240 Hz frames.
-    if(now+2<nextDraw)return;const interval=1000/60;nextDraw=Math.max(nextDraw+interval,now-interval);const dt=Math.min(.04,(now-lastFrame)/1000||1/60);lastFrame=now;time+=dt;
+    if(FRAME_HZ){if(now+2<nextDraw)return;const interval=1000/FRAME_HZ;nextDraw=Math.max(nextDraw+interval,now-interval);}const dt=Math.min(.04,(now-lastFrame)/1000||1/60);lastFrame=now;time+=dt;
     if(mode==='welcome'||mode==='atlas'){globe.update(dt,time);if(mode==='welcome'){hero.update(dt,0,false,time);hero.bones.armR.rotation.set(-.12,-.2,-2.2);hero.bones.foreR.rotation.set(.12,0,-.45+Math.sin(time*3.5)*.25);hero.bones.head.rotation.z=Math.sin(time*1.5)*.04;}if(mode==='atlas'){const base=innerWidth<621?22:19;cameraPos.set(globe.root.position.x*(1-mapDistance/base),2,mapDistance);camera.position.lerp(cameraPos,1-Math.exp(-dt*12));camera.lookAt(0,0,0);if(departAt&&time>=departAt)depart();}}else if(mode==='tour')stepTour(dt);else if(mode==='travel')stepTravel(dt);
     if(atlasInviteUntil&&time>=atlasInviteUntil)endCountriesInvitation();
     if(!$('celebration').hidden&&time>celebrateUntil)$('celebration').hidden=true;
-    if(!$('toast').hidden&&time>toastUntil)$('toast').hidden=true;if(spaceStars.visible)space.update(dt,time,camera);renderer.render(scene,camera);
+    if(!$('toast').hidden&&time>toastUntil)$('toast').hidden=true;if(spaceStars.visible)space.update(dt,time,camera);renderer.render(scene,camera);FLASH_PERF.draw(now);
   }
   save();soundUI();updateAtlas();showMode('welcome');resetTrail();space.update(0,time,camera);renderer.compile(scene,camera);renderer.render(scene,camera);$('boot').hidden=true;requestAnimationFrame(frame);
 })();

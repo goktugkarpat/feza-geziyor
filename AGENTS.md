@@ -32,3 +32,4 @@
 - Güncel dünya: 16 ülke, 48 yer; 124 × 124 alan, ±60 hareket sınırı. Yer ölçeği 1.35; çarpışma da aynı ölçekle dönüşür. Yeni yerin resmi, Emel ses kaydı, keşif oyunu, rota erişimi ve önbellek girişi birlikte doğrulanır.
 
 - Her yer üç farklı etkinlik arasında sırayla değişir; aynı yere yeniden gelişte ve ülkeye dönüşte sıradaki oyun açılır. Sıra yalnız oturumda tutulur. Yeni oyunlarda çanlar dans eder, vagonlar hazırlanır, resimler belirir, fenerler yükselir ve ayıcık piknikleri kurulur. Bitiriş dört saniye görünür; koşmak serbesttir.
+- Nokta (.) tuşu src/perf-hud.js ile FPS + çözünürlük göstergesini açıp kapatır (varsayılan kapalı, dokunmayı engellemez); app.js frame() sonunda FLASH_PERF.draw(now) çağırır. Kare hızı: iPad/dokunmatik/Mac 60 FPS sabit, masaüstü PC en fazla 120 FPS; FRAME_HZ app.js başında.
