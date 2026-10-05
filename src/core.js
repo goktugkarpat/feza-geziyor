@@ -10,7 +10,7 @@ window.FLASH_CORE = (() => {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.08;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap; // simpler, cheaper, stable edges
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xc9e9f1);
   const camera = new THREE.PerspectiveCamera(43,innerWidth/innerHeight,0.1,250);
@@ -18,8 +18,12 @@ window.FLASH_CORE = (() => {
   const sun = new THREE.DirectionalLight(0xffecd5,2.7);
   sun.position.set(-18,30,16); sun.castShadow=true;
   sun.shadow.mapSize.set(1024,1024);
-  Object.assign(sun.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:1,far:100});
-  sun.shadow.normalBias=0.045; sun.shadow.bias=-0.0003;
+  // Wide box (covers everything the camera can see, so far trees/landmarks cast from the first frame they are visible),
+  // centred AHEAD of Feza; the light sits far back so tall landmarks are never clipped by the near plane.
+  const SHADOW_DIST=64, SHADOW_AHEAD=9; let shadowHalf=48, shadowTexel=96/1024;
+  Object.assign(sun.shadow.camera,{left:-shadowHalf,right:shadowHalf,top:shadowHalf,bottom:-shadowHalf,near:1,far:150});
+  sun.shadow.normalBias=0.06; sun.shadow.bias=-0.0004;
+  const LD=new THREE.Vector3(18,-30,-16).normalize(), LR=new THREE.Vector3(0,1,0).cross(LD).normalize().negate(), LU=new THREE.Vector3().crossVectors(LR,LD).normalize();
   scene.add(hemi,sun,sun.target);
   const ray = new THREE.Raycaster(), pointer = new THREE.Vector2();
   const groundPlane = new THREE.Plane(new THREE.Vector3(0,1,0),0);
@@ -39,6 +43,10 @@ window.FLASH_CORE = (() => {
       if(sun.shadow.mapPass){sun.shadow.mapPass.dispose();sun.shadow.mapPass=null;}
       if(size>0)sun.shadow.mapSize.set(size,size);sun.shadow.needsUpdate=true;
     }
+    if(size>0){ // 512 (touch) maps use a slightly tighter box so texels stay small enough
+      shadowHalf=size<=512?42:48; const c=sun.shadow.camera; c.left=-shadowHalf;c.right=shadowHalf;c.top=shadowHalf;c.bottom=-shadowHalf;c.updateProjectionMatrix();
+      shadowTexel=shadowHalf*2/size;
+    }
   }
   function resize() {
     const maxDpr=profile().pixelRatioCap;
@@ -51,7 +59,14 @@ window.FLASH_CORE = (() => {
     return ray.ray.intersectPlane(groundPlane,out);
   }
   function setSky(color) {scene.background.set(color); scene.fog=new THREE.Fog(color,44,112);}
-  function shadowsAt(x,z) {sun.position.set(x-18,30,z+16); sun.target.position.set(x,0,z);sun.target.updateMatrixWorld();}
+  function shadowsAt(x,z) {
+    // aim ahead of Feza (camera looks toward -z), then snap the target to the shadow texel grid so shadows do not swim while walking
+    const tx=x, tz=z-SHADOW_AHEAD, t=shadowTexel;
+    const r=tx*LR.x+tz*LR.z, u=tx*LU.x+tz*LU.z;
+    const dr=Math.round(r/t)*t-r, du=Math.round(u/t)*t-u;
+    const ax=tx+LR.x*dr+LU.x*du, ay=LR.y*dr+LU.y*du, az=tz+LR.z*dr+LU.z*du;
+    sun.target.position.set(ax,ay,az); sun.position.set(ax-LD.x*SHADOW_DIST,ay-LD.y*SHADOW_DIST,az-LD.z*SHADOW_DIST); sun.target.updateMatrixWorld();
+  }
   function dispose(root) {
     const geos=new Set(),mats=new Set(),tex=new Set();
     root.traverse(o=>{if(o.isInstancedMesh)o.dispose();if(o.geometry)geos.add(o.geometry); for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]) {mats.add(m); for(const k of ['map','normalMap','roughnessMap'])if(m[k])tex.add(m[k]);}});

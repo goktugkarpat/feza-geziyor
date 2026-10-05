@@ -1,7 +1,7 @@
 /* Flaş Feza'nın çevrimdışı kopyası. Diğer oyunların önbelleklerine dokunmaz. */
 'use strict';
 const PREFIX = 'flash-feza-geziyor-';
-const CACHE = PREFIX + 'v3-f8e9b86e8bc7';
+const CACHE = PREFIX + 'v3-22ba313d02bc';
 const CORE = [
   'index.html',
   'manifest.webmanifest',
@@ -11,6 +11,7 @@ const CORE = [
   'icons/icon-512.png',
   'vendor/three.js',
   'src/activities.js',
+  'src/activity-fx.js',
   'src/activity-routes.js',
   'src/app.js',
   'src/audio.js',

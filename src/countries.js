@@ -394,6 +394,13 @@
     eg: { ground:'sand', weather:'clear', season:'güneşli çöl', label:'Sıcak kumlar', sky:0xe3dfc8, groundTint:0xe2c284, path:'sand', moisture:0, waterColor:0x60b9c4, fogNear:48, fogFar:118, sunColor:0xffe1a9, sunIntensity:2.8 },
     br: { ground:'grass', weather:'rain', season:'tropikal yağmur', label:'Tropikal yağmur', sky:0xa8d0cd, groundTint:0x5ba466, path:'paving', moisture:.95, waterColor:0x5ab3bc, fogNear:36, fogFar:102, sunColor:0xeaf7ee, sunIntensity:2.0 }
   };
+  // WORLD: own colour moods for the six later countries (they used to borrow a template).
+  environments.gb = Object.assign({}, environments.be, { sky:0xb9cbd6, groundTint:0x76a566, waterColor:0x7fb0bc, sunIntensity:2.0 });
+  environments.it = Object.assign({}, environments.fr, { sky:0xbfe0f2, groundTint:0xa8ba78, sunColor:0xffe8bf, season:'yaz' });
+  environments.es = Object.assign({}, environments.fr, { sky:0xc4e2f0, groundTint:0xb4ba7a, sunColor:0xffe2b0, sunIntensity:2.8, season:'yaz' });
+  environments.nl = Object.assign({}, environments.tr, { sky:0xc2dff0, groundTint:0x7fba60, waterColor:0x6bbac8 });
+  environments.au = Object.assign({}, environments.eg, { sky:0xcfe3ea, groundTint:0xd89a6a, waterColor:0x4fc0cc, sunColor:0xffdcb0 });
+  environments['in'] = Object.assign({}, environments.tr, { sky:0xe0dfc8, groundTint:0xb9b070, sunColor:0xffe0a8, sunIntensity:2.7, fogNear:40, fogFar:104, season:'sıcak yaz' });
   window.FLASH_COUNTRIES.forEach(function (country) { country.environment = Object.assign({}, environments[country.id] || environments[country.environmentTemplate]);
     country.environment.fogNear += 12; country.environment.fogFar += 42;
     country.bounds = 60;

@@ -25,6 +25,8 @@
     '  float alpha = (1.0 - smoothstep(0.28, 1.0, radius)) * vBrightness;',
     '  if(alpha < 0.035) discard;',
     '  vec3 colour = mix(vec3(0.64, 0.80, 1.0), vec3(1.0, 0.94, 0.80), vSeed * 0.48);',
+    '  colour = mix(colour, vec3(1.0, 0.78, 0.9), step(0.93, vSeed) * 0.7);',
+    '  colour = mix(colour, vec3(0.7, 1.0, 0.92), step(0.07, 1.0 - vSeed) * step(vSeed, 0.07) * 0.0 + step(vSeed, 0.05) * 0.7);',
     '  gl_FragColor = vec4(colour, alpha);',
     '  #include <tonemapping_fragment>',
     '  #include <colorspace_fragment>',

@@ -94,6 +94,8 @@
     else if (kind === 'cone') g = new T.ConeGeometry(1, 1, 16);
     else if (kind === 'box') g = new T.BoxGeometry(1, 1, 1);
     else if (kind === 'torus') g = new T.TorusGeometry(1, 0.065, 6, 32);
+    else if (kind === 'bead') g = new T.SphereGeometry(1, 8, 6);
+    else if (kind === 'arc') g = new T.TorusGeometry(1, 0.06, 5, 28, Math.PI);
     else g = shapeGeometry(kind);
     pool.geometry.set(kind, g);
     return g;
@@ -122,7 +124,7 @@
     var pool = acquire(), batches = new Map(), targets = [], meshes = [];
     var elapsed = 0, count = 0, disposed = false, complete = points.length === 0, previous = null;
     var rootInverse = new T.Matrix4(), instanceMatrix = new T.Matrix4(), zero = new T.Matrix4().makeScale(0, 0, 0);
-    var worldPoint = new T.Vector3(), vector = new T.Vector3();
+    var stickerId = null, worldPoint = new T.Vector3(), vector = new T.Vector3();
 
     function node(parent, x, y, z) {
       var n = new T.Object3D(); n.position.set(x || 0, y || 0, z || 0); parent.add(n); return n;
@@ -415,8 +417,13 @@
     points.forEach(function (point, index) {
       var base = node(root, point.x, 0, point.z); base.name = 'hedef-' + index;
       var target = { index: index, base: base, x: point.x, z: point.z, color: PALETTE[index % PALETTE.length], collected: false, at: -Infinity, angle: 0 };
-      pad(target); builders[type](target); targets.push(target);
+      target.pad = base; pad(target);
+      // The themed object lives in a child node so it can squash and stretch without moving the pad.
+      target.body = node(base, 0, 0, 0); target.base = target.body;
+      builders[type](target); targets.push(target);
     });
+    var fx = window.FLASH_ACTIVITY_FX ? window.FLASH_ACTIVITY_FX.attach({ T: T, root: root, node: node, part: part, rod: rod, type: type, country: options.country, place: options.place,
+      targets: targets, pads: options.targets && options.targets.pads, motion: motion, gentle: gentle, options: options }) : null;
     batches.forEach(function (batch) {
       var mesh = new T.InstancedMesh(geometry(pool, batch.kind), material(pool, batch.mat), batch.records.length);
       mesh.name = type + '-' + batch.kind + '-' + batch.mat;
@@ -444,6 +451,7 @@
           star.scale.setScalar((0.22 + Math.sin(Math.min(1, p) * Math.PI) * 0.16 * motion) * Math.min(1, Math.max(0, (1 - p) * 5)));
         }
       }
+      if (fx) fx.animate(dt, time);
       root.updateMatrixWorld(true); rootInverse.copy(root.matrixWorld).invert();
       batches.forEach(function (batch) {
         for (var i = 0; i < batch.records.length; i++) {
@@ -470,6 +478,7 @@
       if (position && Number.isFinite(position.x) && Number.isFinite(position.z)) {
         for (var i = 0; i < targets.length; i++) if (!targets[i].collected && capture(targets[i], position)) {
           var target = targets[i]; target.collected = true; target.at = elapsed; count++; result.collected.push(i);
+          if (fx) fx.react(i, target);
           for (var m = 0; m < target.markers.length; m++) {
             var record = target.markers[m].userData.activityRecord;
             record.batch.mesh.setColorAt(record.index, new T.Color(0x77dc9a)); record.batch.mesh.instanceColor.needsUpdate = true;
@@ -480,18 +489,23 @@
         if (!previous) previous = { x: position.x, z: position.z };
         else { previous.x = position.x; previous.z = position.z; }
       } else previous = null;
-      if (!complete && count === targets.length) { complete = true; result.complete = true; }
+      if (!complete && count === targets.length) { complete = true; result.complete = true; if (fx) fx.finale(result); }
+      if (fx) {
+        fx.step(dt, Number.isFinite(time) ? time : elapsed, position, speed, result);
+        if (position && Number.isFinite(position.y) && !disposed) { var hop = fx.hopHeight(); if (hop > 0) position.y = Math.max(position.y, hop); }
+        if (result.sticker) stickerId = result.sticker;
+      }
       poses(dt, Number.isFinite(time) ? time : elapsed);
       return result;
     }
     function getState() {
       root.updateWorldMatrix(true, false);
-      return { type: type, collected: count, total: targets.length, complete: complete,
+      return { type: type, collected: count, total: targets.length, complete: complete, sticker: stickerId,
         targets: targets.map(function (target) { var p = worldPosition(target); return { x: p.x, z: p.z, collected: target.collected }; }) };
     }
     function reset() {
       if (disposed) return;
-      elapsed = 0; count = 0; previous = null; complete = targets.length === 0;
+      elapsed = 0; count = 0; previous = null; stickerId = null; if (fx) fx.reset(); complete = targets.length === 0;
       targets.forEach(function (target) { target.collected = false; target.at = -Infinity; target.angle = target.index * 0.8; });
       batches.forEach(function (batch) {
         for (var r = 0; r < batch.records.length; r++) batch.mesh.setColorAt(r, new T.Color(batch.records[r].color));
@@ -503,12 +517,13 @@
       if (disposed) return;
       disposed = true; root.removeFromParent();
       meshes.forEach(function (mesh) { mesh.dispose(); });
+      if (fx) fx.dispose();
       root.clear(); release(pool);
     }
     reset();
-    return { root: root, update: update, getState: getState, reset: reset, dispose: dispose };
+    return { root: root, update: update, getState: getState, reset: reset, dispose: dispose, get holdSeconds() { return fx ? fx.hold : 0; }, peekSurprise: function () { return fx && fx.peek ? fx.peek() : null; } };
   }
 
   window.FLASH_ACTIVITIES = { types: TYPES, typeIds: Object.keys(TYPES), typeFor: typeFor, choicesFor: choicesFor, create: create,
-    captureRadius: CAPTURE_RADIUS, rewardSeconds: REWARD_SECONDS };
+    stickers: {}, captureRadius: CAPTURE_RADIUS, rewardSeconds: REWARD_SECONDS };
 }());

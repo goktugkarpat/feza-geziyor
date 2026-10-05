@@ -54,6 +54,9 @@
       else if (kind === 'trim') g = new T.TorusGeometry(1.9, 0.047, 6, 48, Math.PI);
       else if (kind === 'halo') g = new T.TorusGeometry(1.04, 0.065, 6, 40);
       else if (kind === 'star') g = starGeometry();
+      else if (kind === 'octa') g = new T.OctahedronGeometry(1, 0);
+      else if (kind === 'band') g = new T.TorusGeometry(1, 0.075, 6, 20).rotateX(Math.PI / 2);
+      else if (kind === 'base') g = new T.CylinderGeometry(1, 1.04, 1, 40);
       sources.set(kind, g); return g;
     }
     function part(kind, color, x, y, z, sx, sy, sz, rx, ry, rz) {
@@ -79,6 +82,24 @@
       }
     }
     part('halo', 0xffd567, 0, 3.98, 0.06, 1, 1, 1);
+    // Stone platform and carved bands, crystal gems along the arch and on the pillar caps.
+    part('base', 0xe3dcc6, 0, 0.03, 0.3, 3.1, 0.06, 3.1);
+    part('base', 0x67d3cb, 0, 0.065, 0.3, 2.62, 0.03, 2.62);
+    part('base', 0xefe6cc, 0, 0.08, 0.3, 2.5, 0.04, 2.5);
+    part('base', 0xffd98a, 0, 0.1, 0.3, 1.25, 0.02, 1.25);
+    part('base', 0xefe6cc, 0, 0.11, 0.3, 1.15, 0.02, 1.15);
+    for (var side2 = 0; side2 < 2; side2++) {
+      var px = side2 ? -1.9 : 1.9;
+      for (var b = 0; b < 3; b++) part('band', b === 1 ? 0xfff0b8 : 0xffd46a, px, 0.85 + b * 0.8, 0, 0.27, 0.27, 0.27);
+      part('octa', side2 ? 0xff9ec0 : 0x9ae9ff, px, 3.42, 0, 0.17, 0.3, 0.17);
+      part('base', 0xc8f4ef, px, 0.62, 0, 0.215, 0.05, 0.215);
+    }
+    var gemColours = [0xff9ec0, 0x9ae9ff, 0xffe27a, 0xbba7ff];
+    for (var gem = 0; gem < 9; gem++) {
+      var ga = (gem + 0.5) / 9 * Math.PI, gx = Math.cos(ga) * 2.12, gy = 3.08 + Math.sin(ga) * 2.12;
+      part('octa', gemColours[gem % 4], gx, gy, 0.02, 0.11, 0.2, 0.11, 0, 0, ga - Math.PI / 2);
+    }
+    part('octa', 0xfff0a0, 0, 5.2, 0.02, 0.2, 0.33, 0.2);
     // Little arrow-shaped stepping stones point into the arch. They are part
     // of the world and do not require the child to read or tap a new button.
     for (var arrow = 0; arrow < 3; arrow++) {
@@ -120,9 +141,43 @@
       earthGeometry.setAttribute('color', new T.BufferAttribute(colour, 3)); earthMaterial.color.set(0xffffff); earthMaterial.vertexColors = true;
     }
     var earth = new T.Mesh(earthGeometry, earthMaterial); earth.name = 'dünya-kapısı-küre'; earth.position.set(0, 3.98, 0.04); earth.castShadow = true; root.add(earth);
-    var glowGeometry = new T.RingGeometry(0.42, 1.66, 40); ownedGeometries.push(glowGeometry);
-    var glowMaterial = new T.MeshBasicMaterial({ color: 0x79ded3, transparent: true, opacity: 0.19, depthWrite: false, side: T.DoubleSide }); materials.push(glowMaterial);
-    var glow = new T.Mesh(glowGeometry, glowMaterial); glow.rotation.x = -Math.PI / 2; glow.position.y = 0.022; root.add(glow);
+    // Soft rainbow/aurora veil in the doorway (additive, thin; it never hides Feza) and a ground ring that wakes up when she is near.
+    var uniforms = { uTime: { value: 0 }, uNear: { value: 0 } };
+    var veilGeometry = new T.PlaneGeometry(4.2, 5.4).translate(0, 2.7, 0); ownedGeometries.push(veilGeometry);
+    var veilMaterial = new T.ShaderMaterial({ uniforms: uniforms, transparent: true, depthWrite: false, side: T.DoubleSide, toneMapped: false,
+      vertexShader: 'varying vec2 vP; void main(){ vP = vec2((uv.x - 0.5) * 4.2, uv.y * 5.4); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform float uTime, uNear; varying vec2 vP; void main(){ vec2 c = vec2(vP.x, vP.y - 3.08); float e = vP.y > 3.08 ? 1.78 - length(c) : min(1.78 - abs(vP.x), vP.y);' +
+        ' if (e <= 0.0) discard; float mask = smoothstep(0.0, 0.5, e), rim = exp(-e * 5.5); float r = length(c), ang = atan(c.y, c.x);' +
+        ' float sw = 0.5 + 0.5 * sin(ang * 3.0 + r * 4.5 - uTime * 1.1), sw2 = 0.5 + 0.5 * sin(ang * 5.0 - r * 6.0 + uTime * 0.8);' +
+        ' float hue = ang / 6.2832 + r * 0.28 - uTime * 0.07; vec3 rainbow = 0.55 + 0.45 * cos(6.2832 * (hue + vec3(0.0, 0.33, 0.67)));' +
+        ' vec3 aurora = mix(vec3(0.35, 1.0, 0.8), vec3(0.72, 0.5, 1.0), sw2); vec3 col = mix(aurora, rainbow, 0.55 + 0.3 * sw);' +
+        ' float boost = 1.0 + uNear * 0.9; float a = (mask * (0.17 + 0.22 * sw * sw2) + rim * 0.34) * boost; gl_FragColor = vec4(col, a);\n#include <colorspace_fragment>\n}' });
+    materials.push(veilMaterial);
+    var veil = new T.Mesh(veilGeometry, veilMaterial); veil.position.set(0, 0, 0.03); veil.renderOrder = 4; veil.name = 'dünya-kapısı-perde'; root.add(veil);
+    var glowGeometry = new T.CircleGeometry(3.3, 56); ownedGeometries.push(glowGeometry);
+    var glowMaterial = new T.ShaderMaterial({ uniforms: uniforms, transparent: true, depthWrite: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+      vertexShader: 'varying vec2 vQ; void main(){ vQ = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform float uTime, uNear; varying vec2 vQ; void main(){ float r = length(vQ), ang = atan(vQ.y, vQ.x);' +
+        ' float wave = 0.5 + 0.5 * sin(r * 5.2 - uTime * (1.6 + uNear * 2.6)); float fade = smoothstep(3.3, 2.5, r) * smoothstep(0.35, 0.9, r);' +
+        ' vec3 rainbow = 0.55 + 0.45 * cos(6.2832 * (ang / 6.2832 + r * 0.2 - uTime * 0.05 + vec3(0.0, 0.33, 0.67))); vec3 col = mix(vec3(0.47, 0.87, 0.83), rainbow, 0.55);' +
+        ' float outer = exp(-abs(r - 2.9) * 9.0) * (0.45 + uNear * 0.5), ring2 = exp(-abs(r - 1.9 - 0.15 * sin(uTime * 2.0)) * 11.0) * (0.12 + uNear * 0.5);' +
+        ' float a = (0.035 + 0.05 * wave + uNear * 0.22) * fade + outer * 0.55 + ring2 * 0.7; gl_FragColor = vec4(mix(col, vec3(1.0, 0.86, 0.45), outer), min(0.8, a));\n#include <colorspace_fragment>\n}' });
+    materials.push(glowMaterial);
+    var glow = new T.Mesh(glowGeometry, glowMaterial); glow.rotation.x = -Math.PI / 2; glow.position.set(0, 0.13, 0.3); glow.renderOrder = 3; root.add(glow);
+    // Mini Earth rim light (a thin additive shell).
+    var rimGeometry = new T.SphereGeometry(1.03, 24, 16); ownedGeometries.push(rimGeometry);
+    var rimMaterial = new T.ShaderMaterial({ transparent: true, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false,
+      vertexShader: 'varying vec3 vN, vV; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vV = -mv.xyz; vN = normalMatrix * normal; gl_Position = projectionMatrix * mv; }',
+      fragmentShader: 'varying vec3 vN, vV; void main(){ float d = max(0.0, dot(normalize(vN), normalize(vV))); float a = smoothstep(0.0, 0.3, d) * (1.0 - smoothstep(0.3, 0.55, d)); a *= a * 0.9; gl_FragColor = vec4(vec3(0.55, 0.9, 1.0) * a, a);\n#include <colorspace_fragment>\n}' });
+    materials.push(rimMaterial);
+    var rim = new T.Mesh(rimGeometry, rimMaterial); rim.position.copy(earth.position); rim.renderOrder = 5; root.add(rim);
+    // Orbiting sparkles: fourteen little gems swirling around the gate (one instanced draw).
+    var sparkGeometry = new T.OctahedronGeometry(1, 0); ownedGeometries.push(sparkGeometry);
+    var sparkMaterial = new T.MeshBasicMaterial({ color: 0xffffff }); materials.push(sparkMaterial);
+    var sparks = new T.InstancedMesh(sparkGeometry, sparkMaterial, 14); sparks.frustumCulled = false; sparks.instanceMatrix.setUsage(T.DynamicDrawUsage);
+    var sparkColours = [0xffe27a, 0x9ae9ff, 0xff9ec0, 0xbba7ff, 0xb8ffd8];
+    for (var sc = 0; sc < 14; sc++) sparks.setColorAt(sc, new T.Color(sparkColours[sc % 5]));
+    root.add(sparks);
 
     var stars = new T.InstancedMesh(source('star'), solid, 5), starPositions = [[0, 5.40, 0.06, 0.28], [-1.55, 4.83, 0.14, 0.17], [1.55, 4.83, 0.14, 0.17], [-2.19, 3.01, 0.12, 0.14], [2.19, 3.01, 0.12, 0.14]];
     // Shared material vertex colours are supplied on this geometry too, while
@@ -132,22 +187,37 @@
     for (var s = 0; s < starPositions.length; s++) stars.setColorAt(s, new T.Color(s > 2 ? 0xfff0b5 : 0xffd767));
     stars.instanceMatrix.setUsage(T.DynamicDrawUsage); stars.frustumCulled = false; stars.castShadow = true; root.add(stars);
 
-    function update(dt, time) {
+    var near = 0, nearGoal = 0, reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function update(dt, time, heroPosition) {
       if (disposed) return;
-      time = Number.isFinite(time) ? time : 0;
-      // Keep land in view: a full rotation periodically turns the whole sign
-      // into an unrecognisable blue ball. A small sway still reads as a globe.
-      earth.rotation.y = -1.43 + Math.sin(time * 0.27) * 0.20;
-      glow.scale.setScalar(0.98 + Math.sin(time * 1.7) * 0.028); glowMaterial.opacity = 0.17 + Math.sin(time * 1.7) * 0.022;
+      time = Number.isFinite(time) ? time : 0; dt = Number.isFinite(dt) ? dt : 0;
+      // Optional third argument: the runner's world position. The ground ring and veil brighten as she gets close.
+      if (heroPosition && Number.isFinite(heroPosition.x)) {
+        var gap = Math.hypot(heroPosition.x - root.position.x, heroPosition.z - root.position.z);
+        nearGoal = 1 - Math.min(1, Math.max(0, (gap - 2.2) / 7));
+      } else nearGoal = 0;
+      near += (nearGoal - near) * (1 - Math.exp(-dt * 4));
+      var t = reducedMotion ? 0 : time;
+      uniforms.uTime.value = t % 1200; uniforms.uNear.value = reducedMotion ? 0 : near;
+      // Keep land in view: a full rotation periodically turns the whole sign into an unrecognisable blue ball.
+      earth.rotation.y = -1.43 + Math.sin(t * 0.27) * 0.55 + Math.sin(t * 0.11) * 0.2;
       for (var i = 0; i < starPositions.length; i++) {
-        var p = starPositions[i]; instance.position.set(p[0], p[1] + Math.sin(time * 1.8 + i * 0.7) * 0.045, p[2]);
-        instance.rotation.set(0, 0, Math.sin(time * 1.3 + i) * 0.11); instance.scale.setScalar(p[3]); instance.updateMatrix(); stars.setMatrixAt(i, instance.matrix);
+        var p = starPositions[i]; instance.position.set(p[0], p[1] + Math.sin(t * 1.8 + i * 0.7) * 0.045, p[2]);
+        instance.rotation.set(0, 0, Math.sin(t * 1.3 + i) * 0.11); instance.scale.setScalar(p[3]); instance.updateMatrix(); stars.setMatrixAt(i, instance.matrix);
       }
       stars.instanceMatrix.needsUpdate = true;
+      for (var k = 0; k < 14; k++) {
+        var lap = t * (0.28 + (k % 3) * 0.05) * (k % 2 ? 1 : -1) + k * 0.449, rad = 2.45 + (k % 4) * 0.22 + Math.sin(t * 0.9 + k) * 0.12 + near * 0.25;
+        var tw = 0.65 + 0.35 * Math.sin(t * 3 + k * 2.1);
+        instance.position.set(Math.cos(lap) * rad, 3.08 + Math.sin(lap) * rad * 0.98, 0.1 + Math.sin(t * 1.3 + k) * 0.22);
+        if (instance.position.y < 0.35) instance.position.y = 0.35 + (0.35 - instance.position.y) * 0.2;
+        instance.rotation.set(t * 1.1 + k, t * 0.9, 0); instance.scale.setScalar((0.065 + (k % 3) * 0.02) * tw * (1 + near * 0.5)); instance.updateMatrix(); sparks.setMatrixAt(k, instance.matrix);
+      }
+      sparks.instanceMatrix.needsUpdate = true;
     }
     function dispose() {
       if (disposed) return;
-      disposed = true; root.removeFromParent(); stars.dispose();
+      disposed = true; root.removeFromParent(); stars.dispose(); sparks.dispose();
       sources.forEach(function (g) { g.dispose(); }); ownedGeometries.forEach(function (g) { g.dispose(); });
       materials.forEach(function (m) { m.dispose(); }); if (ownedMap && map) map.dispose(); root.clear();
     }

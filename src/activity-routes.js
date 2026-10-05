@@ -32,6 +32,17 @@ window.FLASH_ACTIVITY_ROUTES=(()=>{
         });
         if(target)targets.push({x:target.x,z:target.z});
       }
+      // Decorative jump pads and sparkle gates between neighbouring goals (free, linked points only; nothing blocks a goal).
+      const order=targets.map((t,i)=>({t,a:Math.atan2(t.x-place.x,t.z-place.z)})).sort((a,b)=>a.a-b.a).map(o=>o.t),pads=[];
+      for(let i=0;i+1<order.length;i++){
+        const a=order[i],b=order[i+1],len=Math.hypot(b.x-a.x,b.z-a.z);if(len<4)continue;
+        const dx=(b.x-a.x)/len,dz=(b.z-a.z)/len;
+        for(const f of [.5,.4,.6]){
+          const p={x:a.x+(b.x-a.x)*f,z:a.z+(b.z-a.z)*f};
+          if(free(p.x,p.z,1.9)&&free(p.x-dz*1.5,p.z+dx*1.5,1.0)&&free(p.x+dz*1.5,p.z-dx*1.5,1.0)&&pads.every(q=>Math.hypot(q.x-p.x,q.z-p.z)>3)){pads.push({x:p.x,z:p.z,dx,dz,kind:i%2?'gate':'jump'});break;}
+        }
+      }
+      targets.pads=pads;
       result[place.id]=targets;
     });
     return result;

@@ -189,7 +189,7 @@
     if(end<0)return [];const points=[];for(let i=end;i>=0;i=parent[i])points.push(point(i));points.reverse();const result=[];let anchor=startPos;
     for(let i=0;i<points.length;){let j=i;while(j+1<points.length&&free(anchor,points[j+1]))j++;result.push(points[j]);anchor=points[j];i=j+1;}return result;
   }
-  function celebrate(seconds){$('celebration').replaceChildren(P.node('star'),P.node('star'),P.node('star'));$('celebration').hidden=false;celebrateUntil=time+seconds;}
+  function celebrate(seconds){$('celebration').replaceChildren(P.node('star'),P.node('star'),P.node('star'));$('celebration').hidden=false;celebrateUntil=time+seconds;hero.celebrate?.(seconds);}
   function challengePictures(state){const meta=FLASH_ACTIVITIES.types[state.type];$('challenge-icon').replaceChildren(P.node(meta.icon));$('challenge-count').replaceChildren();for(let i=0;i<state.total;i++){const icon=P.node(meta.icon);icon.classList.toggle('earned',i<state.collected);$('challenge-count').append(icon);}$('challenge').setAttribute('aria-label',meta.title+' · '+state.collected+' / '+state.total);}
   function move(dx,dz){const pos=hero.root.position,nx=Math.max(-60,Math.min(60,pos.x+dx)),nz=Math.max(-60,Math.min(60,pos.z+dz));
     if(!collides(nx,nz)){pos.x=nx;pos.z=nz;return;}if(!collides(nx,pos.z))pos.x=nx;if(!collides(pos.x,nz))pos.z=nz;
@@ -197,7 +197,7 @@
   function cancelChallenge(){if(challenge)challenge.root.visible=false;challenge=null;activityEndAt=0;cueTarget=null;$('target-cue').hidden=true;$('challenge').hidden=true;document.body.classList.remove('has-activity');}
   function startChallenge(place){if(!place||challenge?.place===place)return;cancelChallenge();const prepared=activityStages.get(place.id);if(!prepared)return;const key=current.id+':'+place.id,round=activityRounds.get(key)||0;const stage=prepared.stages[round%prepared.stages.length];activityRounds.set(key,round+1);stage.reset();challenge={stage,place,root:stage.root};stage.root.visible=true;lastActivityPlace=place;activityEndAt=0;challengePictures(stage.getState());$('challenge').hidden=false;document.body.classList.add('has-activity');FLASH_AUDIO.play(FLASH_ACTIVITIES.types[stage.getState().type].voiceKey,{replacePending:true});}
   function updateChallenge(dt){if(!challenge)return;const event=challenge.stage.update(dt,time,hero.root.position,velocity.length());if(event.collected.length){FLASH_AUDIO.chime(challenge.stage.getState().collected-1,event.complete);challengePictures(challenge.stage.getState());guideUIAt=-1;if(challenge.stage.getState().type==='splashes')hopUntil=time+.48;}
-    if(event.complete){const id=current.id+':'+challenge.place.id;if(!data.activities.includes(id))data.activities.push(id);save();celebrate(1.8);activityEndAt=time+4;activityCooldown=time+8;FLASH_AUDIO.play(FLASH_ACTIVITIES.types[challenge.stage.getState().type].doneKey||'activity-done-'+((activityRounds.get(id)||0)%3+1),{replacePending:true});}
+    if(event.complete){const id=current.id+':'+challenge.place.id;if(!data.activities.includes(id))data.activities.push(id);save();celebrate(1.8);activityEndAt=time+4+(challenge.stage.holdSeconds||0);activityCooldown=time+8+(challenge.stage.holdSeconds||0);FLASH_AUDIO.play(FLASH_ACTIVITIES.types[challenge.stage.getState().type].doneKey||'activity-done-'+((activityRounds.get(id)||0)%3+1),{replacePending:true});}
     if(activityEndAt&&time>=activityEndAt)cancelChallenge();}
   function targetGuide(){
     if(mode!=='tour'||navPlace||modal||portalTravelAt){$('target-cue').hidden=true;cueTarget=null;return;}
@@ -294,14 +294,14 @@
       if(near&&(navPlace===p||!seen(current,p)||!challenge&&p!==lastActivityPlace&&time>activityCooldown)){discover(p);break;}}}
     if(time-guideUIAt>.1){guideUIAt=time;targetGuide();}
     if(discoveryPlace&&time>=discoveryUntil)closeDiscovery();
-    if(portal){portal.update(dt,time);const gap=Math.hypot(hero.root.position.x-portal.root.position.x,hero.root.position.z-portal.root.position.z);
+    if(portal){portal.update(dt,time,hero.root.position);const gap=Math.hypot(hero.root.position.x-portal.root.position.x,hero.root.position.z-portal.root.position.z);
       if(!portalArmed&&time>=portalReadyAt&&gap>3&&current.places.some(p=>seen(current,p)))portalArmed=true;
       if(portalArmed&&time>=portalReadyAt&&!locked&&gap<1.8){portalArmed=false;portalTravelAt=time+.55;resetInput();$('portal-transition').hidden=false;}
       if(portalTravelAt&&time>=portalTravelAt){closeDiscovery();cancelChallenge();navPlace=null;hasSelection=false;showMode('atlas');updateAtlas();FLASH_AUDIO.play('portal-travel',{replacePending:true});return;}}
     if(time-lastUI>.1){lastUI=time;$('speed-number').textContent=Math.round(moving*(isBoost?125:3.6));$('speed-fill').style.width=(moving/28*100)+'%';}
   }
   function stepTravel(dt){if(modal)return;travelTime+=dt;const p=Math.min(1,travelTime/travelDuration);if(spaceArrival){globe.update(dt,time);poseSpaceShuttle(dt,p);if(lastTerrain!=='globe'){$('travel-terrain').innerHTML=P.svg('globe');lastTerrain='globe';}$('travel-progress').style.width=p*100+'%';$('travel-runner').style.left=p*100+'%';if(time-lastTravelUI>.12){lastTravelUI=time;$('travel-distance').textContent='';$('travel-caption').textContent='Pencereden dünyaya bak!';}if(p>=1&&sceneReady){arrive();resetTrail();}return;}if(!travelStage)return;hero.update(dt,1,true,time);travelStage.positionAt(p,hero.root.position);travelStage.positionAt(Math.min(1,p+.005),tmp);velocity.copy(tmp).sub(hero.root.position).multiplyScalar(20);hero.root.rotation.y=Math.atan2(velocity.x,velocity.z);travelStage.update(dt,time,p);
-    camera.position.set(hero.root.position.x+10,10,hero.root.position.z+21);camera.lookAt(hero.root.position.x,1,hero.root.position.z-15);C.shadowsAt(hero.root.position.x,hero.root.position.z);updateEffects(dt,28,true);
+    camera.position.set(hero.root.position.x+10,10,hero.root.position.z+21);camera.lookAt(hero.root.position.x,1,hero.root.position.z-15);travelStage.sway?.(camera,time);C.shadowsAt(hero.root.position.x,hero.root.position.z);updateEffects(dt,28,true);
     const s=travelStage.sample(p),terrain=s.land?'trees':'wave';if(lastTerrain!==terrain){$('travel-terrain').innerHTML=P.svg(terrain);lastTerrain=terrain;if(time-lastTerrainVoice>2.5){FLASH_AUDIO.play(s.land?'travel-land':'travel-water',{replacePending:true});lastTerrainVoice=time;}}
     $('travel-progress').style.width=p*100+'%';$('travel-runner').style.left=p*100+'%';if(time-lastTravelUI>.12){lastTravelUI=time;$('travel-distance').textContent=journeyDistance<1?'':kmFormat.format(Math.round(journeyDistance*p))+' km';$('travel-caption').textContent=s.land?(s.countryName||'Kara')+' · Ağaçlar, tepeler, köyler':'Deniz · Dalgaların üstünde koşuyoruz!';}
     if(p>=1&&sceneReady){arrive();resetTrail();}
