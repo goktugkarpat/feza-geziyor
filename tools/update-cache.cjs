@@ -9,6 +9,6 @@ const files=[...base,...source,...assets];
 let sw=fs.readFileSync(file,'utf8');
 sw=sw.replace(/const CORE = \[[\s\S]*?\];/,'const CORE = [\n'+files.map(f=>"  '"+f+"'").join(',\n')+'\n];');
 const hash=crypto.createHash('sha256');hash.update(sw.replace(/const CACHE = PREFIX \+ '[^']+';/,"const CACHE = PREFIX + 'VERSION';"));
-files.forEach(f=>{hash.update(f+'\0');hash.update(fs.readFileSync(path.join(root,f)));});const version='v3-'+hash.digest('hex').slice(0,12);
+files.forEach(f=>{hash.update(f+'\0');hash.update(fs.readFileSync(path.join(root,f)));});const version='v4-'+hash.digest('hex').slice(0,12);
 sw=sw.replace(/const CACHE = PREFIX \+ '[^']+';/,"const CACHE = PREFIX + '"+version+"';");
 fs.writeFileSync(file,sw);console.log(files.length+' local files in offline cache ('+version+').');
