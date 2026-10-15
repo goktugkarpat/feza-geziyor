@@ -3,3 +3,13 @@ __pycache__/
 .claude/
 *.rej
 *.orig
+
+# Geçici dosyalar ve test çıktıları
+*.py[cod]
+*.tmp
+*.bak
+*~
+Thumbs.db
+/test-results/
+/playwright-report/
+/blob-report/
