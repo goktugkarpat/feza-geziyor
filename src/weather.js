@@ -1,5 +1,5 @@
 /* Selected seasonal scenes, not live weather. One fixed GPU particle pool per
- * country; classic THREE script, no textures, DOM, audio or frame allocations. */
+ * country (+ one small GRAFIK pool: rain splash rings or sunny pollen motes); classic THREE script, no textures, DOM, audio or frame allocations. */
 (function () {
   'use strict';
   var T = window.THREE;
@@ -8,22 +8,25 @@
   var defaults = {
     clear: { kind: 'clear', colour: 0xffffff },
     mist: { kind: 'mist', colour: 0xffffff },
-    snow: { kind: 'snow', touchCount: 72, desktopCount: 112, speed: .68, wind: .045, size: 76, opacity: .82, colour: 0xf4fbff },
-    rain: { kind: 'rain', touchCount: 80, desktopCount: 128, speed: 3.2, wind: .07, length: .26, opacity: .56, colour: 0xc4e6ee },
-    petals: { kind: 'petals', touchCount: 64, desktopCount: 96, speed: .42, wind: .025, size: 102, opacity: .86, colour: 0xffadc7 }
+    snow: { kind: 'snow', touchCount: 96, desktopCount: 140, speed: .62, wind: .045, size: 84, opacity: .88, colour: 0xf4fbff },
+    rain: { kind: 'rain', touchCount: 80, desktopCount: 128, speed: 3.4, wind: .07, length: .46, opacity: .6, colour: 0xc4e6ee },
+    petals: { kind: 'petals', touchCount: 72, desktopCount: 104, speed: .42, wind: .025, size: 112, opacity: .92, colour: 0xff9fc0 }
   };
   Object.keys(defaults).forEach(function (key) { Object.freeze(defaults[key]); });
   var profiles = {
     tr: defaults.clear, us: defaults.clear, ca: defaults.snow,
-    be: Object.freeze({ kind: 'rain', touchCount: 64, desktopCount: 96, speed: 2.3, wind: .04, length: .22, opacity: .46, colour: 0xd6e9ed }),
+    be: Object.freeze({ kind: 'rain', touchCount: 64, desktopCount: 96, speed: 2.6, wind: .04, length: .38, opacity: .5, colour: 0xd6e9ed }),
     fr: defaults.clear, ru: defaults.snow, jp: defaults.petals,
     cn: defaults.mist, eg: defaults.clear, br: defaults.rain
   };
   Object.freeze(profiles);
+  // GRAFIK: snow = soft round flakes with a bright core and a slow twinkle,
+  // sizes vary per flake; petals = two-tone notched blossom petals that tumble
+  // (their width breathes with a 3D flip) and catch the light.
   var pointsVertex = [
     'uniform float uTime, uSpeed, uWind, uSize, uPetal;',
     'attribute float aSeed;',
-    'varying float vSeed, vFade;',
+    'varying float vSeed, vFade, vFlip;',
     'void main(){',
     '  float y = mod(position.y - uTime * uSpeed * (0.82 + aSeed * 0.34), 10.0);',
     '  vec3 p = position; p.y = y;',
@@ -32,55 +35,128 @@
     '  p.z += cos(wave * 0.81) * (0.17 + uPetal * 0.32);',
     '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
     '  gl_Position = projectionMatrix * mv;',
-    '  gl_PointSize = clamp(uSize / max(1.0, -mv.z), 1.4, 4.5 + uPetal * 1.5);',
-    '  vSeed = aSeed;',
+    '  float sz = uSize * (0.62 + aSeed * aSeed * 0.95);',
+    '  gl_PointSize = clamp(sz / max(1.0, -mv.z), 1.6, 6.0 + uPetal * 3.0);',
+    '  vSeed = aSeed; vFlip = cos(uTime * (1.3 + aSeed * 1.7) + aSeed * 40.0);',
     '  vFade = smoothstep(0.0, 0.65, y) * (1.0 - smoothstep(9.35, 10.0, y));',
     '}'
   ].join('\n');
   var pointsFragment = [
     'uniform vec3 uColour;',
     'uniform float uOpacity, uPetal, uTime;',
-    'varying float vSeed, vFade;',
+    'varying float vSeed, vFade, vFlip;',
     'void main(){',
     '  vec2 q = (gl_PointCoord - 0.5) * 2.0;',
-    '  float angle = vSeed * 6.2831853 + uTime * 0.38;',
-    '  float cs = cos(angle), sn = sin(angle);',
-    '  vec2 r = vec2(q.x*cs-q.y*sn, q.x*sn+q.y*cs);',
-    '  float circle = length(q);',
-    '  float petal = length(vec2(r.x / 0.65, r.y / 0.95));',
-    '  float edge = mix(circle, petal, uPetal);',
-    '  float alpha = (1.0 - smoothstep(0.38, 1.0, edge)) * uOpacity * vFade;',
+    '  vec3 col; float alpha;',
+    '  if (uPetal > 0.5) {',
+    '    float angle = vSeed * 6.2831853 + uTime * 0.38;',
+    '    float cs = cos(angle), sn = sin(angle);',
+    '    vec2 r = vec2(q.x*cs-q.y*sn, q.x*sn+q.y*cs);',
+    '    float w = 0.28 + 0.42 * abs(vFlip);',
+    '    vec2 e = vec2(r.x / w, (r.y + 0.1) / 0.9);',
+    '    float petal = length(e) + 0.35 * smoothstep(0.55, 1.0, r.y) * (1.0 - smoothstep(0.0, 0.22, abs(r.x)));',
+    '    alpha = (1.0 - smoothstep(0.78, 1.0, petal)) * uOpacity * vFade;',
+    '    float shade = 0.82 + 0.18 * vFlip;',
+    '    col = mix(vec3(1.0, 0.95, 0.97), uColour, 0.35 + 0.45 * smoothstep(0.0, 1.0, petal)) * shade;',
+    '    col = mix(col, vec3(1.0, 0.55, 0.7), (1.0 - smoothstep(0.0, 0.35, length(r - vec2(0.0, -0.75)))) * 0.5);',
+    '  } else {',
+    '    float d = length(q);',
+    '    float core = 1.0 - smoothstep(0.0, 0.55, d);',
+    '    alpha = ((1.0 - smoothstep(0.3, 1.0, d)) * 0.7 + core * 0.3) * uOpacity * vFade;',
+    '    float tw = pow(max(0.0, sin(uTime * 2.7 + vSeed * 83.0)), 12.0);',
+    '    col = mix(uColour * 0.92, vec3(1.0), core * 0.6 + tw * 0.5);',
+    '    alpha = min(1.0, alpha * (1.0 + tw * 0.6));',
+    '  }',
     '  if(alpha < 0.03) discard;',
-    '  gl_FragColor = vec4(mix(uColour, vec3(1.0), vSeed * 0.10), alpha);',
+    '  gl_FragColor = vec4(col, alpha);',
     '  #include <tonemapping_fragment>',
     '  #include <colorspace_fragment>',
     '}'
   ].join('\n');
+  // Rain: bright head, fading tail.
   var rainVertex = [
     'uniform float uTime, uSpeed, uWind, uLength;',
     'attribute float aSeed, aEnd;',
-    'varying float vFade;',
+    'varying float vFade, vEnd;',
     'void main(){',
     '  float y = mod(position.y - uTime * uSpeed * (0.88 + aSeed * 0.24), 10.0);',
     '  vec3 p = position;',
-    '  p.y = y - aEnd * uLength;',
-    '  p.x += (10.0-y) * uWind + aEnd * uLength * 0.34;',
-    '  p.z += aEnd * uLength * 0.12;',
+    '  float len = uLength * (0.75 + aSeed * 0.6);',
+    '  p.y = y + aEnd * len;',
+    '  p.x += (10.0-y) * uWind - aEnd * len * 0.34;',
+    '  p.z -= aEnd * len * 0.12;',
     '  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);',
-    '  vFade = smoothstep(0.0, 0.55, y) * (1.0 - smoothstep(9.45, 10.0, y));',
+    '  vFade = smoothstep(0.0, 0.55, y) * (1.0 - smoothstep(9.45, 10.0, y)); vEnd = aEnd;',
     '}'
   ].join('\n');
   var rainFragment = [
     'uniform vec3 uColour;',
     'uniform float uOpacity;',
-    'varying float vFade;',
+    'varying float vFade, vEnd;',
     'void main(){',
-    '  gl_FragColor = vec4(uColour, uOpacity * vFade);',
+    '  gl_FragColor = vec4(mix(vec3(1.0), uColour, vEnd), uOpacity * vFade * (1.0 - vEnd * 0.85));',
     '  #include <tonemapping_fragment>',
     '  #include <colorspace_fragment>',
     '}'
   ].join('\n');
-
+  // Rain splash rings on the ground: one small Points pool, each ring grows and fades.
+  var splashVertex = [
+    'uniform float uTime, uScale;',
+    'attribute float aSeed;',
+    'varying float vAge;',
+    'void main(){',
+    '  float cyc = uTime * (0.9 + aSeed * 0.5) + aSeed * 17.0;',
+    '  vAge = fract(cyc);',
+    '  float k = floor(cyc);',
+    '  vec3 p = position + vec3(sin(k * 12.9 + aSeed * 7.0), 0.0, cos(k * 7.3 + aSeed * 3.0)) * 2.2;',
+    '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
+    '  gl_Position = projectionMatrix * mv;',
+    '  gl_PointSize = clamp(uScale / max(1.0, -mv.z), 2.0, 22.0);',
+    '}'
+  ].join('\n');
+  var splashFragment = [
+    'uniform vec3 uColour;',
+    'varying float vAge;',
+    'void main(){',
+    '  vec2 q = (gl_PointCoord - 0.5) * 2.0; q.y *= 2.2;',
+    '  float d = length(q); float r = 0.2 + vAge * 0.75;',
+    '  float a = (1.0 - smoothstep(0.0, 0.14, abs(d - r))) * (1.0 - vAge) * 0.55;',
+    '  if (a < 0.02) discard;',
+    '  gl_FragColor = vec4(uColour, a);',
+    '  #include <tonemapping_fragment>',
+    '  #include <colorspace_fragment>',
+    '}'
+  ].join('\n');
+  // Sunny / misty days: slow golden pollen and dandelion fluff glinting in the light.
+  var motesVertex = [
+    'uniform float uTime, uScale;',
+    'attribute float aSeed;',
+    'varying float vSeed, vFade;',
+    'void main(){',
+    '  vec3 p = position;',
+    '  float t = uTime * (0.25 + aSeed * 0.2);',
+    '  p.x += sin(t + aSeed * 30.0) * 1.4 + uTime * 0.12; p.z += cos(t * 0.8 + aSeed * 11.0) * 1.2;',
+    '  p.y = 0.3 + mod(position.y + sin(t * 1.3 + aSeed * 5.0) * 0.6 + uTime * 0.05, 4.0);',
+    '  p.xz = mod(p.xz + 13.0, 26.0) - 13.0;',
+    '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
+    '  gl_Position = projectionMatrix * mv;',
+    '  gl_PointSize = clamp(uScale * (0.6 + aSeed * 0.8) / max(1.0, -mv.z), 1.5, 7.0);',
+    '  vSeed = aSeed; vFade = smoothstep(0.3, 0.9, p.y) * (1.0 - smoothstep(3.6, 4.3, p.y)) * (1.0 - smoothstep(9.0, 13.0, length(p.xz)));',
+    '}'
+  ].join('\n');
+  var motesFragment = [
+    'uniform vec3 uColour; uniform float uTime;',
+    'varying float vSeed, vFade;',
+    'void main(){',
+    '  float d = length((gl_PointCoord - 0.5) * 2.0);',
+    '  float tw = 0.55 + 0.45 * sin(uTime * 2.1 + vSeed * 60.0);',
+    '  float a = (1.0 - smoothstep(0.0, 1.0, d)) * tw * vFade * 0.75;',
+    '  if (a < 0.02) discard;',
+    '  gl_FragColor = vec4(mix(uColour, vec3(1.0), 1.0 - smoothstep(0.0, 0.4, d)), a);',
+    '  #include <tonemapping_fragment>',
+    '  #include <colorspace_fragment>',
+    '}'
+  ].join('\n');
 
   // Small ambient life (butterflies, birds, falling leaves, lanterns, dust):
   // one pooled Points draw, positions wrap around the child in the shader.
@@ -175,7 +251,11 @@
     var lifeList = lifeSpec(id, reduced, options.touch);
     var count = reduced ? 0 : (options.touch ? style.touchCount : style.desktopCount) || 0;
     var root = new T.Group(); root.name = 'mevsim-havası-' + kind;
-    var profile = Object.freeze({ country: id, kind: kind, count: count, draws: (count ? 1 : 0) + (lifeList ? 1 : 0), life: lifeList ? lifeList.length : 0,
+    // GRAFIK extras: rain splash rings, or slow pollen / dust motes on clear and misty days.
+    var lowQuality = !!(window.FLASH_CORE && window.FLASH_CORE.quality === 'low');
+    var extraKind = reduced || lowQuality ? '' : kind === 'rain' ? 'splash' : (kind === 'clear' || kind === 'mist') ? 'motes' : '';
+    var extraCount = extraKind === 'splash' ? (options.touch ? 28 : 40) : extraKind === 'motes' ? (options.touch ? 36 : 54) : 0;
+    var profile = Object.freeze({ country: id, kind: kind, count: count, draws: (count ? 1 : 0) + (lifeList ? 1 : 0) + (extraCount ? 1 : 0), life: lifeList ? lifeList.length : 0, extra: extraKind, extraCount: extraCount,
       reduced: !!reduced, speed: style.speed || 0, wind: style.wind || 0, colour: style.colour,
       height: HEIGHT, width: WIDTH, cpuPositionsPerFrame: 0, textures: 0 });
     root.userData.weather = profile;
@@ -214,6 +294,27 @@
       // Bounds cover the complete shader motion; no buffers are uploaded again.
       effect.frustumCulled = false; effect.renderOrder = 2; root.add(effect);
     }
+    var extraGeo = null, extraMat = null;
+    if (extraCount) {
+      var ep = new Float32Array(extraCount * 3), es = new Float32Array(extraCount), eseed = 9157 + id.length * 31;
+      for (var e0 = 0; e0 < id.length; e0++) eseed += id.charCodeAt(e0) * (e0 + 7) * 71;
+      var er = function () { eseed = (Math.imul(eseed, 1664525) + 1013904223) >>> 0; return eseed / 4294967296; };
+      for (var ei = 0; ei < extraCount; ei++) {
+        var ex = (er() - .5) * (extraKind === 'splash' ? 18 : 26), ez = (er() - .5) * (extraKind === 'splash' ? 18 : 26);
+        if (ex*ex + ez*ez < 4) { ex += ex < 0 ? -2 : 2; }
+        ep[ei*3] = ex; ep[ei*3+1] = extraKind === 'splash' ? .03 : er() * 4; ep[ei*3+2] = ez; es[ei] = er();
+      }
+      extraGeo = new T.BufferGeometry();
+      extraGeo.setAttribute('position', new T.BufferAttribute(ep, 3)); extraGeo.setAttribute('aSeed', new T.BufferAttribute(es, 1));
+      extraGeo.boundingSphere = new T.Sphere(new T.Vector3(0, 2, 0), 20);
+      var sandy = country && country.environment && country.environment.ground === 'sand';
+      extraMat = new T.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uScale: { value: extraKind === 'splash' ? 150 : 60 },
+          uColour: { value: new T.Color(extraKind === 'splash' ? 0xe6f6fb : sandy ? 0xf6deb0 : 0xfff2b8) } },
+        vertexShader: extraKind === 'splash' ? splashVertex : motesVertex, fragmentShader: extraKind === 'splash' ? splashFragment : motesFragment,
+        transparent: true, depthWrite: false, depthTest: true, toneMapped: false });
+      var extra = new T.Points(extraGeo, extraMat); extra.name = extraKind === 'splash' ? 'Yağmur halkaları' : 'Uçuşan polenler';
+      extra.frustumCulled = false; extra.renderOrder = 2; root.add(extra);
+    }
     var lifeGeo = null, lifeMat = null;
     if (lifeList) {
       var n = lifeList.length, lp = new Float32Array(n * 3), ls = new Float32Array(n), lt = new Float32Array(n), lc = new Float32Array(n * 3), col = new T.Color();
@@ -236,12 +337,13 @@
       clock = Number.isFinite(time) ? time : clock + Math.min(.1, Math.max(0, Number(dt) || 0));
       var tv = ((clock % 3600) + 3600) % 3600;
       if (material) material.uniforms.uTime.value = tv;
+      if (extraMat) extraMat.uniforms.uTime.value = tv;
       if (lifeMat) { lifeMat.uniforms.uTime.value = tv; if (anchor) lifeMat.uniforms.uAnchor.value.set(Number.isFinite(anchor.x) ? anchor.x : 0, 0, Number.isFinite(anchor.z) ? anchor.z : 0); }
       if (anchor) root.position.set(Number.isFinite(anchor.x) ? anchor.x : 0, 0, Number.isFinite(anchor.z) ? anchor.z : 0);
     }
     function dispose() {
       if (destroyed) return; destroyed = true;
-      root.removeFromParent(); if (geometry) geometry.dispose(); if (material) material.dispose(); if (lifeGeo) lifeGeo.dispose(); if (lifeMat) lifeMat.dispose();
+      root.removeFromParent(); if (geometry) geometry.dispose(); if (material) material.dispose(); if (lifeGeo) lifeGeo.dispose(); if (lifeMat) lifeMat.dispose(); if (extraGeo) extraGeo.dispose(); if (extraMat) extraMat.dispose();
       geometry = null; material = null; root.clear();
     }
     return Object.freeze({ root: root, kind: kind, count: count, profile: profile, update: update, dispose: dispose });

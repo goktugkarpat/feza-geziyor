@@ -159,6 +159,21 @@ for _key in list(LINES):
     for _written, _spoken in {"Big Ben":"Big Ben","Tower Bridge":"Tavır Briç","Stonehenge":"Stonhenc","Thames":"Temz","Hawa Mahal":"Hava Mahal","Park Güell":"Park Güel","Sagrada Familia":"Sagrada Familya","Uluru":"Uluru"}.items():
         LINES[_key] = LINES[_key].replace(_written, _spoken)
 
+# Yeni sistem: sesler/*.txt (kimlik | metin [| rehber]). Rehber (hayvan dost) aynı Emel sesiyle biraz daha tiz ve hızlıdır.
+REHBER_RATE, REHBER_PITCH = "+2%", "+22Hz"
+STYLE = {}
+for _dosya in sorted((ROOT / "sesler").glob("*.txt")) if (ROOT / "sesler").exists() else []:
+    for _satir in _dosya.read_text(encoding="utf-8").splitlines():
+        _satir = _satir.strip()
+        if not _satir or _satir.startswith("#"):
+            continue
+        _parca = [p.strip() for p in _satir.split("|")]
+        if len(_parca) < 2 or not re.fullmatch(r"[a-z0-9-]+", _parca[0]):
+            raise SystemExit(f"{_dosya.name}: geçersiz satır: {_satir}")
+        LINES[_parca[0]] = _parca[1]
+        if len(_parca) > 2 and _parca[2] == "rehber":
+            STYLE[_parca[0]] = (REHBER_RATE, REHBER_PITCH)
+
 TRIM = (
     "silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.035:detection=peak,"
     "areverse,silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.12:detection=peak,areverse,"
@@ -177,8 +192,9 @@ def find_ffmpeg():
         raise SystemExit("ffmpeg yok. 'pip install imageio-ffmpeg' ile kurabilirsin.") from exc
 
 
-def recording_hash(text):
-    return hashlib.sha256(f"{VOICE}|{RATE}|{PITCH}|{TRIM}|{text}".encode("utf-8")).hexdigest()
+def recording_hash(text, key=None):
+    rate, pitch = STYLE.get(key, (RATE, PITCH))
+    return hashlib.sha256(f"{VOICE}|{rate}|{pitch}|{TRIM}|{text}".encode("utf-8")).hexdigest()
 
 
 def measure(ffmpeg, path):
@@ -197,7 +213,8 @@ async def record(key, text, ffmpeg, semaphore):
             trimmed = Path(directory) / "trimmed.mp3"
             for attempt in range(3):
                 try:
-                    await edge_tts.Communicate(text, VOICE, rate=RATE, pitch=PITCH).save(str(raw))
+                    rate, pitch = STYLE.get(key, (RATE, PITCH))
+                    await edge_tts.Communicate(text, VOICE, rate=rate, pitch=pitch).save(str(raw))
                     break
                 except Exception:
                     if attempt == 2:
@@ -211,14 +228,29 @@ async def record(key, text, ffmpeg, semaphore):
                 raise RuntimeError(f"Geçersiz kayıt: {key}")
             shutil.copyfile(trimmed, OUT / f"{key}.mp3")
             print(f"{key}: {seconds:.2f} saniye", flush=True)
-            return key, {"text": text, "duration": round(seconds, 3), "hash": recording_hash(text)}
+            return key, {"text": text, "duration": round(seconds, 3), "hash": recording_hash(text, key)}
+
+
+def yaz_ses_listesi():
+    """src/ses-listesi.js: oyunun çalabileceği yeni kimlikler (sesler/*.txt) ve efektler (assets/sfx/*.mp3)."""
+    yeni = sorted(k for k in LINES if (OUT / f"{k}.mp3").exists())
+    sfx_dir = ROOT / "assets" / "sfx"
+    sfx = sorted(p.stem for p in sfx_dir.glob("*.mp3")) if sfx_dir.exists() else []
+    (ROOT / "src" / "ses-listesi.js").write_text(
+        "/* tools/gen_voice.py üretir; elle düzenleme. */\n"
+        f"window.FLASH_SES_LISTESI = {json.dumps(yeni, ensure_ascii=False)};\n"
+        f"window.FLASH_SFX_LISTESI = {json.dumps(sfx)};\n", encoding="utf-8")
 
 
 async def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--hepsi", action="store_true")
     parser.add_argument("--only", default="")
+    parser.add_argument("--liste", action="store_true", help="yalnız src/ses-listesi.js yaz")
     args = parser.parse_args()
+    if args.liste:
+        yaz_ses_listesi()
+        return
     selected = set(args.only.split(",")) if args.only else set(LINES)
     unknown = selected - LINES.keys()
     if unknown:
@@ -229,12 +261,13 @@ async def main():
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     records = manifest.get("lines", {})
     todo = [(key, text) for key, text in LINES.items() if key in selected and (
-        args.hepsi or not (OUT / f"{key}.mp3").exists() or records.get(key, {}).get("hash") != recording_hash(text))]
+        args.hepsi or not (OUT / f"{key}.mp3").exists() or records.get(key, {}).get("hash") != recording_hash(text, key))]
     semaphore = asyncio.Semaphore(3)
     for key, data in await asyncio.gather(*(record(key, text, ffmpeg, semaphore) for key, text in todo)):
         records[key] = data
     manifest = {"voice": VOICE, "rate": RATE, "pitch": PITCH, "trimmed": True, "lines": records}
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    yaz_ses_listesi()
     missing = [key for key in LINES if not (OUT / f"{key}.mp3").exists()]
     print(f"{len(records)} ses kaydı hazır.")
     if missing:

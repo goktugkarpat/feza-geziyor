@@ -7,10 +7,11 @@ window.FLASH_TRAVEL=(()=>{
     const root=new THREE.Group(),length=900,sections=100,step=length/sections;
     const shared=[],groups=new Map(),anim=[];
     const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const colors={sea:0x49bbd4,sea2:0x8ae0ee,grass:0x9bdb78,grass2:0x8fd36e,flower1:0xff9fc4,flower2:0xffe36a,flower3:0xffffff,rock:0xb7b2a6,desert:0xefcf8b,sand2:0xe3b96d,snow:0xe5f5ef,path:0xf3ddb0,wood:0x9b704b,leaf:0x50aa65,leaf2:0x73c75e,pine:0x2f8a5c,roof:0xea7864,wall:0xffedc7,cloud:0xffffff,cloud2:0xf1f8ff,foam:0xcaf8ff,hill:0x73be77,white:0xfaf6ee,red:0xe8545c,teal:0x3fc4c0,gold:0xffcf55,blue:0x4a8fe0,whale:0x4f7fa8,sail:0xffffff,glint:0xffffff,shadow:0x5d7f9d};
-    function material(key){if(!groups.has(key))groups.set(key,{mat:new THREE.MeshStandardMaterial({color:colors[key],roughness:key==='sea'?.22:key==='glint'||key==='sail'?.5:1,metalness:0,emissive:key==='glint'?0xffffff:0,emissiveIntensity:key==='glint'?.6:0}),items:[]});return groups.get(key);}
+    const colors={sea:0x49bbd4,sea2:0x8ae0ee,grass:0x9bdb78,grass2:0x8fd36e,flower1:0xff9fc4,flower2:0xffe36a,flower3:0xffffff,rock:0xb7b2a6,desert:0xefcf8b,sand2:0xe3b96d,snow:0xe5f5ef,path:0xf3ddb0,wood:0x9b704b,leaf:0x50aa65,leaf2:0x73c75e,pine:0x2f8a5c,roof:0xea7864,wall:0xffedc7,cloud:0xffffff,cloud2:0xf1f8ff,foam:0xcaf8ff,hill:0x73be77,white:0xfaf6ee,red:0xe8545c,teal:0x3fc4c0,gold:0xffcf55,blue:0x4a8fe0,whale:0x4f7fa8,sail:0xffffff,glint:0xffffff,shadow:0x5d7f9d,bird:0x3e5566};
+    function material(key){if(!groups.has(key))groups.set(key,{mat:new THREE.MeshStandardMaterial({color:colors[key],roughness:key==='sea'?.22:key==='glint'||key==='sail'?.5:1,metalness:0,emissive:key==='glint'?0xffffff:0,emissiveIntensity:key==='glint'?.6:0}),items:[]});const m=groups.get(key).mat;if(!m.userData.gz){m.userData.gz=1;if(key==='bird')m.side=THREE.DoubleSide;if(window.FLASH_GRAFIK){if(key==='sea')FLASH_GRAFIK.surface(m,'water',{edge:'none'});else if(key==='leaf'||key==='leaf2'||key==='pine')FLASH_GRAFIK.surface(m,'leaf');}}return groups.get(key);}
     const box=new THREE.BoxGeometry(1,1,1),cone=new THREE.ConeGeometry(1,1,7),sphere=new THREE.SphereGeometry(1,10,6),pyramid=new THREE.ConeGeometry(1,1,4),cyl=new THREE.CylinderGeometry(1,1,1,10),flat=new THREE.ConeGeometry(1,1,3),bud=new THREE.SphereGeometry(1,6,4);
-    shared.push(box,cone,sphere,pyramid,cyl,flat,bud);
+    const birdGeo=new THREE.BufferGeometry();birdGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,0,.35,-1,.18,-.05,0,0,-.25,0,0,.35,0,0,-.25,1,.18,-.05],3));birdGeo.computeVertexNormals();
+    shared.push(box,cone,sphere,pyramid,cyl,flat,bud,birdGeo);
     function item(key,geo,x,y,z,sx,sy,sz,ry=0){material(key).items.push({geo,x,y,z,sx,sy,sz,ry});}
     function at(p,out=new THREE.Vector3()){return out.set(Math.sin(p*Math.PI*3)*7+Math.sin(p*Math.PI*7)*2,.08,20-p*length);}
     function sample(p){return samples[Math.min(samples.length-1,Math.max(0,Math.round(p*(samples.length-1))))];}
@@ -67,7 +68,7 @@ window.FLASH_TRAVEL=(()=>{
     }
     // Animated pools (small, updated only near the runner): glints, boats, whales, birds, windmill blades.
     function pool(key,geo,count,castShadow=false){const mesh=new THREE.InstancedMesh(geo,material(key).mat,Math.max(1,count));mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled=false;mesh.castShadow=castShadow;mesh.count=count;dummy.scale.setScalar(0);dummy.updateMatrix();for(let i=0;i<count;i++)mesh.setMatrixAt(i,dummy.matrix);root.add(mesh);return mesh;}
-    const glintMesh=pool('glint',box,glints.length),hullMesh=pool('red',box,boats.length,true),sailMesh=pool('sail',flat,boats.length,true),mastMesh=pool('wood',box,boats.length),whaleMesh=pool('whale',sphere,whales.length*2),bladeMesh=pool('wood',box,blades.length*2),birdMesh=pool('white',flat,9);
+    const glintMesh=pool('glint',box,glints.length),hullMesh=pool('red',box,boats.length,true),sailMesh=pool('sail',flat,boats.length,true),mastMesh=pool('wood',box,boats.length),whaleMesh=pool('whale',sphere,whales.length*2),bladeMesh=pool('wood',box,blades.length*2),birdMesh=pool('bird',birdGeo,9);
     const NEAR_BEHIND=40,NEAR_AHEAD=170;
     const heroAt=new THREE.Vector3();
     function put(mesh,i,x,y,z,sx,sy,sz,rx,ry,rz){dummy.position.set(x,y,z);dummy.rotation.set(rx,ry,rz);dummy.scale.set(sx,sy,sz);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);}
@@ -88,7 +89,7 @@ window.FLASH_TRAVEL=(()=>{
       bladeMesh.instanceMatrix.needsUpdate=true;
       // A little flock escorts the runner, flapping.
       for(let i=0;i<9;i++){const ox=(i%3-1)*7+(i>>1&1)*2.5,oz=-22-(i/3|0)*8-(i%2)*3,flap=Math.sin(tt*9+i*1.4);
-        put(birdMesh,i,pos.x+ox+Math.sin(tt*.8+i)*2,9+Math.sin(tt*1.3+i*2)*1.2+(i%3),hz+oz,.75,.12+Math.abs(flap)*.22,1.1,-Math.PI/2+flap*.5,0,Math.PI);}
+        put(birdMesh,i,pos.x+ox+Math.sin(tt*.8+i)*2,9+Math.sin(tt*1.3+i*2)*1.2+(i%3),hz+oz,.8,flap*2.2,.8,0,Math.PI,0);}
       birdMesh.instanceMatrix.needsUpdate=true;
     }
     animate(0,0,at(0));

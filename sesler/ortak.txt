@@ -1,0 +1,13 @@
+# Ortak satırlar (MIMAR). Biçim: kimlik | metin  ya da  kimlik | metin | rehber
+# "rehber" sesi aynı Emel sesidir, biraz daha tiz ve hızlı (hayvan dostun sesi).
+ovgu-1 | Harika!
+ovgu-2 | Çok güzel!
+ovgu-3 | Süpersin!
+ovgu-4 | Vay, bravo!
+ovgu-5 | İşte böyle!
+ovgu-6 | Ne güzel yaptın!
+rehber-gel-1 | Haydi, beni takip et! | rehber
+rehber-gel-2 | Bu taraftan, gel gel! | rehber
+rehber-gel-3 | Buradayım, yanıma gel! | rehber
+pasaport-ac | Bu senin pasaportun! Sayfaları çevirip çıkartmalarına bak.
+ulke-damga | Bütün yerleri gezdin! Pasaportuna kocaman bir ülke damgası!

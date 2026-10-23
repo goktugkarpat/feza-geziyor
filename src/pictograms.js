@@ -37,5 +37,7 @@ window.FLASH_PICTO=(()=>{
   function svg(name){return '<svg class="picto" viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">'+(paths[name]||paths.star)+'</svg>';}
   function node(name){const span=document.createElement('span');span.className='pictogram';span.innerHTML=svg(name);return span;}
   function stars(count,total=3){const row=document.createElement('span');row.className='picture-stars';for(let i=0;i<total;i++){const s=node('star');s.classList.toggle('earned',i<count);row.append(s);}return row;}
-  return {svg,node,stars};
+  // Ülke dosyaları kendi simgelerini ekler (64×64 çizgi yolu): FLASH_PICTO.ekle('vapur','<path .../>').
+  function ekle(name,markup){if(!paths[name])paths[name]=markup;}
+  return {svg,node,stars,ekle};
 })();

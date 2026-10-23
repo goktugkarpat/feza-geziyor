@@ -210,6 +210,7 @@
         var mat=new T.MeshStandardMaterial(opt);mat.userData.surface=type;
         if(vertexColors)patchFx(mat,type==='leaf'||type==='cloth',true);
         else if(type==='leaf'||type==='cloth')patchFx(mat,true,false);
+        if(window.FLASH_GRAFIK)window.FLASH_GRAFIK.surface(mat,type); // GRAFIK: ortak malzeme (su, yaprak)
         mat.forceSinglePass=true; materials.set(key,mat);
       }
       return materials.get(key);
@@ -1002,7 +1003,7 @@
       }, { k: 1.45, top: .075, rough: .035, bump: .05 });
       collider(p, 0, 0, 7.8);
       var cg = new T.Group(); cg.userData.dynamic = true; p.add(cg);
-      [[-6, 6.2, -2.5, 1.8, .3, .9], [5.5, 7.8, -5, 1.6, .28, .8], [0, 9.8, -6.5, 1.9, .3, .9]].forEach(function (c) { part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0], c[1], c[2], c[3], c[4], c[5]); part(cg, 'sphere', surface(0xf4f8ff, 'cloth'), c[0] + c[3] * .4, c[1] + .15, c[2], c[3] * .6, c[4] * 1.2, c[5] * .8); });
+      [[-6, 6.2, -2.5, 1.8, .3, .9], [5.5, 7.8, -5, 1.6, .28, .8], [0, 9.8, -6.5, 1.9, .3, .9]].forEach(function (c) { var w = c[3], h = w * .62; part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0], c[1], c[2], w, h, c[5]); part(cg, 'sphere', surface(0xfbfdff, 'cloth'), c[0] - w * .55, c[1] - h * .18, c[2] + .1, w * .62, h * .75, c[5] * .85); part(cg, 'sphere', surface(0xf6f9ff, 'cloth'), c[0] + w * .55, c[1] - h * .12, c[2] + .1, w * .68, h * .8, c[5] * .85); part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0] + w * .1, c[1] + h * .35, c[2] - .05, w * .55, h * .7, c[5] * .8); }); /* GRAFIK: yumuşak kabarık bulut */
       batchMotion(cg); animated.push({ type: 'drift', object: cg, s: .035 });
       pagoda(p, 11.5, 5.5, .9, 5);
       part(p, 'cylinder', surface(0x7bc3d6, 'water'), 0, .035, 13.2, 5.5, .05, 2.6); [-1, 1].forEach(function (s) { part(p, 'sphere', surface(0xd9cfb7, 'stone'), s * 4.8, .1, 13, .4, .25, .4); });
@@ -1028,7 +1029,7 @@
       part(p, 'cylinder', white, 0, Y0 + 4.4, 0, .34, .4, .34); part(p, 'sphere', white, 0, Y0 + 5.0, 0, .62, .72, .64); part(p, 'sphere', surface(0xd0cbbb, 'cloth'), 0, Y0 + 5.35, -.08, .64, .3, .64);
       box(p, surface(0x8b8578, 'cloth'), -.22, Y0 + 5.05, .58, .16, .06, .05); box(p, surface(0x8b8578, 'cloth'), .22, Y0 + 5.05, .58, .16, .06, .05); box(p, shade, 0, Y0 + 4.85, .62, .1, .2, .08);
       var cg = new T.Group(); cg.userData.dynamic = true; p.add(cg);
-      [[-6, 13.5, -4, 1.7, .3, .9], [6.5, 12.5, -5, 1.6, .28, .9], [0, 15.2, -6, 1.8, .3, .9]].forEach(function (c) { part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0], c[1], c[2], c[3], c[4], c[5]); part(cg, 'sphere', surface(0xf3f7ff, 'cloth'), c[0] + c[3] * .45, c[1] + .12, c[2], c[3] * .6, c[4] * 1.2, c[5] * .8); });
+      [[-6, 13.5, -4, 1.7, .3, .9], [6.5, 12.5, -5, 1.6, .28, .9], [0, 15.2, -6, 1.8, .3, .9]].forEach(function (c) { var w = c[3], h = w * .62; part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0], c[1], c[2], w, h, c[5]); part(cg, 'sphere', surface(0xfbfdff, 'cloth'), c[0] - w * .55, c[1] - h * .18, c[2] + .1, w * .62, h * .75, c[5] * .85); part(cg, 'sphere', surface(0xf6f9ff, 'cloth'), c[0] + w * .55, c[1] - h * .12, c[2] + .1, w * .68, h * .8, c[5] * .85); part(cg, 'sphere', surface(0xffffff, 'cloth'), c[0] + w * .1, c[1] + h * .35, c[2] - .05, w * .55, h * .7, c[5] * .8); }); /* GRAFIK: yumuşak kabarık bulut */
       batchMotion(cg); animated.push({ type: 'drift', object: cg, s: .04 });
       bird(p, 0, 13, 0, 5.5, .4, 1.0, 0x2c3238); bird(p, 0, 15, 0, 7, -.3, .9, 0x2c3238); bird(p, 0, 11, 0, 8, .22, .9, 0x2c3238);
       spark(p, 0, 11, 0, 14, 8.8, 3.2, 1.2, 0xfff3c2, .22, 1, 1.4);
@@ -1685,21 +1686,25 @@
 
     // Quiet perimeter city scenery leaves the spawn and the three routes open.
     var perimeter = [[-55,-54],[-40,-55],[-24,-55],[-8,-55],[8,-55],[24,-55],[40,-55],[55,-54],[-55,-25],[-55,0],[-55,25],[-45,55],[-25,55],[55,10],[55,32],[45,55]];
-    if (country.id !== 'eg') perimeter.forEach(function (a, i) {
+    // Ülke kaydında eskiCevre:false ise (TASARIM.md §3) eski çevre dolgu binaları ve yol ağaçları kurulmaz; ülke kendi sahnesini kurar.
+    var eskiCevre = country.eskiCevre !== false;
+    if (eskiCevre && country.id !== 'eg') perimeter.forEach(function (a, i) {
       var h = country.id === 'us' ? 7 + i % 3 * 3 : 3.2 + i % 3 * 0.9;
       var tint = i % 2 ? WHITE : STONE;
       building(root, a[0], a[1], 4, h, 3.5, tint, country.color);
       colliders.push({ x: a[0], z: a[1], r: 2.7 });
     });
-    else { tree(root, -55, 14, 0x72a96c, 1.2, true); tree(root, 55, 26, 0x72a96c, 1.2, true); }
+    else if (eskiCevre) { tree(root, -55, 14, 0x72a96c, 1.2, true); tree(root, 55, 26, 0x72a96c, 1.2, true); }
     var walkwayColor = country.id === 'eg' ? 0xefdab4 : winter ? 0xb5c1c5 : 0xd8ccb0;
     box(root, walkwayColor, 0, 0.015, 8, 3.8, 0.05, 58);
     box(root, walkwayColor, 0, 0.016, -5, 72, 0.05, 3.6);
-    for (var i = 0; i < 5; i++) {
+    if (eskiCevre) for (var i = 0; i < 5; i++) {
       tree(root, -9, 3 + i * 5, country.id === 'jp' ? 0xe8aac5 : 0x71a477, 0.75, country.id === 'br' || country.id === 'eg');
       tree(root, 8, -22 + i * 6, country.id === 'jp' ? 0xe8aac5 : 0x71a477, 0.75, country.id === 'br' || country.id === 'eg');
     }
     country.places.forEach(function (place) {
+      // Ülke kaydı bu yerin modelini kendisi kuruyorsa (kayit.yerler[id].yap) eski modeli atla.
+      if (options.atla && options.atla.indexOf(place.id) >= 0) return;
       var p = new T.Group(); p.name = place.id; p.position.set(place.x, 0, place.z); root.add(p);
       if (!models[place.kind]) throw new Error('Bilinmeyen gezi modeli: ' + place.kind);
       var firstCollider=colliders.length;models[place.kind](p);if(!options.thumbnail)district(p,place);

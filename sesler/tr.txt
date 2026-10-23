@@ -1,0 +1,22 @@
+# Türkiye (MIMAR — örnek). Biçim: kimlik | metin  ya da  kimlik | metin | rehber
+tr-rehber-merhaba | Merhaba Feza! Merhaba Bilbo! Ben Pamuk, bir Van kedisiyim. Türkiye'ye hoş geldiniz! Gelin, size güzel yerler göstereyim. | rehber
+tr-rehber-dokun-1 | Miyav! Gözlerimden biri mavi, biri sarı. | rehber
+tr-rehber-dokun-2 | Van kedileri suda yüzmeyi çok sever! | rehber
+tr-rehber-dokun-3 | Simit de severim, balık da severim! | rehber
+tr-rehber-kapi | Türkiye'yi birlikte gezdik! Dünya kapısından yeni bir ülkeye gidebilirsin. Güle güle Feza, güle güle Bilbo! | rehber
+tr-simit-basla | Martılar acıkmış! Martılara dokun, Feza onlara simit atsın.
+tr-simit-ipucu | Uçan bir martıya dokun!
+tr-simit-bitti | Bütün martılar doydu! Bak, kulenin balkonunda simitlerini yiyorlar.
+tr-yunus-basla | Boğaz'da yunuslar var! Suya dokun, yunuslar zıplasın.
+tr-yunus-ipucu | Mavi suya dokun!
+tr-yunus-bitti | Yunuslar seninle çok eğlendi! Bak, yüzgeçleriyle el sallıyorlar.
+tr-comlek-basla | Kapadokya'da çömlek yapalım! Parmağını çamurun üstünde yukarı kaydır.
+tr-comlek-ipucu | Parmağını yukarı aşağı kaydır, çömlek büyüsün.
+tr-comlek-boya | Şimdi bir boyaya dokun, çömleği süsleyelim! | rehber
+tr-comlek-bitti | Ne güzel çömlekler yaptın! Hepsi rafta sıra sıra duruyor.
+tr-vapur-bin | Vapura bindik! Herkes yerine otursun. | rehber
+tr-vapur-yol | Vapurla denizde gidiyoruz! Martılara el salla.
+tr-vapur-var | İskeleye vardık! Haydi, Boğaz'a koşalım.
+tr-balon-bin | Balona bindik! Sıkı tutunun! | rehber
+tr-balon-yol | Gökyüzünde uçuyoruz! Aşağıdaki peribacalarına bak.
+tr-balon-var | Yumuşacık indik! Burası Kapadokya.

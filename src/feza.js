@@ -1,13 +1,28 @@
-/* Flash Feza: young travelling superhero. Classic script; only window.THREE is required.
- * Real reuse from feza-huysuzlara-karsi/src/04_feza.js: parametric Feza head,
- * original facial GLSL (eyes, brows, nose and smirk), procedural brown hair,
- * blended skinned geometry builder, pose channels and idle/running animation.
- * Inventory, fighting, lightsabers, cape, thumbnail baking and x-ray removed.
- * create() -> { root, update(dt, speed01, boost, time), dispose() }; faces +Z.
- */
+/* Flash Feza (yeni model). Yüz, saç, kulak, kafa ve vücut oranları ../feza-bilbo/hala/src/04_feza.js içindeki
+ * Feza'nın BAĞIMSIZ kopyasıdır (parametrik kafa, yüz shader'ı, dağınık saç tutamları, iskelet ve ağırlıklar);
+ * kıyafet eski hero.js'teki Flash kostümüdür (kırmızı tulum, göğüste beyaz disk + altın şimşek, altın kemer/yaka/eldiven
+ * ağzı ve altın botlar). Eşya, ışın kılıcı, şapka, pelerin, x-ray, stencil ve küçük resim kısımları alınmadı.
+ * Klasik script; yalnız window.THREE kullanır, yalnız window.FLASH_FEZA tanımlar.
+ *
+ * FLASH_FEZA.create() → {
+ *   root            Group; +Z'ye bakar, ayak tabanı y=0, ölçek 1'de boy ≈ 1.78 (height alanı)
+ *   update(dt, speed01, boost, time)    boşta nefes/göz kırpma/bakınma, koşu, şimşek koşusu (boost)
+ *   bones           { root, hips, chest, head, armL, foreL, armR, foreR, thighL, shinL, thighR, shinR }
+ *   skeleton, celebrate(sn), land(), lookAt(Vector3|null), dispose()
+ *   wave(sn=2)      sağ kolla el sallar, kendiliğinden biter
+ *   cheer(sn=1.6)   iki kol havada, iki küçük zıplama, mutlu yüz
+ *   throwAt(v3)     ~0.5 sn sağ kolla atma; dönüş: bırakma anına kadar saniye (0.25). Atılan nesne handWorld'den çıkar.
+ *   handWorld(out, side='R')  elin dünya konumu
+ *   setSeated(on)   taşıtta oturma pozu (koşu animasyonu kapalı). Oturak yüzeyi root'un seatHeight*ölçek üstündedir:
+ *                   root.position.y = oturakY - seatHeight * root.scale.y
+ *   seatHeight      ölçek 1'de kalça altının (oturağın) root'tan yüksekliği
+ *   express(tur, sn)  'mutlu' | 'saskin' | 'gulme'
+ * }
+ * Çizim: deri (yüz shader'ı), kırmızı tulum, altın parçalar, saç = 4 çizim (+ yalnız kıvılcım varken 1 nokta çizimi). */
 (function () {
   'use strict';
-  const TAU = Math.PI * 2, HEAD_SCALE = 1.13, BODY_SCALE = 0.76, BODY_WIDTH = 0.93;
+  if (!window.THREE) throw new Error('FLASH_FEZA: THREE yok');
+  const TAU = Math.PI * 2;
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const lerp = (a, b, t) => a + (b - a) * t;
   const sq = x => x * x;
@@ -15,7 +30,85 @@
   const keep = o => o;
   const v3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
   const V2 = (x, y = x) => new THREE.Vector2(x, y);
+  const UP = new THREE.Vector3(0, 1, 0);
+  const ANISO = 4;
   function mulberry32(a) { return function () { let t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  // ── Küçük ilkel geometri önbelleği + Kit (hala 00_core.js'ten kopya; bu dosyanın içinde kalır) ──
+  const GC = {};
+  const gcache = (key, make) => GC[key] || (GC[key] = make());
+  const G = {
+    sphere: (w = 20, h) => gcache('s' + w + '_' + h, () => new THREE.SphereGeometry(1, w, h ?? Math.max(6, Math.round(w * 0.7)))),
+    cyl: (rt = 1, rb = 1, seg = 16) => gcache('c' + rt + '_' + rb + '_' + seg, () => new THREE.CylinderGeometry(rt, rb, 1, seg, 1, false)),
+    torus: (arc = TAU, tube = 0.25, seg = 16) => gcache('t' + arc.toFixed(3) + '_' + tube + '_' + seg, () => new THREE.TorusGeometry(1, tube, 8, seg, arc)),
+    rbox: (seg = 2) => gcache('rb' + seg, () => roundedBox(seg)),
+  };
+  function roundedBox(seg) {
+    const g = new THREE.BoxGeometry(1, 1, 1, seg * 2 + 1, seg * 2 + 1, seg * 2 + 1);
+    const p = g.attributes.position, n = g.attributes.normal, v = new THREE.Vector3(), c = new THREE.Vector3(), r = 0.12;
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i);
+      c.set(clamp(v.x, -0.5 + r, 0.5 - r), clamp(v.y, -0.5 + r, 0.5 - r), clamp(v.z, -0.5 + r, 0.5 - r));
+      const d = v.clone().sub(c);
+      if (d.lengthSq() > 1e-8) { d.normalize(); v.copy(c).addScaledVector(d, r); p.setXYZ(i, v.x, v.y, v.z); n.setXYZ(i, d.x, d.y, d.z); }
+    }
+    return g;
+  }
+  const _m4 = new THREE.Matrix4(), _kq = new THREE.Quaternion(), _ke = new THREE.Euler(), _s3 = new THREE.Vector3(), _p3 = new THREE.Vector3();
+  function tmat(pos, rot, scl) {
+    const m = new THREE.Matrix4();
+    _p3.set(pos ? pos[0] : 0, pos ? pos[1] : 0, pos ? pos[2] : 0);
+    if (rot && rot.isQuaternion) _kq.copy(rot); else if (rot) _kq.setFromEuler(_ke.set(rot[0] || 0, rot[1] || 0, rot[2] || 0)); else _kq.identity();
+    if (scl === undefined || scl === null) _s3.set(1, 1, 1); else if (typeof scl === 'number') _s3.set(scl, scl, scl); else _s3.set(scl[0], scl[1], scl[2]);
+    return m.compose(_p3, _kq, _s3);
+  }
+  class Kit {
+    constructor() { this.parts = []; this.stack = [new THREE.Matrix4()]; }
+    top() { return this.stack[this.stack.length - 1]; }
+    push(pos, rot, scl) { this.stack.push(this.top().clone().multiply(tmat(pos, rot, scl))); return this; }
+    pop() { if (this.stack.length > 1) this.stack.pop(); return this; }
+    add(geo, color, pos, rot, scl) {
+      const c = typeof color === 'function' ? color : (color && color.isColor ? color.clone() : new THREE.Color(color ?? 0xffffff));
+      this.parts.push({ geo, color: c, m: this.top().clone().multiply(tmat(pos, rot, scl)) });
+      return this;
+    }
+    build() { return kitMerge(this.parts); }
+  }
+  function kitMerge(parts) {
+    let nv = 0, ni = 0;
+    for (const p of parts) { const P = p.geo.attributes.position; nv += P.count; ni += p.geo.index ? p.geo.index.count : P.count; }
+    const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), col = new Float32Array(nv * 3), uv = new Float32Array(nv * 2);
+    const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+    const v = new THREE.Vector3(), nm = new THREE.Matrix3();
+    let vo = 0, io = 0;
+    for (const p of parts) {
+      const g = p.geo, P = g.attributes.position, N = g.attributes.normal, U = g.attributes.uv;
+      nm.getNormalMatrix(p.m);
+      const fn = typeof p.color === 'function' ? p.color : null;
+      for (let i = 0; i < P.count; i++) {
+        const o = (vo + i) * 3;
+        v.fromBufferAttribute(P, i).applyMatrix4(p.m);
+        pos[o] = v.x; pos[o + 1] = v.y; pos[o + 2] = v.z;
+        const c = fn ? fn(v.x, v.y, v.z) : p.color;
+        col[o] = c.r; col[o + 1] = c.g; col[o + 2] = c.b;
+        if (N) { v.fromBufferAttribute(N, i).applyMatrix3(nm).normalize(); nor[o] = v.x; nor[o + 1] = v.y; nor[o + 2] = v.z; }
+        if (U) { uv[(vo + i) * 2] = U.getX(i); uv[(vo + i) * 2 + 1] = U.getY(i); }
+      }
+      if (g.index) { const I = g.index; for (let i = 0; i < I.count; i++) idx[io + i] = I.getX(i) + vo; io += I.count; }
+      else { for (let i = 0; i < P.count; i++) idx[io + i] = vo + i; io += P.count; }
+      vo += P.count;
+    }
+    const out = new THREE.BufferGeometry();
+    out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    out.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    out.setIndex(new THREE.BufferAttribute(idx, 1));
+    return out;
+  }
+  const kitGeo = f => { const k = new Kit(); f(k); return k.build(); };
+
+  // ── Geometri kurucuları (hala) ──
   function paramGeo(fn, nu, nv, ctr, wrapU) {
     const n1 = nu + 1, nV = n1 * (nv + 1);
     const pos = new Float32Array(nV * 3), nor = new Float32Array(nV * 3), uv = new Float32Array(nV * 2);
@@ -135,7 +228,7 @@
     out.computeBoundingSphere();
     return out;
   }
-  // Kit-like merge with skin weights. part: {geo, bone} or {geo, w(x,y,z) → [bone0, bone1, weight1]}, color hex|fn, face?
+  // Skin ağırlıklı birleştirme (hero.js sürümü: ışıltı ve düz-UV desteğiyle)
   function mergeSkinned(parts, withFace) {
     let nv = 0, ni = 0;
     for (const p of parts) { nv += p.geo.attributes.position.count; ni += p.geo.index ? p.geo.index.count : p.geo.attributes.position.count; }
@@ -176,14 +269,17 @@
     out.computeBoundingSphere();
     return keep(out);
   }
-  const HB = 1.60 * BODY_SCALE, HC = v3(0, 0.24, 0.012);
+
+  // ── Kafa, kulak, saç (hala; kafa kemiği uzayında, bağlama pozunda y + HB) ──
+  // ── Head shape (head-bone space; bone sits at the neck base, world y = HB in bind pose) ──
+  const HB = 0.84, HC = v3(0, 0.24, 0.012);
   function headSurf(th, ph, o) {
     const cp = Math.cos(ph), dx = Math.sin(th) * cp, dy = Math.sin(ph), dz = Math.cos(th) * cp;
     let x = dx * 0.272, y = dy * lerp(0.198, 0.262, sstep(-0.35, 0.35, dy)), z = dz * lerp(0.27, 0.258, sstep(-0.35, 0.35, dz));
     const jaw = sstep(0.3, 1.25, -ph);                                                     // narrower jaw, short soft chin
-    x *= 1 - 0.14 * jaw; z *= 1 - 0.13 * jaw;
+    x *= 1 - 0.22 * jaw; z *= 1 - 0.16 * jaw;
     const at = Math.abs(th), front = sstep(-0.1, 0.4, dz);
-    let b = 0.029 * Math.exp(-sq((at - 0.5) / 0.33) - sq((ph + 0.35) / 0.27)) * front;      // round cheeks
+    let b = 0.022 * Math.exp(-sq((at - 0.5) / 0.33) - sq((ph + 0.35) / 0.27)) * front;      // round cheeks
     b += 0.013 * Math.exp(-sq(th / 0.08) - sq((ph + 0.262) / 0.065));                      // button nose
     b += 0.006 * Math.exp(-sq(th / 0.3) - sq((ph + 0.92) / 0.2));                          // chin
     o.set(HC.x + x + dx * b, HC.y + y + dy * b, HC.z + z + dz * b);
@@ -213,14 +309,31 @@
     return -Math.PI / 2 + (lo + f) / (PH_CDF.length - 1) * Math.PI;
   }
   function headGeo() {
-    const NU = 48, NV = 32, ctr = v3(0, HB + HC.y * HEAD_SCALE, HC.z * HEAD_SCALE);
-    const g = paramGeo((u, v, o) => { headSurf(headTh(u), headPh(v), o).multiplyScalar(HEAD_SCALE); o.y += HB; }, NU, NV, ctr, true);
+    const NU = 64, NV = 40, ctr = v3(0, HB + HC.y, HC.z);
+    const g = paramGeo((u, v, o) => { headSurf(headTh(u), headPh(v), o); o.y += HB; }, NU, NV, ctr, true);
     const f = new Float32Array((NU + 1) * (NV + 1) * 2);
     for (let j = 0, k = 0; j <= NV; j++) for (let i = 0; i <= NU; i++, k++) { f[k * 2] = headTh(i / NU); f[k * 2 + 1] = headPh(j / NV); }
     g.setAttribute('aFace', new THREE.BufferAttribute(f, 2));
     return g;
   }
-  const HAIR_D = new THREE.Color(0x2c180c), HAIR_L = new THREE.Color(0x4a2b16), HAIR_H = new THREE.Color(0x6b4424);
+  // Ears (half covered by the side hair, like in the photo): a thin plate with a rolled rim, tilted back a little.
+  const EAR = { th: 1.6, ph: -0.19 };
+  function earGeo(s) {
+    const th = s * EAR.th, p = headSurf(th, EAR.ph, v3()), n = headNormal(th, EAR.ph, v3());
+    const X = n.clone(), Y = v3(0, 1, 0).addScaledVector(X, -X.y).normalize().applyAxisAngle(X, -0.22 * s), Z = v3().crossVectors(X, Y);
+    const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+    const c = p.clone().addScaledVector(n, 0.004); c.y += HB;
+    const o = c.clone().addScaledVector(X, 0.008), inner = new THREE.Color(0xe9a390), outer = new THREE.Color(0xf6cdb8), tmp = new THREE.Color(), w = v3();
+    const col = (x, y, z) => { w.set(x, y, z).sub(o); return tmp.copy(inner).lerp(outer, sstep(0.008, 0.022, Math.hypot(w.dot(Y), w.dot(Z) * 1.3))); };
+    return kitGeo(k => {
+      k.add(G.sphere(12, 8), col, [c.x, c.y, c.z], q, [0.009, 0.034, 0.024]);
+      k.push([o.x, o.y, o.z], q).add(G.torus(TAU, 0.34, 18), 0xf6cdb8, [0, 0.002, 0], [0, Math.PI / 2, 0], [0.018, 0.026, 0.02]).pop();
+    });
+  }
+
+  // ── Hair: a shell over the scalp plus ~75 short, tousled locks (a boy's shaggy cut: nape at the top of the neck,
+  // ears half covered, fringe swept diagonally so one corner of the forehead shows) and a few cowlicks ──
+  const HAIR_D = new THREE.Color(0x352010), HAIR_L = new THREE.Color(0x56351c), HAIR_H = new THREE.Color(0x7d532d);
   function hairline(th) {
     const a = Math.abs(th), saw = th * 2.3 + 0.35 - Math.floor(th * 2.3 + 0.35);
     const front = 0.46 + 0.06 * th + 0.06 * Math.pow(saw, 1.7);                              // the locks make the fringe edge
@@ -237,7 +350,7 @@
   const capLift = (th, ph) => { const hl = hairline(th); return hairThick(th, ph) * sstep(hl - 0.1, hl + 0.06, ph); };
   const dirOf = (th, ph) => v3(Math.sin(th) * Math.cos(ph), Math.sin(ph), Math.cos(th) * Math.cos(ph));
   function hairCapGeo() {
-    const NU = 64, NV = 16, n = v3(), ctr = HC.clone();
+    const NU = 128, NV = 16, n = v3(), ctr = HC.clone();
     const g = paramGeo((u, v, o) => {
       const th = -Math.PI + u * TAU, hl = hairline(th), s = Math.pow(v, 0.85), ph = lerp(hl, Math.PI / 2 - 1e-3, s);
       headSurf(th, ph, o); headNormal(th, ph, n);
@@ -277,15 +390,15 @@
     for (const s of [1, -1]) {
       for (let i = 0; i < 3; i++) {   // temples / sideburns
         const th0 = s * (0.8 + i * 0.16 + r(-0.03, 0.03)), ph0 = 0.5 + r(-0.03, 0.06);
-        lock4(th0, ph0, th0 + s * (0.14 + r(0, 0.08)), -0.13 - r(0, 0.06), [0, 0.019, 0.026, 0.048], r(0.056, 0.068), 0.022, r(0.1, 0.9), 1, s * 0.04);
+        lock4(th0, ph0, th0 + s * (0.14 + r(0, 0.08)), -0.06 - r(0, 0.05), [0, 0.018, 0.022, 0.03], r(0.056, 0.068), 0.021, r(0.1, 0.9), 1, s * 0.04);
       }
       for (let i = 0; i < 3; i++) {   // over the ear: covers its top half
         const th0 = s * (1.36 + i * 0.17 + r(-0.03, 0.03)), ph0 = 0.56 + r(-0.03, 0.06);
-        lock4(th0, ph0, th0 + s * r(0.04, 0.14), -0.03 - r(0, 0.05), [0, 0.022, 0.032, 0.052], r(0.06, 0.072), 0.023, r(0, 1), 1);
+        lock4(th0, ph0, th0 + s * r(0.04, 0.14), 0.1 - r(0, 0.05), [0, 0.02, 0.026, 0.032], r(0.06, 0.072), 0.022, r(0, 1), 1);
       }
       for (let i = 0; i < 3; i++) {   // behind the ear
         const th0 = s * (1.95 + i * 0.2 + r(-0.04, 0.04)), ph0 = 0.62 + r(-0.03, 0.08);
-        lock4(th0, ph0, th0 + s * r(0.04, 0.16), -0.16 - r(0, 0.08), [0, 0.022, 0.03, 0.05], r(0.064, 0.076), 0.024, r(0, 1), 1);
+        lock4(th0, ph0, th0 + s * r(0.04, 0.16), -0.02 - r(0, 0.06), [0, 0.02, 0.025, 0.03], r(0.064, 0.076), 0.023, r(0, 1), 1);
       }
       for (let i = 0; i < 4; i++) {   // short upper-side layer (volume seen from above)
         const th0 = s * (0.8 + i * 0.42 + r(-0.05, 0.05)), ph0 = 1.02 + r(0, 0.1);
@@ -294,8 +407,8 @@
     }
     // nape: uneven tips at the top of the neck, flicking out
     for (let i = 0; i < 9; i++) {
-      const th0 = Math.PI + (i - 4) * 0.22 + r(-0.04, 0.04), ph0 = 0.72 + r(0, 0.1), th1 = th0 + r(-0.16, 0.16), ph1 = -0.06 - r(0, 0.18) + (i & 1) * 0.06;
-      lock4(th0, ph0, th1, ph1, [0, 0.022, 0.032, 0.045 + r(0, 0.035)], r(0.068, 0.082), 0.025, r(0, 0.9), 1);
+      const th0 = Math.PI + (i - 4) * 0.22 + r(-0.04, 0.04), ph0 = 0.72 + r(0, 0.1), th1 = th0 + r(-0.12, 0.12), ph1 = 0.04 - r(0, 0.08) + (i & 1) * 0.05;
+      lock4(th0, ph0, th1, ph1, [0, 0.02, 0.026, 0.03 + r(0, 0.012)], r(0.068, 0.082), 0.024, r(0, 0.9), 1);
     }
     // shorter layer over the back of the head, so the back reads layered and tousled, not as one straight curtain
     for (let i = 0; i < 7; i++) {
@@ -333,8 +446,35 @@
       (t, c) => { c.copy(base).multiplyScalar(0.86 + 0.26 * t); if (L.tone > 0.75 && t > 0.3) c.lerp(HAIR_H, 0.3); },
       t => L.tuft ? -(Math.pow(t, 1.5) * L.flex + 0.01) : Math.pow(t, 1.5) * L.flex);
   }
+  // Low-poly outer hull of head + hair (for the x-ray silhouette proxy), head-bone space shifted to bind pose (y + HB).
+
+  // ── Strand normal map for the hair (generated once, 128²) ──
+  let STRAND = null;
+  function strandTex() {
+    if (STRAND) return STRAND;
+    const S = 128, D = new Uint8Array(S * S * 4), H = new Float32Array(S * S), R = mulberry32(77);
+    const ph = [], fr = [2, 5, 9, 14, 23, 31, 47], am = [0.3, 0.25, 0.22, 0.18, 0.12, 0.1, 0.06];
+    for (let i = 0; i < fr.length; i++) ph.push(R() * TAU);
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      let h = 0; const u = x / S, v = y / S;
+      for (let i = 0; i < fr.length; i++) h += am[i] * Math.sin(TAU * fr[i] * u + ph[i] + 0.6 * Math.sin(TAU * v + i));
+      H[y * S + x] = h;
+    }
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const dx = H[y * S + (x + 1) % S] - H[y * S + (x + S - 1) % S], dy = H[((y + 1) % S) * S + x] - H[((y + S - 1) % S) * S + x];
+      const nx = -dx * 2.2, ny = -dy * 2.2, l = Math.hypot(nx, ny, 1), o = (y * S + x) * 4;
+      D[o] = (nx / l * 0.5 + 0.5) * 255; D[o + 1] = (ny / l * 0.5 + 0.5) * 255; D[o + 2] = (1 / l * 0.5 + 0.5) * 255; D[o + 3] = 255;
+    }
+    const t = new THREE.DataTexture(D, S, S, THREE.RGBAFormat);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.generateMipmaps = true; t.anisotropy = ANISO; t.colorSpace = THREE.NoColorSpace; t.needsUpdate = true;
+    return (STRAND = keep(t));
+  }
+
+  // ── Yüz (deri shader'ının içinde çizilir; hala) ──
+  // ── The face, drawn inside the skin shader ──
   const FACE_GLSL = `
-    uniform vec4 fzEye; uniform vec3 fzEyeW; uniform vec4 fzMouth; uniform vec3 fzBrow;
+    uniform vec4 fzEye; uniform float fzWink; uniform vec3 fzEyeW; uniform vec4 fzMouth; uniform vec3 fzBrow;
     varying vec2 vFace;
     #define SRGB(r, g, b) pow(vec3(r, g, b), vec3(2.2))
     float fzSq(float x) { return x * x; }
@@ -342,14 +482,13 @@
     float fzLine(float d, float w, float aa) { return 1.0 - smoothstep(w - aa, w + aa, d); }
     void fzFace(inout vec3 col, inout float gloss, inout vec3 emis, vec2 q, float aa) {
       // cheeks + nose tip
-      float bl = exp(-fzSq((abs(q.x) - 0.35) / 0.13) - fzSq((q.y + 0.40) / 0.085)) * (0.12 + 0.2 * fzBrow.z);
-      col = mix(col, SRGB(0.98, 0.58, 0.54), bl);
-      float blm = exp(-fzSq((abs(q.x) - 0.35) / 0.17) - fzSq((q.y + 0.34) / 0.07)) * 0.05 * (0.4 + fzBrow.z);
-      col = mix(col, SRGB(1.0, 0.42, 0.45), blm);
+      float bl = exp(-fzSq((abs(q.x) - 0.34) / 0.115) - fzSq((q.y + 0.325) / 0.07)) * (0.4 + 0.4 * fzBrow.z);
+      col = mix(col, SRGB(0.99, 0.55, 0.53), bl);
       col = mix(col, SRGB(0.97, 0.66, 0.6), 0.22 * exp(-fzSq(q.x / 0.04) - fzSq((q.y + 0.252) / 0.035)));
       // eyes (e: eye-local, +x = outer corner)
       float side = q.x < 0.0 ? -1.0 : 1.0;
-      vec2 ec = vec2(0.25 * side, -0.115), er = vec2(0.178, 0.205);
+      float fzBk = max(fzEye.x, side > 0.0 ? fzWink : 0.0);   // göz kırpma: yalnız sol göz
+      vec2 ec = vec2(0.252 * side, -0.11), er = vec2(0.138, 0.158);
       vec2 e = vec2((q.x - ec.x) * side, q.y - ec.y) / er;
       float aE = aa / er.y;
       float xx = clamp(e.x, -1.0, 1.0), cx = sqrt(max(0.0, 1.0 - xx * xx));
@@ -358,27 +497,26 @@
       // frame is a smiling squint, never a see-through pale ghost eye
       float hx = clamp(e.x, -0.95, 0.95), hy = -0.08 + 0.62 * (1.0 - hx * hx);
       float sq = clamp(1.0 - fzEyeW.x, 0.0, 1.0), tgt = mix(0.04, hy, fzEyeW.y / max(fzEyeW.y + fzEyeW.z, 1e-3));
-      float lid = mix(mix(top, tgt + 0.03, sq), bot * 0.9 + 0.06, fzEye.x);
+      float lid = mix(mix(top, tgt + 0.03, sq), bot * 0.9 + 0.06, fzBk);
       lid = min(lid, top - fzEye.w * 0.6 * cx);
       float rr = length(vec2(e.x, e.y > 0.0 ? e.y / max(0.05, top / max(cx, 0.05)) : e.y / 0.92));
       float lidL = mix(-1.6, tgt - 0.03, sq);
       float vis = (1.0 - smoothstep(1.0 - aE, 1.0 + aE, rr)) * (1.0 - smoothstep(-aE, aE, e.y - lid)) * smoothstep(-aE, aE, e.y - lidL);
-      vec2 ic = ec + vec2(fzEye.y * 0.034, fzEye.z * 0.026 - 0.004);
-      vec2 di = q - ic; float ir = 0.152, dr = length(di) / ir, aI = aa / ir;
+      vec2 ic = ec + vec2(fzEye.y * 0.03, fzEye.z * 0.024 + 0.002);
+      vec2 di = q - ic; float ir = 0.12, dr = length(di) / ir, aI = aa / ir;
       vec3 iris = mix(SRGB(0.36, 0.2, 0.1), SRGB(0.72, 0.46, 0.22), smoothstep(0.2, -0.95, di.y / ir));
       iris *= 0.86 + 0.14 * sin(atan(di.y, di.x) * 15.0 + dr * 5.0);
       iris = mix(iris, SRGB(0.16, 0.08, 0.04), smoothstep(0.68, 0.98, dr));
-      iris = mix(iris, SRGB(0.05, 0.025, 0.02), 1.0 - smoothstep(0.46 - aI, 0.46 + aI, dr));
+      iris = mix(iris, SRGB(0.06, 0.03, 0.02), 1.0 - smoothstep(0.43 - aI, 0.43 + aI, dr));
       vec3 scl = SRGB(0.97, 0.965, 0.99) * (1.0 - 0.1 * smoothstep(0.6, 1.0, rr));
       vec3 eye = mix(scl, iris, 1.0 - smoothstep(1.0 - aI, 1.0 + aI, dr));
       eye *= 1.0 - 0.45 * smoothstep(lid - 0.62, lid, e.y);
-      float c1 = 1.0 - smoothstep(0.31 - aI, 0.31 + aI, length(di / ir - vec2(-0.34, 0.38)));
-      float c2 = 1.0 - smoothstep(0.16 - aI, 0.16 + aI, length(di / ir - vec2(0.40, -0.34)));
-      float c3 = 1.0 - smoothstep(0.08 - aI, 0.08 + aI, length(di / ir - vec2(0.12, 0.62)));
-      float cl = max(max(c1, c2 * 0.92), c3 * 0.8);
+      float c1 = 1.0 - smoothstep(0.27 - aI, 0.27 + aI, length(di / ir - vec2(-0.33, 0.36)));
+      float c2 = 1.0 - smoothstep(0.13 - aI, 0.13 + aI, length(di / ir - vec2(0.38, -0.36)));
+      float cl = max(c1, c2 * 0.9);
       eye = mix(eye, vec3(1.0), cl);
       // thin, even upper lid line (no outer flick: a boy, not mascara)
-      float lw = (0.12 + 0.08 * fzEye.x) * mix(0.8, 1.0, smoothstep(-1.0, 0.3, e.x));
+      float lw = (0.12 + 0.08 * fzBk) * mix(0.8, 1.0, smoothstep(-1.0, 0.3, e.x));
       float ly = e.y - lid;
       float lash = smoothstep(-0.05 - aE, -0.05 + aE, ly) * (1.0 - smoothstep(lw - aE, lw + aE, ly)) * (1.0 - smoothstep(0.88, 1.02, abs(e.x)));
       // closed variants: happy ^ and wince >
@@ -386,7 +524,7 @@
       float wd = min(fzSeg(e, vec2(0.95, 0.5), vec2(-0.5, 0.02)), fzSeg(e, vec2(-0.5, 0.02), vec2(0.95, -0.42)));
       float wince = fzLine(wd, 0.16, aE);
       vec3 lashC = SRGB(0.17, 0.09, 0.06);
-      float lower = fzLine(abs(e.y - max(bot, lidL) - 0.05), 0.045, aE) * smoothstep(0.95, 0.4, abs(e.x - 0.1)) * (1.0 - max(fzEye.x, sq));
+      float lower = fzLine(abs(e.y - max(bot, lidL) - 0.05), 0.045, aE) * smoothstep(0.95, 0.4, abs(e.x - 0.1)) * (1.0 - max(fzBk, sq));
       float ow = smoothstep(0.05, 0.35, fzEyeW.x), cw = smoothstep(0.45, 0.9, sq);   // open eye fades only once nearly shut
       col = mix(col, col * SRGB(0.8, 0.62, 0.58), lower * 0.7 * ow);
       col = mix(col, eye, vis * ow);
@@ -397,29 +535,33 @@
       emis += vec3(0.55) * cl * vis * ow;
       // brows
       float bx = e.x;
-      float by = ec.y + er.y + 0.055 + fzBrow.x * 0.04 + 0.022 * (1.0 - bx * bx) - fzBrow.y * 0.03 * bx;
-      float bw = 0.02 * (1.2 - 0.3 * (bx + 1.0)) * (1.0 - 0.3 * smoothstep(0.5, 1.0, abs(bx)));
-      float brow = (1.0 - smoothstep(bw * 0.35, bw * 1.25 + aa, abs(q.y - by))) * (1.0 - smoothstep(0.7, 1.0, abs(bx - 0.05)));
-      col = mix(col, SRGB(0.2, 0.1, 0.06), brow * 0.9);
+      float by = ec.y + er.y + 0.06 + fzBrow.x * 0.035 + 0.02 * (1.0 - bx * bx) - fzBrow.y * 0.03 * bx;
+      float bw = 0.017 * (1.15 - 0.2 * (bx + 1.0));
+      float brow = fzLine(abs(q.y - by), bw, aa) * (1.0 - smoothstep(0.85, 1.0, abs(bx - 0.05)));
+      col = mix(col, SRGB(0.24, 0.13, 0.07), brow * 0.92);
       // mouth
       vec2 m = q - vec2(0.012, -0.44);
       vec3 mline = SRGB(0.5, 0.22, 0.19), minner = SRGB(0.45, 0.1, 0.13), medge = SRGB(0.4, 0.12, 0.12);
-      // sweet closed smile: symmetric arc, tiny dimple ticks at the corners and a soft lower lip
-      float sx = clamp(m.x, -0.108, 0.108);
-      float sy = 1.9 * sx * sx - 0.004;
-      float sd = abs(m.y - sy) / sqrt(1.0 + fzSq(3.8 * sx));
-      float sw = 0.0145 * (1.0 - 0.45 * smoothstep(0.04, 0.11, abs(m.x)));
-      float inX = 1.0 - smoothstep(0.108, 0.124, abs(m.x));
+      // cheeky closed-lip smirk: thick lip line with the corner on Feza's left pushed up into a cheek bulge + dimple
+      float sx = clamp(m.x, -0.074, 0.088), sk = max(0.0, sx - 0.02);
+      float sy = 1.4 * sx * sx + 0.12 * sx + 6.5 * sk * sk - 0.004;
+      float sd = abs(m.y - sy) / sqrt(1.0 + fzSq(2.8 * sx + 0.12 + 13.0 * sk));
+      float sw = 0.0125 * (0.72 + 0.6 * smoothstep(-0.08, 0.07, m.x));
+      float inX = smoothstep(-0.088, -0.068, m.x) * (1.0 - smoothstep(0.084, 0.1, m.x));
       float smirk = fzLine(sd, sw, aa) * inX;
-      float lipLo = exp(-fzSq(m.x / 0.065) - fzSq((m.y - sy + 0.024) / 0.015));
-      float dimple = (fzLine(fzSeg(vec2(abs(m.x), m.y), vec2(0.124, 0.024), vec2(0.136, 0.056)), 0.0065, aa)) * smoothstep(0.0, 0.01, abs(m.x) - 0.09);
-      col = mix(col, SRGB(0.93, 0.5, 0.5), 0.5 * lipLo * inX * fzMouth.x);
-      col = mix(col, col * SRGB(1.0, 1.1, 1.1), 0.3 * exp(-fzSq(m.x / 0.022) - fzSq((m.y - sy + 0.022) / 0.005)) * fzMouth.x);
-      col = mix(col, col * SRGB(0.8, 0.6, 0.56), 0.7 * dimple * fzMouth.x);
+      float lipLo = exp(-fzSq((m.x + 0.004) / 0.052) - fzSq((m.y - sy + 0.021) / 0.014));                // fuller lower lip
+      float lipUp = exp(-fzSq((m.x - 0.004) / 0.05) - fzSq((m.y - sy - 0.011) / 0.008));
+      float bulge = exp(-fzSq((m.x - 0.112) / 0.045) - fzSq((m.y - 0.05) / 0.042));                        // pushed-up cheek
+      float dimple = fzLine(fzSeg(m, vec2(0.094, 0.036), vec2(0.108, 0.066)), 0.0065, aa) * smoothstep(0.03, 0.05, m.y);
+      float tuck = exp(-fzSq((m.x + 0.079) / 0.009) - fzSq((m.y - sy + 0.002) / 0.009));                  // other corner
+      col *= 1.0 + 0.09 * bulge * fzMouth.x;
+      col = mix(col, SRGB(0.9, 0.5, 0.46), (0.62 * lipLo + 0.35 * lipUp) * inX * fzMouth.x);
+      col = mix(col, col * SRGB(1.0, 1.08, 1.08), 0.35 * exp(-fzSq((m.x + 0.01) / 0.025) - fzSq((m.y - sy + 0.024) / 0.006)) * fzMouth.x);
+      col = mix(col, col * SRGB(0.8, 0.6, 0.56), (0.75 * dimple + 0.5 * tuck) * fzMouth.x);
       col = mix(col, mline, smirk * fzMouth.x);
       // open grin and "o" grow open as they blend in (solid colour at every weight, no pale see-through mouth)
       float gk = mix(0.3, 1.0, fzMouth.y), ga = smoothstep(0.0, 0.3, fzMouth.y);
-      float gx = m.x / (0.142 * mix(0.8, 1.0, fzMouth.y)), gt = 0.021 + 1.2 * m.x * m.x, gb = gt - 0.12 * gk * sqrt(max(0.0, 1.0 - gx * gx));
+      float gx = m.x / (0.105 * mix(0.8, 1.0, fzMouth.y)), gt = 0.016 + 1.2 * m.x * m.x, gb = gt - 0.1 * gk * sqrt(max(0.0, 1.0 - gx * gx));
       float gin = min(min(gt - m.y, m.y - gb), (1.0 - abs(gx)) * 0.03);
       float gI = smoothstep(-aa, aa, gin), gE = smoothstep(-aa, aa, gin + 0.006) - gI;
       vec3 gc = mix(minner, SRGB(0.95, 0.46, 0.52), 1.0 - smoothstep(0.045 * gk - aa, 0.045 * gk + aa, length(m - vec2(0.0, gt - 0.09 * gk))));
@@ -435,10 +577,12 @@
       col = mix(col, mline, small * fzMouth.w);
       gloss = max(gloss, (gI * ga + oI * oa) * 0.6);
     }`;
+  // Soft highlight knee just below the bloom threshold: skin, clothes and hair never glow, magic items still do.
   const KNEE = 'outgoingLight = mix(outgoingLight, 1.0 + (outgoingLight - 1.0) / (1.0 + (outgoingLight - 1.0) * 5.0), step(1.0, outgoingLight));';
+  const SKIN = 0xf2cbb5;
   function makeSkinMat() {
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, color: SKIN, roughness: 0.55, envMapIntensity: 0.75 });
-    const U = { fzEye: { value: new THREE.Vector4(0, 0, 0, 0) }, fzEyeW: { value: v3(1, 0, 0) }, fzMouth: { value: new THREE.Vector4(.35, .65, 0, 0) }, fzBrow: { value: v3(0, 0, .32) } };
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, color: SKIN, roughness: 0.55, metalness: 0, envMapIntensity: 0.75 });
+    const U = { fzEye: { value: new THREE.Vector4(0, 0, 0, 0) }, fzWink: { value: 0 }, fzEyeW: { value: v3(1, 0, 0) }, fzMouth: { value: new THREE.Vector4(1, 0, 0, 0) }, fzBrow: { value: v3() } };
     m.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, U);
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aFace; varying vec2 vFace;')
@@ -447,13 +591,6 @@
         .replace('#include <color_fragment>', `#include <color_fragment>
           float fzGloss = 0.0; vec3 fzEmis = vec3(0.0);
           vec2 fzQ = vec2(vFace.x * cos(vFace.y), vFace.y); float fzAA = max(length(fwidth(fzQ)) * 0.7, 1e-4);
-          if (vFace.x > -9.0) {
-            float hoodSide = smoothstep(0.96, 1.16, abs(vFace.x)) * smoothstep(-0.72, -0.34, vFace.y);
-            float hood = max(smoothstep(-0.35, -0.29, vFace.y), hoodSide);
-            diffuseColor.rgb = mix(diffuseColor.rgb, SRGB(0.80, 0.035, 0.075), hood);
-            float trimM = (1.0 - smoothstep(0.005, 0.017, abs(vFace.y + 0.325))) * (1.0 - smoothstep(0.9, 1.1, abs(vFace.x)));
-            diffuseColor.rgb = mix(diffuseColor.rgb, SRGB(1.0, 0.72, 0.2), trimM * 0.95);
-          }
           if (vFace.x > -9.0 && abs(vFace.x) < 1.2) fzFace(diffuseColor.rgb, fzGloss, fzEmis, fzQ, fzAA);`)
         .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.32, fzGloss);')
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += fzEmis;')
@@ -485,49 +622,53 @@
           ${KNEE}
           #include <opaque_fragment>`);
     };
-    m.customProgramCacheKey = () => 'flashFezaSkin2';
+    m.customProgramCacheKey = () => 'flashFezaSkin4';
     m.userData.fz = U;
     return m;
   }
-  const CHN = ['bX', 'bY', 'bZ', 'bRX', 'bRY', 'bRZ', 'hRX', 'hRY', 'hRZ', 'cRX', 'cRY', 'cRZ', 'kRX', 'kRY', 'kRZ',
-    'aLX', 'aLY', 'aLZ', 'fL', 'fLZ', 'aRX', 'aRY', 'aRZ', 'fR', 'fRZ', 'wX', 'wY', 'wZ', 'tLX', 'tLZ', 'sL', 'tRX', 'tRZ', 'sR'];
-  const C = {}; CHN.forEach((n, i) => { C[n] = i; });
-  const NCH = CHN.length;
-  const LEGS = [C.tLX, C.tLZ, C.sL, C.tRX, C.tRZ, C.sR];
-  const BASE = new Float32Array(NCH);
-  Object.entries({ cRX: 0.015, kRX: -0.10, kRZ: 0.025, aLX: 0.025, aLZ: 0.14, fL: -0.24, aRX: 0.025, aRY: 0, aRZ: -0.14, fR: -0.24,
-    wX: 2.8, wY: 0, wZ: 0.3, tLZ: 0.035, sL: 0.03, tRZ: -0.035, sR: 0.03 }).forEach(([k, v]) => { BASE[C[k]] = v; });
-    function idlePose(p, t) {
-      p.set(BASE);
-      const br = Math.sin(t * 2.3), sw = Math.sin(t * 0.9);
-      p[C.cRX] += 0.025 * br; p[C.aLZ] += 0.02 * br; p[C.aRZ] -= 0.02 * br; p[C.bY] += 0.004 * br; p[C.kRX] -= 0.015 * br;
-      p[C.hRZ] = 0.03 * sw; p[C.bX] = 0.008 * sw; p[C.kRZ] += 0.025 * Math.sin(t * 0.9 + 1); p[C.cRZ] = -0.02 * sw;
-      p[C.tLZ] += 0.02 * sw; p[C.tRZ] += 0.02 * sw;
-    }
-    function runPose(p, ph, m) {
-      p.set(BASE);
-      const s = Math.sin(ph), c = Math.cos(ph);
-      p[C.bY] = m * (.016 + .022 * (1 - Math.cos(ph * 2))); p[C.bRX] = .15 * m;
-      p[C.hRY] = .10 * s * m; p[C.cRY] = -.16 * s * m; p[C.hRZ] = .022 * c * m;
-      p[C.kRX] = -.10 - .13 * m; p[C.kRY] = .045 * s * m; p[C.kRZ] = .012;
-      p[C.tLX] = -.82 * s * m; p[C.tRX] = .82 * s * m;
-      p[C.sL] = m * (.16 + 1.26 * Math.max(0, c)); p[C.sR] = m * (.16 + 1.26 * Math.max(0, -c));
-      p[C.aLX] = .04 + .67 * s * m; p[C.aLZ] = .14 + .055 * m; p[C.fL] = -.24 - m * (.70 + .16 * c);
-      p[C.aRX] = .04 - .67 * s * m; p[C.fR] = -.24 - m * (.70 - .16 * c); p[C.aRZ] = -p[C.aLZ];
-      p[C.bRZ] = -.022 * c * m;
-    }
-  // Child runner proportions; bone numbering and hierarchy retain the original
-  // Feza rig, so the original running channels can be reused without retargeting.
-  const BONES = [
-    ['root', -1, 0, 0, 0], ['hips', 0, 0, 0.95, 0],
-    ['chest', 1, 0, 0.25, 0], ['head', 2, 0, 0.40, 0],
-    ['armL', 2, 0.275, 0.30, -0.005], ['foreL', 4, 0, -0.28, 0],
-    ['armR', 2, -0.275, 0.30, -0.005], ['foreR', 6, 0, -0.28, 0],
-    ['thighL', 1, 0.12, -0.05, 0], ['shinL', 8, 0, -0.40, 0],
-    ['thighR', 1, -0.12, -0.05, 0], ['shinR', 10, 0, -0.40, 0],
-    ['finL', 3, 0, 0, 0], ['finR', 3, 0, 0, 0]
-  ];
-  const RED = 0xcd1535, GOLD = 0xffca43, SKIN = 0xf2cbb5;
+  // Hair vertex motion: spring offset + spin puff (aFlex), cowlicks collapse (aFlex < 0) and, under a hat, every vertex
+  // outside the hat's inner ellipsoid (fzHatM: head space → unit sphere) and above its band is pulled inside it.
+  // Saç: yaylı salınım ofseti (aFlex ile tutam uçlarında artar). Şapka yok; perçemler hep görünür.
+  const HAIR_V = 'transformed += (fzHOff + normalize(transformed - vec3(0.0, 0.24, 0.012)) * fzHExp) * abs(aFlex);';
+  function makeHairMat() {
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5, metalness: 0, normalMap: strandTex(), normalScale: V2(0.6, 0.6), envMapIntensity: 0.55 });
+    const U = { fzHOff: { value: v3() }, fzHExp: { value: 0 } };
+    const vpatch = sh => {
+      Object.assign(sh.uniforms, U);
+      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aFlex; uniform vec3 fzHOff; uniform float fzHExp;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + HAIR_V);
+    };
+    m.onBeforeCompile = sh => {
+      vpatch(sh);
+      sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>', `float fzF = 1.0 - saturate(dot(normal, normalize(vViewPosition)));
+          outgoingLight += vec3(1.0, 0.8, 0.6) * pow(fzF, 3.0) * 0.12;
+          ${KNEE}
+          #include <opaque_fragment>`);
+    };
+    m.customProgramCacheKey = () => 'flashFezaHair3';
+    const d = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+    d.onBeforeCompile = vpatch; d.customProgramCacheKey = () => 'flashFezaHairD3';
+    m.userData.fz = U; m.userData.depth = d;
+    return m;
+  }
+
+  // ── İskelet ve vücut profilleri (hala oranları; metre, bağlama pozu) ──
+  // Kemikler: 0 root, 1 hips, 2 chest, 3 head, 4 armL, 5 foreL, 6 armR, 7 foreR, 8 thighL, 9 shinL, 10 thighR, 11 shinR. +Z ön; sağ taraf −x.
+  const BONES = [['root', -1, 0, 0, 0], ['hips', 0, 0, 0.47, 0], ['chest', 1, 0, 0.13, 0], ['head', 2, 0, 0.24, 0],
+    ['armL', 2, 0.175, 0.16, -0.005], ['foreL', 4, 0, -0.155, 0], ['armR', 2, -0.175, 0.16, -0.005], ['foreR', 6, 0, -0.155, 0],
+    ['thighL', 1, 0.088, -0.03, 0], ['shinL', 8, 0, -0.195, 0], ['thighR', 1, -0.088, -0.03, 0], ['shinR', 10, 0, -0.195, 0]];
+  const NECK_P = [[0, 0.76], [0.06, 0.765], [0.058, 0.84], [0.06, 0.92], [0, 0.95]];
+  const PANTLEG_P = [[0.042, 0.158], [0.057, 0.161], [0.062, 0.172], [0.064, 0.186], [0.07, 0.21], [0.075, 0.24], [0.077, 0.27], [0.08, 0.3], [0.087, 0.34],
+    [0.09, 0.38], [0.093, 0.41], [0.091, 0.44], [0.07, 0.455], [0, 0.46]];
+  const LSLEEVE_P = [[0.036, 0.462], [0.054, 0.465], [0.058, 0.48], [0.057, 0.51], [0.059, 0.56], [0.062, 0.605], [0.065, 0.65], [0.068, 0.7], [0.069, 0.74], [0.064, 0.775],
+    [0.048, 0.795], [0.026, 0.805], [0, 0.808]];
+  const SHIRT_P = [[0, 0.44], [0.13, 0.438], [0.172, 0.445], [0.18, 0.46], [0.185, 0.5], [0.184, 0.55], [0.178, 0.61], [0.17, 0.67], [0.163, 0.72],
+    [0.152, 0.76], [0.13, 0.79], [0.1, 0.81], [0.07, 0.822], [0.056, 0.826], [0, 0.827]];
+  const SHORTS_P = [[0, 0.375], [0.1, 0.378], [0.155, 0.398], [0.178, 0.43], [0.187, 0.47], [0.186, 0.5], [0.18, 0.52], [0, 0.525]];
+  // Altın bot konçu: pantolon paçası içinde kalır (paça y .16–.21 r .057–.07)
+  const BOOT_P = [[0, 0.03], [0.047, 0.035], [0.058, 0.06], [0.061, 0.1], [0.065, 0.15], [0.069, 0.19], [0.072, 0.215], [0.071, 0.228], [0, 0.232]];
+  const RED = 0xcd1535, GOLD = 0xffca43, CREAM = 0xfff5dc;
+  const SEAT_Y = 0.355;   // oturunca uyluğun alt yüzü (hala birimi): kalça eklemi .44 − uyluk kalınlığı
 
   function ellipsoid(cx, cy, cz, sx, sy, sz, seg = 14) {
     const g = new THREE.SphereGeometry(1, seg, 10);
@@ -547,145 +688,67 @@
     g.scale(scale, scale, scale);
     return transformed(g, x, y, z, rx, ry, rz);
   }
-  function mergeParts(parts, face) {
-    // A shorter body and the original Feza-sized face make the four-year-old
-    // silhouette clear. Head/hood details are already built in child head space.
-    for (const p of parts) if (!p.childHead) {
-      p.geo.scale(BODY_WIDTH, BODY_SCALE, BODY_WIDTH);
-      // Profiles and weight thresholds are authored in the SAME unscaled rig
-      // space. Feeding the shortened vertex y to them bound the whole sleeve
-      // to the forearm, pulling its shoulder away whenever the elbow bent.
-      if (p.w) {
-        const weights = p.w;
-        p.w = (x, y, z) => weights(x / BODY_WIDTH, y / BODY_SCALE, z / BODY_WIDTH);
-      }
-    }
-    const g = mergeSkinned(parts, face);
-    for (const p of parts) p.geo.dispose();
-    return g;
+  function bootGeo(s) {
+    const x0 = 0.088 * s;
+    return kitGeo(k => {
+      k.add(G.rbox(2), CREAM, [x0, 0.018, 0.03], 0, [0.104, 0.036, 0.215]);
+      k.add(G.sphere(14), GOLD, [x0, 0.054, 0.028], 0, [0.052, 0.048, 0.1]);
+      k.add(G.sphere(12), RED, [x0, 0.046, 0.094], 0, [0.049, 0.036, 0.052]);
+      k.add(G.sphere(12), GOLD, [x0, 0.064, -0.03], 0, [0.049, 0.054, 0.048]);
+      k.add(G.sphere(10), RED, [x0, 0.052, -0.062], 0, [0.04, 0.042, 0.03]);
+    });
   }
-  // Swept wing fin of the Flash cowl: three stacked tapered blades, pivoting at the ear (bone finL / finR).
-  function finGeo(s, ear) {
-    const blade = (len, hgt, wid, rot, dz) => {
-      const sh = new THREE.Shape();
-      sh.moveTo(0, -wid * 0.5); sh.quadraticCurveTo(len * 0.55, -wid * 0.6, len, hgt);
-      sh.quadraticCurveTo(len * 0.62, wid * 0.6, 0, wid * 0.5); sh.closePath();
-      const e = new THREE.ExtrudeGeometry(sh, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1, curveSegments: 6 });
-      e.translate(0, 0, -0.012);
-      e.applyMatrix4(new THREE.Matrix4().makeRotationZ(rot));
-      e.applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI / 2 - 0.72));   // shape +X -> back (-z), extrusion -> outwards (+x)
-      e.translate(Math.abs(ear.x) + 0.012, HB + ear.y + 0.012 + dz, ear.z + 0.03);
-      if (s < 0) {   // mirror to the left of the head and keep the winding outward
-        e.scale(-1, 1, 1);
-        for (const n of ['position', 'normal', 'uv']) {
-          const A = e.attributes[n], k = A.itemSize;
-          for (let i = 0; i < A.count; i += 3) for (let c = 0; c < k; c++) { const t = A.array[(i + 1) * k + c]; A.array[(i + 1) * k + c] = A.array[(i + 2) * k + c]; A.array[(i + 2) * k + c] = t; }
-        }
-        const N = e.attributes.normal; for (let i = 0; i < N.count; i++) N.setX(i, -N.getX(i));
-      }
-      return e;
-    };
-    return [blade(0.3, 0.1, 0.075, 0.1, 0.016), blade(0.22, 0.04, 0.062, -0.05, -0.002), blade(0.15, -0.02, 0.05, -0.2, -0.02)];
-  }
-  function buildRunner() {
-    const skin = [{ geo: headGeo(), bone: 3, childHead:true }], suit = [], gold = [];
-    skin.push({ geo: lathe([[0, 1.47], [0.068, 1.49], [0.066, 1.58], [0.058, 1.65], [0, 1.68]],
-      16, 0, 0, 1, 0.90), w: (x, y) => [2, 3, sstep(1.56, 1.63, y)] });
-    // Streamlined torso, long sleeves and trousers replace the original shirt,
-    // shorts and equipment. Elbows, knees, neck and waist still use blended skin weights.
-    suit.push({ geo: lathe([[0, 0.89], [0.16, 0.91], [0.20, 0.98], [0.20, 1.06],
-      [0.225, 1.18], [0.265, 1.33], [0.275, 1.43], [0.225, 1.50],
-      [0.145, 1.54], [0.066, 1.56], [0, 1.56]], 36, 0, 0, 1, 0.68),
-      w: (x, y) => [1, 2, sstep(1.01, 1.26, y)], color: RED });
-    gold.push({ geo: lathe([[0.195, 0.993], [0.208, 1.00], [0.211, 1.02], [0.208, 1.035], [0.20, 1.045]],
-      36, 0, 0, 1, 0.72), bone: 1, color: GOLD });
-    gold.push({ geo: lathe([[.073, 1.531], [.086, 1.538], [.088, 1.55], [.084, 1.557], [.073, 1.563]],
-      18, 0, 0, 1, .90), bone: 2, color: GOLD });
-    // Belt buckle: round gold frame with a softly glowing lightning plate.
-    gold.push({ geo: transformed(new THREE.CylinderGeometry(0.066, 0.066, 0.02, 24), 0, 1.02, 0.152, Math.PI / 2), bone: 1, color: GOLD });
-    gold.push({ geo: transformed(new THREE.CylinderGeometry(0.048, 0.048, 0.016, 24), 0, 1.02, 0.158, Math.PI / 2), bone: 1, color: 0xfff0a8, glow: 1 });
-    suit.push({ geo: lightningGeo(0, 1.02, 0.1685, 0.062), bone: 1, color: RED, flat: true });
-    // The familiar white disk and gold lightning are model geometry, not an image.
-    suit.push({ geo: transformed(new THREE.CylinderGeometry(0.123, 0.123, 0.018, 36),
-      0, 1.385, 0.179, Math.PI / 2), bone: 2, color: 0xfff7dd, flat: true });
-    gold.push({ geo: transformed(new THREE.TorusGeometry(0.126, 0.011, 8, 40), 0, 1.385, 0.186), bone: 2, color: GOLD });
-    gold.push({ geo: lightningGeo(0, 1.385, 0.190, 0.17), bone: 2, color: GOLD, glow: 0.55 });
+  function buildBody() {
+    const skin = [], suit = [], gold = [];
+    skin.push({ geo: headGeo(), bone: 3 });
+    for (const s of [1, -1]) skin.push({ geo: earGeo(s), bone: 3 });
+    skin.push({ geo: lathe(NECK_P, 16, 0, 0.004, 1, 0.92), w: (x, y) => [2, 3, sstep(0.8, 0.87, y)] });
     for (const s of [1, -1]) {
-      const up = s > 0 ? 4 : 6, fore = up + 1, thigh = s > 0 ? 8 : 10, shin = thigh + 1;
-      const ax = 0.275 * s, lx = 0.12 * s;
-      suit.push({ geo: lathe([[0, 0.91], [0.05, 0.93], [0.06, 0.98], [0.063, 1.05],
-        [0.077, 1.16], [0.079, 1.22], [0.084, 1.32], [0.094, 1.43],
-        [0.088, 1.48], [0.061, 1.525], [0, 1.54]], 20, ax, -0.005, 1, 0.95),
-        w: (x, y) => [up, fore, sstep(1.29, 1.17, y)], color: RED });
-      // Round joint caps stay centred on the actual pivots. They cover the
-      // bent sleeve/trouser silhouette without separating rigid body pieces.
-      suit.push({ geo: ellipsoid(ax, 1.50, -.005, .088, .089, .082, 14), bone: up, color: RED });
-      suit.push({ geo: ellipsoid(ax, 1.22, -.005, .077, .08, .074, 14), bone: fore, color: RED });
-      // Shoulder pad: a rounded dome with a gold rim, on the upper-arm bone (stays on the shoulder in every pose).
-      suit.push({ geo: transformed(ellipsoid(0, 0, 0, .104, .06, .094, 16), ax + s * .012, 1.532, -.005, 0, 0, -s * .28), bone: up, color: 0xd91a3c });
-      gold.push({ geo: transformed(new THREE.TorusGeometry(.098, .0085, 6, 28), ax + s * .02, 1.514, -.005, Math.PI / 2, 0, -s * .28 * 0), bone: up, color: GOLD });
-      // A round palm, separate soft fingertips and a turned-in thumb read as
-      // small gloves, while staying in the same single skinned suit batch.
-      suit.push({ geo: ellipsoid(ax, .933, .009, .062, .064, .054, 14), bone: fore, color: RED });
-      for (let finger = 0; finger < 4; finger++) {
-        const fx = ax + (finger - 1.5) * .023;
-        suit.push({ geo: ellipsoid(fx, .884 + Math.abs(finger - 1.5) * .005, .018,
-          .0145, .036 - Math.abs(finger - 1.5) * .004, .022, 10), bone: fore, color: RED });
-      }
-      suit.push({ geo: transformed(ellipsoid(0, 0, 0, .025, .041, .027, 10),
-        ax - .052 * s, .936, .036, 0, 0, -.42 * s), bone: fore, color: RED });
-      gold.push({ geo: ellipsoid(ax, .952, .06, .032, .017, .008, 10), bone: fore, color: GOLD, glow: 0.4 });
-      gold.push({ geo: lathe([[0.067, 1.014], [0.072, 1.02], [0.072, 1.056], [0.067, 1.062]],
-        18, ax, -0.005, 1, 0.97), bone: fore, color: GOLD });
-      suit.push({ geo: lathe([[0, 0.08], [0.05, 0.10], [0.058, 0.21], [0.077, 0.34],
-        [0.075, 0.45], [0.072, 0.50], [0.089, 0.64], [0.105, 0.78],
-        [0.11, 0.87], [0.092, 0.965], [0, 0.99]], 20, lx, 0, 1, 0.98),
-        w: (x, y) => [thigh, shin, sstep(0.57, 0.46, y)], color: RED });
-      suit.push({ geo: ellipsoid(lx, .50, 0, .077, .08, .073, 14), bone: shin, color: RED });
-      // Boots: gold shaft with a fold-over cuff, thick cream sole, red toe cap and heel, lightning accents.
-      gold.push({ geo: lathe([[0.05, 0.04], [0.058, 0.08], [0.061, 0.15], [0.073, 0.27],
-        [0.083, 0.36], [0.084, 0.405], [0.08, 0.435]], 20, lx, 0, 1.02, 1.01),
-        bone: shin, color: GOLD });
-      gold.push({ geo: lathe([[0.081, 0.395], [0.093, 0.402], [0.096, 0.425], [0.092, 0.452], [0.082, 0.458]], 20, lx, 0, 1.02, 1.01),
-        bone: shin, color: 0xffe07a });
-      gold.push({ geo: ellipsoid(lx, .083, .067, .09, .066, .172), bone: shin, color: GOLD });
-      suit.push({ geo: ellipsoid(lx, .032, .065, .093, .03, .178), bone: shin, color: 0xfff5dc, flat: true });
-      suit.push({ geo: ellipsoid(lx, .08, .16, .066, .05, .06), bone: shin, color: RED });
-      suit.push({ geo: ellipsoid(lx, .076, -.064, .083, .058, .048), bone: shin, color: RED });
-      gold.push({ geo: lightningGeo(lx + s * .088, .22, .01, .075, 0, s * Math.PI / 2), bone: shin, color: 0xfff0b0, glow: 0.7 });
-      gold.push({ geo: lightningGeo(lx + s * .094, .09, .09, .05, 0, s * Math.PI / 2), bone: shin, color: 0xfff0b0, glow: 0.7 });
-      // Cowl wing fins on the head: own bones so they can flutter.
-      const ear = headSurf(s * 1.6, -0.19, v3()).multiplyScalar(HEAD_SCALE);
-      for (const g of finGeo(s, ear)) gold.push({ geo: g, bone: s > 0 ? 12 : 13, color: GOLD, childHead: true, glow: 0.15 });
+      const up = s > 0 ? 4 : 6, fo = up + 1, th = s > 0 ? 8 : 10, sh = th + 1, ax = 0.175 * s, lx = 0.088 * s;
+      // kırmızı eldiven: yuvarlak avuç + içe dönük başparmak (hala'nın el biçimi)
+      suit.push({ geo: kitGeo(k => {
+        k.add(G.sphere(14), 0xffffff, [ax, 0.42, 0.002], 0, [0.049, 0.055, 0.051]);
+        k.add(G.sphere(10), 0xffffff, [ax - 0.035 * s, 0.433, 0.027], [0, 0, 0.5 * s], [0.018, 0.027, 0.019]);
+      }), bone: fo, color: RED, flat: true });
+      suit.push({ geo: lathe(LSLEEVE_P, 18, ax * 0.985, -0.005, 1, 0.95), w: (x, y) => y > 0.66 ? [2, up, sstep(0.8, 0.72, y)] : [up, fo, sstep(0.64, 0.57, y)], color: RED });
+      gold.push({ geo: kitGeo(k => k.add(G.torus(TAU, 0.28, 20), 0xffffff, [ax, 0.47, -0.005], [Math.PI / 2, 0, 0], [0.057, 0.054, 0.057])), bone: fo, color: GOLD });
+      suit.push({ geo: lathe(PANTLEG_P, 18, 0.09 * s, 0, 1, 0.95), w: (x, y) => y > 0.37 ? [1, th, sstep(0.43, 0.37, y)] : [th, sh, sstep(0.28, 0.21, y)], color: RED });
+      gold.push({ geo: lathe(BOOT_P, 18, lx, 0.004, 1.02, 1.0), bone: sh, color: GOLD });
+      gold.push({ geo: kitGeo(k => k.add(G.torus(TAU, 0.3, 18), 0xffffff, [lx, 0.222, 0.004], [Math.PI / 2, 0, 0], [0.073, 0.071, 0.073])), bone: sh, color: 0xffe07a });
+      gold.push({ geo: bootGeo(s), bone: sh, color: 0xffffff });
+      gold.push({ geo: lightningGeo(lx + s * 0.072, 0.13, 0.0, 0.05, 0, s * Math.PI / 2), bone: sh, color: 0xfff0b0, glow: 0.7 });
+      // kulakların üstünde küçük altın şimşekler (Flash işareti; yüzü örtmez)
+      const ear = headSurf(s * 1.6, -0.19, v3());
+      gold.push({ geo: lightningGeo(s * (Math.abs(ear.x) + 0.045), HB + ear.y + 0.04, ear.z - 0.005, 0.14, 0, s * (Math.PI / 2 - 0.75), s * 0.3), bone: 3, color: GOLD, glow: 0.6 });
     }
+    suit.push({ geo: lathe(SHIRT_P, 32, 0, 0, 1, 0.8), w: (x, y) => [1, 2, sstep(0.5, 0.6, y)], color: RED });
+    suit.push({ geo: lathe(SHORTS_P, 28, 0, 0, 1, 0.82), bone: 1, color: RED });
+    // kırmızı dik yaka + altın şerit (boyun kısa ve tulum bütün görünsün)
+    suit.push({ geo: lathe([[0, 0.79], [0.07, 0.795], [0.069, 0.82], [0.065, 0.842], [0.06, 0.85], [0, 0.852]], 24, 0, 0.004, 1, 0.92), bone: 2, color: RED });
+    gold.push({ geo: kitGeo(k => k.add(G.torus(TAU, 0.2, 24), 0xffffff, [0, 0.843, 0.004], [Math.PI / 2, 0, 0], [0.067, 0.062, 0.067])), bone: 2, color: GOLD });
+    // altın kemer (tulumun bel kıvrımını örter) + ışıldayan tokada kırmızı şimşek
+    gold.push({ geo: kitGeo(k => k.add(G.torus(TAU, 0.13, 36), 0xffffff, [0, 0.508, 0], [Math.PI / 2, 0, 0], [0.19, 0.155, 0.19])), bone: 1, color: GOLD });
+    gold.push({ geo: transformed(new THREE.CylinderGeometry(0.042, 0.042, 0.014, 24), 0, 0.508, 0.172, Math.PI / 2), bone: 1, color: GOLD });
+    gold.push({ geo: transformed(new THREE.CylinderGeometry(0.031, 0.031, 0.012, 24), 0, 0.508, 0.177, Math.PI / 2), bone: 1, color: 0xfff0a8, glow: 1 });
+    suit.push({ geo: lightningGeo(0, 0.508, 0.181, 0.04), bone: 1, color: RED, flat: true });
+    // göğüste beyaz disk, altın halka ve altın şimşek (model geometrisi, resim değil)
+    suit.push({ geo: transformed(new THREE.CylinderGeometry(0.076, 0.076, 0.014, 36), 0, 0.64, 0.139, Math.PI / 2 - 0.13), bone: 2, color: 0xfff7dd, flat: true });
+    gold.push({ geo: transformed(new THREE.TorusGeometry(0.078, 0.0075, 8, 40), 0, 0.64, 0.145, -0.13), bone: 2, color: GOLD });
+    gold.push({ geo: lightningGeo(0, 0.641, 0.144, 0.105, -0.13), bone: 2, color: GOLD, glow: 0.55 });
     const hairPieces = [hairCapGeo()];
-    for (const lock of hairLocks()) hairPieces.push(lockGeo(lock));
+    for (const L of hairLocks()) hairPieces.push(lockGeo(L));
     const hair = concat(hairPieces);
-    for (const g of hairPieces) g.dispose();
-    return { skin: mergeParts(skin, true), suit: mergeParts(suit), gold: mergeParts(gold), hair };
+    const out = { skin: mergeSkinned(skin, true), suit: mergeSkinned(suit), gold: mergeSkinned(gold), hair };
+    for (const p of skin.concat(suit, gold)) p.geo.dispose();
+    hairPieces.forEach(g => g.dispose());
+    return out;
   }
-  // Soft rim + a fake "hair gloss" band that follows the camera (view-space normal), no extra lights.
+  // Bağlama pozunda saçın en tepesi → ölçek 1'de 1.78 boy için iç ölçek
+  function topOf(geo, dy) { geo.computeBoundingBox(); return geo.boundingBox.max.y + dy; }
+
   const RIM_GLSL = (rim, k) => `
           { float fzR = 1.0 - saturate(dot(normal, normalize(vViewPosition)));
             outgoingLight += vec3(${rim}) * fzR * fzR * fzR * ${k}; }`;
-  function makeHairMat() {
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.51 });
-    const offset = { value: v3() };
-    const patch = sh => {
-      sh.uniforms.fzHOff = offset;
-      sh.vertexShader = sh.vertexShader.replace('#include <common>',
-        '#include <common>\nattribute float aFlex; uniform vec3 fzHOff;')
-        .replace('#include <begin_vertex>',
-          '#include <begin_vertex>\ntransformed += fzHOff * abs(aFlex);');
-    };
-    m.onBeforeCompile = patch;
-    m.customProgramCacheKey = () => 'flashFezaHair1';
-    const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
-    depth.onBeforeCompile = patch; depth.customProgramCacheKey = () => 'flashFezaHairDepth1';
-    m.userData.offset = offset; m.userData.depth = depth;
-    return m;
-  }
-
   // ---- procedural suit cloth: fine weave + side seams, one 256x256 canvas used for colour, roughness and bump ----
   function makeClothTexture() {
     const N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
@@ -722,16 +785,50 @@
   const bump = (x, w) => (x > 0 && x < w) ? Math.sin(x / w * Math.PI) : 0;
   const SPARKS = 40;
 
+  // ── Poz kanalları (hala/hero ortak düzeni) ──
+  const CHN = ['bX', 'bY', 'bZ', 'bRX', 'bRY', 'bRZ', 'hRX', 'hRY', 'hRZ', 'cRX', 'cRY', 'cRZ', 'kRX', 'kRY', 'kRZ',
+    'aLX', 'aLY', 'aLZ', 'fL', 'fLZ', 'aRX', 'aRY', 'aRZ', 'fR', 'fRZ', 'wX', 'wY', 'wZ', 'tLX', 'tLZ', 'sL', 'tRX', 'tRZ', 'sR'];
+  const C = {}; CHN.forEach((n, i) => { C[n] = i; });
+  const NCH = CHN.length;
+  const LEGS = [C.tLX, C.tLZ, C.sL, C.tRX, C.tRZ, C.sR];
+  const BASE = new Float32Array(NCH);
+  Object.entries({ cRX: 0.015, kRX: -0.10, kRZ: 0.025, aLX: 0.025, aLZ: 0.14, fL: -0.24, aRX: 0.025, aRY: 0, aRZ: -0.14, fR: -0.24,
+    wX: 2.8, wY: 0, wZ: 0.3, tLZ: 0.035, sL: 0.03, tRZ: -0.035, sR: 0.03 }).forEach(([k, v]) => { BASE[C[k]] = v; });
+  BASE[C.aLZ] = 0.17; BASE[C.aRZ] = -0.17; BASE[C.fL] = -0.3; BASE[C.fR] = -0.3; BASE[C.kRX] = -0.12;
+    function idlePose(p, t) {
+      p.set(BASE);
+      const br = Math.sin(t * 2.3), sw = Math.sin(t * 0.9);
+      p[C.cRX] += 0.025 * br; p[C.aLZ] += 0.02 * br; p[C.aRZ] -= 0.02 * br; p[C.bY] += 0.004 * br; p[C.kRX] -= 0.015 * br;
+      p[C.hRZ] = 0.03 * sw; p[C.bX] = 0.008 * sw; p[C.kRZ] += 0.025 * Math.sin(t * 0.9 + 1); p[C.cRZ] = -0.02 * sw;
+      p[C.tLZ] += 0.02 * sw; p[C.tRZ] += 0.02 * sw;
+    }
+    function runPose(p, ph, m) {
+      p.set(BASE);
+      const s = Math.sin(ph), c = Math.cos(ph);
+      p[C.bY] = m * (.016 + .022 * (1 - Math.cos(ph * 2))); p[C.bRX] = .15 * m;
+      p[C.hRY] = .10 * s * m; p[C.cRY] = -.16 * s * m; p[C.hRZ] = .022 * c * m;
+      p[C.kRX] = -.10 - .13 * m; p[C.kRY] = .045 * s * m; p[C.kRZ] = .012;
+      p[C.tLX] = -.82 * s * m; p[C.tRX] = .82 * s * m;
+      p[C.sL] = m * (.16 + 1.26 * Math.max(0, c)); p[C.sR] = m * (.16 + 1.26 * Math.max(0, -c));
+      p[C.aLX] = .04 + .67 * s * m; p[C.aLZ] = .14 + .055 * m; p[C.fL] = -.24 - m * (.70 + .16 * c);
+      p[C.aRX] = .04 - .67 * s * m; p[C.fR] = -.24 - m * (.70 - .16 * c); p[C.aRZ] = -p[C.aLZ];
+      p[C.bRZ] = -.022 * c * m;
+    }
+  // Taşıtta oturma: uyluklar öne yatay, baldırlar aşağı, eller dizlerde
+  const SEAT = { tLX: -1.5, tRX: -1.5, sL: 1.45, sR: 1.45, tLZ: 0.07, tRZ: -0.07, aLX: -0.62, aRX: -0.62, aLZ: 0.1, aRZ: -0.1, aLY: 0, aRY: 0,
+    fL: -0.6, fR: -0.6, cRX: 0.04, hRX: 0, bRX: 0, kRX: -0.08 };
+  const SEAT_CH = Object.keys(SEAT).map(k => C[k]), SEAT_V = Object.keys(SEAT).map(k => SEAT[k]);
+
+  const THROW_CH = [C.aRX, C.aRY, C.aRZ, C.fR, C.cRY, C.kRX], THROW_UP = [-3.0, -0.25, -0.35, -1.3, -0.28, -0.18], THROW_OUT = [-1.35, 0.1, -0.15, -0.12, 0.22, -0.08];
   function create() {
-    const body = buildRunner(), root = new THREE.Group(); root.name = 'Flash Feza';
+    const body = buildBody(), root = new THREE.Group(); root.name = 'Flash Feza';
+    const top = Math.max(topOf(body.hair, BONES[1][3] + BONES[2][3] + BONES[3][3]), topOf(body.skin, 0));
+    const SCALE = 1.78 / top, BYK = 1.4 / SCALE;
+    const inner = new THREE.Group(); inner.name = 'Feza iç ölçek'; inner.scale.setScalar(SCALE); root.add(inner);
     const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const bones = BONES.map(b => {
-      const bone = new THREE.Bone(); bone.name = b[0]; bone.position.set(b[2]*BODY_WIDTH,b[3]*BODY_SCALE,b[4]*BODY_WIDTH);
-      bone.rotation.order = 'YXZ'; return bone;
-    });
+    const bones = BONES.map(b => { const o = new THREE.Bone(); o.name = b[0]; o.position.set(b[2], b[3], b[4]); o.rotation.order = 'YXZ'; return o; });
     BONES.forEach((b, i) => { if (b[1] >= 0) bones[b[1]].add(bones[i]); });
-    for (const [i, s] of [[12, 1], [13, -1]]) bones[i].position.copy(headSurf(s * 1.6, -0.19, v3()).multiplyScalar(HEAD_SCALE));
-    root.add(bones[0]); root.updateMatrixWorld(true);
+    inner.add(bones[0]); root.updateMatrixWorld(true);
     const skeleton = new THREE.Skeleton(bones);
     const cloth = makeClothTexture(), sparkTex = makeSparkTexture();
     const skinMat = makeSkinMat(), hairMat = makeHairMat();
@@ -748,19 +845,21 @@
       m.customProgramCacheKey = () => key;
     };
     const suitMat = new THREE.MeshStandardMaterial({ vertexColors: true, map: cloth, bumpMap: cloth, bumpScale: 0.5, roughness: 0.46, metalness: 0.05 });
-    rimPatch(suitMat, 'flashFezaSuit2', '1.0, 0.45, 0.4', 0.34);
+    rimPatch(suitMat, 'flashFezaSuit3', '1.0, 0.45, 0.4', 0.34);
     const glowU = { value: 0.8 };
     const goldMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.28, emissive: 0xffb62f, emissiveIntensity: 0.06 });
-    rimPatch(goldMat, 'flashFezaGold2', '1.0, 0.85, 0.5', 0.4, glowU);
-    function skinned(g, mat) {
-      const mesh = new THREE.SkinnedMesh(g, mat); mesh.name = 'Flash Feza gövde';
-      mesh.castShadow = true; mesh.frustumCulled = false; root.add(mesh); mesh.bind(skeleton); return mesh;
+    rimPatch(goldMat, 'flashFezaGold3', '1.0, 0.85, 0.5', 0.4, glowU);
+    function skinned(g, mat, name) {
+      const mesh = new THREE.SkinnedMesh(g, mat); mesh.name = name;
+      mesh.castShadow = true; mesh.frustumCulled = false; inner.add(mesh); mesh.bind(skeleton); return mesh;
     }
-    skinned(body.skin, skinMat); skinned(body.suit, suitMat); skinned(body.gold, goldMat);
-    const hair = new THREE.Mesh(body.hair, hairMat); hair.name = 'Feza özgün saç';
-    hair.scale.setScalar(HEAD_SCALE); hair.castShadow = true;
-    hair.customDepthMaterial = hairMat.userData.depth; bones[3].add(hair);
-    // ---- pooled sparkle sprites (bolts + stars); world-space, one additive draw, hidden when idle ----
+    skinned(body.skin, skinMat, 'Feza deri'); skinned(body.suit, suitMat, 'Feza Flash tulumu'); skinned(body.gold, goldMat, 'Feza altın süsler');
+    const hair = new THREE.Mesh(body.hair, hairMat); hair.name = 'Feza saç';
+    hair.castShadow = true; hair.frustumCulled = false; hair.customDepthMaterial = hairMat.userData.depth; bones[3].add(hair);
+    const hands = { R: new THREE.Object3D(), L: new THREE.Object3D() };
+    hands.R.position.set(0, -0.19, 0.012); bones[7].add(hands.R);
+    hands.L.position.set(0, -0.19, 0.012); bones[5].add(hands.L);
+    // ---- kıvılcımlar (dünya uzayında; yalnız canlı kıvılcım varken çizilir) ----
     const spPos = new Float32Array(SPARKS * 3), spData = new Float32Array(SPARKS * 4), spCol = new Float32Array(SPARKS * 3);
     const spVel = new Float32Array(SPARKS * 3), spLife = new Float32Array(SPARKS), spMax = new Float32Array(SPARKS), spSz = new Float32Array(SPARKS);
     const spGeo = new THREE.BufferGeometry();
@@ -783,13 +882,12 @@
     sparksMesh.frustumCulled = false; sparksMesh.matrixAutoUpdate = false; sparksMesh.matrixWorldAutoUpdate = false; sparksMesh.renderOrder = 5;
     const _sz = new THREE.Vector2();
     sparksMesh.onBeforeRender = (rd, sc, cam) => { rd.getDrawingBufferSize(_sz); spU.uScale.value = _sz.y * 0.5 * cam.projectionMatrix.elements[5]; };
-    // Compile the sparkle program now (under the loading picture); the mesh is only visible while sparks live.
     try {
       const rd = window.FLASH_CORE && window.FLASH_CORE.renderer;
       if (rd) { const tmp = new THREE.Scene(); tmp.add(sparksMesh); rd.compile(tmp, new THREE.PerspectiveCamera()); tmp.remove(sparksMesh); }
-    } catch (e) { /* first sparkle will compile instead */ }
+    } catch (e) { /* ilk kıvılcımda derlenir */ }
     sparksMesh.visible = false; root.add(sparksMesh);
-    let spLive = 0, spNext = 0, spAcc = 0, spSide = 1;
+    let spNext = 0, spAcc = 0, spSide = 1, spLive = 0;
     function spawn(x, y, z, vx, vy, vz, life, size, kind, r, g, b) {
       const i = spNext; spNext = (spNext + 1) % SPARKS;
       spPos[i * 3] = x; spPos[i * 3 + 1] = y; spPos[i * 3 + 2] = z; spVel[i * 3] = vx; spVel[i * 3 + 1] = vy; spVel[i * 3 + 2] = vz;
@@ -812,17 +910,17 @@
     const B = {}; bones.forEach(b => { B[b.name] = b; });
     const P = new Float32Array(NCH), Q = new Float32Array(NCH), J = new Float32Array(NCH);
     let phase = 0, move = 0, clock = 0, destroyed = false, started = false;
-    // gaze / head, pigtail spring, face state, one-shot animations
-    let gazeX = 0, gazeY = 0, headYaw = 0, lastX = 0, lastZ = 0, lastScale = 0, followY = 0;
+    let gazeX = 0, gazeY = 0, headYaw = 0, lastX = 0, lastZ = 0, lastScale = 0;
     let celT = -1, celDur = 2.3, landT = -1, target = null;
-    const sw = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0 };
-    const FS = { grin: 0, ooh: 0, happy: 0, brow: 0, blush: 0.32, tilt: 0, squint: 0 };
-    const FT = { grin: 0, ooh: 0, happy: 0, brow: 0, blush: 0.32, tilt: 0, squint: 0 };
-    const _v = v3();
-    const smoothPose = (cur, tgt, k) => cur + (tgt - cur) * k;
+    let waveT = -1, waveDur = 2, cheerT = -1, cheerDur = 1.6, throwT = -1, throwTarget = null, seatW = 0, seated = false;
+    let exprKind = null, exprT = 0, exprDur = 0;
+    const hairOff = v3(), hairVel = v3();
+    const FS = { grin: 0, ooh: 0, happy: 0, brow: 0, blush: 0.4, tilt: 0, squint: 0 };
+    const FT = { grin: 0, ooh: 0, happy: 0, brow: 0, blush: 0.4, tilt: 0, squint: 0 };
+    const EYE_H = (BONES[1][3] + BONES[2][3] + BONES[3][3] + HC.y) * SCALE;
 
     function applyPose(p) {
-      B.root.position.set(p[C.bX], p[C.bY] * 1.4, p[C.bZ]); B.root.rotation.set(p[C.bRX], p[C.bRY], p[C.bRZ]);
+      B.root.position.set(p[C.bX], p[C.bY] * BYK, p[C.bZ]); B.root.rotation.set(p[C.bRX], p[C.bRY], p[C.bRZ]);
       B.hips.rotation.set(p[C.hRX], p[C.hRY], p[C.hRZ]); B.chest.rotation.set(p[C.cRX], p[C.cRY], p[C.cRZ]);
       B.head.rotation.set(p[C.kRX], p[C.kRY], p[C.kRZ]);
       B.armL.rotation.set(p[C.aLX], p[C.aLY], p[C.aLZ]); B.foreL.rotation.set(p[C.fL], 0, p[C.fLZ]);
@@ -830,16 +928,15 @@
       B.thighL.rotation.set(p[C.tLX], 0, p[C.tLZ]); B.shinL.rotation.set(p[C.sL], 0, 0);
       B.thighR.rotation.set(p[C.tRX], 0, p[C.tRZ]); B.shinR.rotation.set(p[C.sR], 0, 0);
     }
-    // Squat / crouch weight k (0..1): knees bent, body lowered, arms swung back.
     function crouch(p, k) {
       p[C.bY] -= 0.062 * k; p[C.tLX] -= 0.55 * k; p[C.tRX] -= 0.55 * k; p[C.sL] += 1.05 * k; p[C.sR] += 1.05 * k; p[C.bRX] += 0.2 * k;
       p[C.aLX] += 0.45 * k; p[C.aRX] += 0.45 * k; p[C.aLZ] += 0.25 * k; p[C.aRZ] -= 0.25 * k;
     }
-    // V-arms up, legs tucked / apart (celebration + airborne): w blends 0..1, tuck 0..1
-    function cheer(p, w, tuck, t) {
+    function cheerPose(p, w, tuck, t) {
       const wob = reduced ? 0 : Math.sin(t * 9) * 0.06;
-      p[C.aLZ] = lerp(p[C.aLZ], 2.45 + wob, w); p[C.aRZ] = lerp(p[C.aRZ], -2.45 - wob, w);
-      p[C.aLX] = lerp(p[C.aLX], 0.0, w); p[C.aRX] = lerp(p[C.aRX], 0.0, w);
+      p[C.aLZ] = lerp(p[C.aLZ], 0.8 + wob, w); p[C.aRZ] = lerp(p[C.aRZ], -0.8 - wob, w);
+      p[C.aLX] = lerp(p[C.aLX], -2.35, w); p[C.aRX] = lerp(p[C.aRX], -2.35, w);
+      p[C.aLY] = lerp(p[C.aLY], 0.0, w); p[C.aRY] = lerp(p[C.aRY], 0.0, w);
       p[C.fL] = lerp(p[C.fL], -0.3, w); p[C.fR] = lerp(p[C.fR], -0.3, w);
       p[C.tLX] = lerp(p[C.tLX], -0.45, tuck); p[C.sL] = lerp(p[C.sL], 0.95, tuck);
       p[C.tRX] = lerp(p[C.tRX], -0.15, tuck); p[C.sR] = lerp(p[C.sR], 0.55, tuck);
@@ -847,36 +944,37 @@
       p[C.kRX] = lerp(p[C.kRX], -0.22, w);
     }
     function burst(n, cx, cy, cz, spread, up, big) {
-      const ry = root.rotation.y, sc = root.scale.x;
+      const sc = root.scale.x;
       for (let i = 0; i < n; i++) {
         const a = Math.random() * 6.283, r = spread * (0.5 + Math.random() * 0.5), hot = Math.random();
         spawn(cx + Math.cos(a) * r * 0.5, cy + Math.random() * 0.4 * sc, cz + Math.sin(a) * r * 0.5, Math.cos(a) * r * 1.4, up * (0.6 + Math.random() * 0.8), Math.sin(a) * r * 1.4,
           0.55 + Math.random() * 0.5, (big ? 0.15 : 0.11) * sc * (0.7 + Math.random() * 0.6), Math.random() < 0.3 ? 1 : 0, 1, 0.78 + 0.2 * hot, 0.25 + 0.5 * hot);
       }
     }
+    const _t = v3();
 
     function update(dt, speed01 = 0, boost = false, time) {
       if (destroyed) return;
       dt = clamp(Number(dt) || 0, 0, 0.1); speed01 = clamp(Number(speed01) || 0, 0, 1);
       const fast = clamp(Number(boost) || 0, 0, 1);
       clock = Number.isFinite(time) ? time : clock + dt;
+      if (seated) speed01 = 0;
       move += (speed01 - move) * (dt === 0 ? 1 : 1 - Math.exp(-16 * dt));
       phase = (phase + dt * (7 + 7 * speed01 + 4 * fast) * (move > 0.02 ? Math.min(1, move * 1.7) : 0)) % TAU;
       const rp = root.position, sc = root.scale.x, ry = root.rotation.y;
-      // arrival detection: entering the tour scale or a large teleport = landing from the shuttle / portal
-      if (started && !reduced) {
+      if (started && !reduced && !seated) {
         const entered = sc > 1.3 && sc < 1.5 && (lastScale < 1.3 || lastScale > 1.5), jumped = Math.hypot(rp.x - lastX, rp.z - lastZ) > 4;
-        if ((entered || jumped) && speed01 < 0.2 && celT < 0) { landT = 0; }
+        if ((entered || jumped) && speed01 < 0.2 && celT < 0) landT = 0;
       }
       started = true; lastScale = sc; lastX = rp.x; lastZ = rp.z;
-      // ---- base pose: idle + run ----
       idlePose(P, clock);
-      // look around: eyes lead, head follows a little; or look at a given target
+      // bakış: gözler önce, kafa biraz arkadan; ya da verilen hedefe
       let gx, gy;
-      if (target) {
-        const dx = target.x - rp.x, dz = target.z - rp.z, c = Math.cos(ry), s = Math.sin(ry);
+      const look = throwTarget && throwT >= 0 ? throwTarget : target;
+      if (look) {
+        const dx = look.x - rp.x, dz = look.z - rp.z, c = Math.cos(ry), s = Math.sin(ry);
         const lx = dx * c - dz * s, lz = dx * s + dz * c, d = Math.max(0.5, Math.hypot(lx, lz));
-        gx = clamp(Math.atan2(lx, lz) / 0.9, -1, 1); gy = clamp((target.y - rp.y - 2.0 * sc) / d * 2.5, -0.7, 0.7);
+        gx = clamp(Math.atan2(lx, lz) / 0.9, -1, 1); gy = clamp(((look.y || 0) - rp.y - EYE_H * sc) / d * 2.5, -0.7, 0.7);
       } else {
         const seg = 3.1, n = Math.floor(clock / seg), f = clock / seg - n, k = sstep(0, 0.14, f);
         const a0 = (hash1(n - 1) - 0.5) * 2, a1 = (hash1(n) - 0.5) * 2, b0 = (hash1(n + 99) - 0.5), b1 = (hash1(n + 100) - 0.5);
@@ -887,105 +985,143 @@
       if (run) {
         runPose(Q, phase, Math.max(move, 0.08));
         Q[C.aRY] = 0;
-        Q[C.bRX] += .10 * fast; Q[C.kRX] -= .08 * fast;
+        Q[C.bRX] += 0.10 * fast; Q[C.kRX] -= 0.08 * fast;
         const blend = Math.min(1, move * 2.5);
         for (let i = 0; i < NCH; i++) P[i] += (Q[i] - P[i]) * blend;
-        gx *= 1 - blend; gy *= 1 - blend;
-        FT.ooh *= 1 - blend;
+        gx *= 1 - blend; gy *= 1 - blend; FT.ooh *= 1 - blend;
       }
       gazeX += (gx - gazeX) * (1 - Math.exp(-10 * dt)); gazeY += (gy - gazeY) * (1 - Math.exp(-10 * dt));
-      headYaw += (gazeX * 0.32 - headYaw) * (1 - Math.exp(-5 * dt));
-      if (!reduced) { P[C.kRY] += headYaw; P[C.kRX] += -gazeY * 0.08; P[C.kRZ] += 0.04 * Math.sin(clock * 0.55 + 1) - headYaw * 0.1; }
-      // idle personality: occasional toe-bounce and shoulder shrug
+      headYaw += (gazeX * (look ? 0.55 : 0.32) - headYaw) * (1 - Math.exp(-5 * dt));
+      if (!reduced) { P[C.kRY] += headYaw; P[C.kRX] += -gazeY * 0.1; P[C.kRZ] += 0.04 * Math.sin(clock * 0.55 + 1) - headYaw * 0.1; }
       if (!run && !reduced) { const q = bump((clock % 9.7) - 6.1, 0.8); P[C.bY] += 0.012 * q; P[C.aLZ] += 0.08 * q; P[C.aRZ] -= 0.08 * q; }
-      // face targets for the base state
-      FT.grin = run ? clamp(0.45 * move + 0.5 * fast, 0, 1) : 0; FT.happy = 0; FT.brow = fast * 0.5; FT.blush = 0.32 + 0.4 * fast + 0.15 * move; FT.tilt = fast * -0.16; FT.squint = fast * 0.12;
+      FT.grin = run ? clamp(0.45 * move + 0.5 * fast, 0, 1) : 0; FT.happy = 0; FT.brow = fast * 0.5; FT.blush = 0.4 + 0.4 * fast + 0.15 * move; FT.tilt = fast * -0.16; FT.squint = fast * 0.12;
       if (run) FT.ooh = 0;
-      // ---- airborne (activity hop) ----
-      const air = reduced ? 0 : sstep(0.03, 0.22, rp.y);
+      // ---- taşıtta oturma ----
+      seatW += ((seated ? 1 : 0) - seatW) * (dt === 0 ? 1 : 1 - Math.exp(-10 * dt));
+      if (seatW > 0.001) {
+        J.set(P); for (let i = 0; i < SEAT_CH.length; i++) J[SEAT_CH[i]] = SEAT_V[i];
+        J[C.aLX] += 0.04 * Math.sin(clock * 1.7); J[C.aRX] += 0.04 * Math.sin(clock * 1.7 + 1);
+        J[C.sL] += reduced ? 0 : 0.12 * Math.sin(clock * 3.1); J[C.sR] += reduced ? 0 : 0.12 * Math.sin(clock * 3.1 + 2.2);   // ayak sallama
+        for (let i = 0; i < NCH; i++) if (i !== C.kRY && i !== C.kRZ) P[i] += (J[i] - P[i]) * seatW;
+      }
+      // ---- havada (oyun zıplaması) ----
+      const air = reduced || seated ? 0 : sstep(0.03, 0.22, rp.y);
       if (air > 0.001 && celT < 0) {
-        J.set(P); cheer(J, 0.85, 1, clock);
+        J.set(P); cheerPose(J, 0.85, 1, clock);
         for (let i = 0; i < NCH; i++) P[i] += (J[i] - P[i]) * air;
         FT.grin = Math.max(FT.grin, air); FT.happy = Math.max(FT.happy, 0.6 * air); FT.brow = Math.max(FT.brow, 0.4 * air);
       }
-      // ---- celebration: crouch, jump + spin, land, ta-da ----
-      let celW = 0;
+      // ---- kutlama: çömel, zıpla + dön, in, ta-da ----
       if (celT >= 0) {
         celT += dt;
-        const u = celT, cu = clamp(1 - u / celDur, 0, 1);
+        const u = celT; let celW;
         J.set(P);
-        if (reduced) {
-          cheer(J, sstep(0, 0.3, u), 0, clock); FT.grin = 1; FT.happy = 0.8; FT.brow = 0.5; FT.blush = 0.6;
+        if (reduced || seated) {
+          cheerPose(J, sstep(0, 0.3, u), 0, clock); FT.grin = 1; FT.happy = 0.8; FT.brow = 0.5; FT.blush = 0.7;
           celW = sstep(0, 0.3, u) * (1 - sstep(celDur - 0.5, celDur, u));
+          if (seated) for (const i of LEGS) J[i] = P[i];
         } else {
           let h = 0, spin = 0, cr = 0, w = 1, tuck = 0;
           if (u < 0.24) { cr = sstep(0, 0.24, u); }
           else if (u < 0.98) { const x = (u - 0.24) / 0.74; h = 0.62 * 4 * x * (1 - x); spin = x; cr = 0; w = sstep(0, 0.2, x); tuck = sstep(0.05, 0.3, x) * (1 - sstep(0.75, 1, x) * 0.5); }
           else if (u < 1.3) { cr = 1 - sstep(0.98, 1.3, u); w = 1; }
-          else { w = 1; }
-          cheer(J, Math.max(w * (u > 0.24 ? 1 : 0), 0), tuck, clock);
+          cheerPose(J, Math.max(w * (u > 0.24 ? 1 : 0), 0), tuck, clock);
           crouch(J, cr);
           J[C.bY] += h / 1.4; J[C.bRY] = spin * TAU;
           if (u > 1.3) { const q = Math.abs(Math.sin((u - 1.3) * 5.2)); J[C.bY] += 0.028 * q; J[C.hRZ] += 0.05 * Math.sin((u - 1.3) * 5.2); J[C.kRZ] = 0.07 * Math.sin((u - 1.3) * 5.2); }
-          FT.grin = 1; FT.happy = u > 0.24 ? 1 : 0; FT.brow = 0.55; FT.blush = 0.65; FT.ooh = 0;
+          FT.grin = 1; FT.happy = u > 0.24 ? 1 : 0; FT.brow = 0.55; FT.blush = 0.7; FT.ooh = 0;
           celW = sstep(0, 0.12, u) * (1 - sstep(celDur - 0.4, celDur, u));
-          if (u > 0.24 && u < 0.98 && !reduced) { spAcc += dt * 20; while (spAcc >= 1) { spAcc -= 1; burst(1, rp.x, rp.y + (0.5 + h * 1.4) * sc, rp.z, 0.7 * sc, 1.1, true); } }
+          if (u > 0.24 && u < 0.98) { spAcc += dt * 20; while (spAcc >= 1) { spAcc -= 1; burst(1, rp.x, rp.y + (0.5 + h * 1.4) * sc, rp.z, 0.7 * sc, 1.1, true); } }
         }
         celW *= 1 - sstep(0.15, 0.6, move);
         for (let i = 0; i < NCH; i++) P[i] += (J[i] - P[i]) * celW;
         if (u >= celDur || (move > 0.6 && u > 0.5)) celT = -1;
       }
-      // ---- landing from the shuttle / portal: squash, pop, wave-ish arms ----
+      // ---- iniş (mekik / kapı): çömel, fırla, kollar açık ----
       if (landT >= 0) {
         landT += dt; const u = landT; J.set(P);
         const cr = u < 0.3 ? sstep(0, 0.3, u) : 1 - sstep(0.3, 0.55, u), h = u > 0.3 && u < 0.78 ? 0.2 * 4 * ((u - 0.3) / 0.48) * (1 - (u - 0.3) / 0.48) : 0;
-        cheer(J, sstep(0.3, 0.5, u) * (1 - sstep(1.0, 1.4, u) * 0.5), u > 0.3 && u < 0.8 ? 0.7 : 0, clock);
+        cheerPose(J, sstep(0.3, 0.5, u) * (1 - sstep(1.0, 1.4, u) * 0.5), u > 0.3 && u < 0.8 ? 0.7 : 0, clock);
         if (u < 0.3) { J[C.aLZ] = 0.9; J[C.aRZ] = -0.9; J[C.fL] = -0.2; J[C.fR] = -0.2; }
         crouch(J, cr); J[C.bY] += h / 1.4; J[C.kRZ] += 0.06 * Math.sin(u * 7) * sstep(0.8, 1.0, u);
-        FT.ooh = u < 0.3 ? 0.9 : 0; FT.grin = u >= 0.3 ? 1 : 0; FT.happy = u > 0.5 ? 0.7 : 0; FT.brow = 0.6; FT.blush = 0.5;
+        FT.ooh = u < 0.3 ? 0.9 : 0; FT.grin = u >= 0.3 ? 1 : 0; FT.happy = u > 0.5 ? 0.7 : 0; FT.brow = 0.6; FT.blush = 0.55;
         const lw = (1 - sstep(1.2, 1.6, u)) * (1 - sstep(0.15, 0.6, move));
         for (let i = 0; i < NCH; i++) P[i] += (J[i] - P[i]) * lw;
         if (u > 0.3 && !reduced && u - dt <= 0.3) burst(14, rp.x, rp.y + 0.1 * sc, rp.z, 1.1 * sc, 1.4, true);
         if (u > 1.6 || (move > 0.6 && u > 0.4)) landT = -1;
       }
+      // ---- sevinç: iki kol havada, iki küçük zıplama ----
+      if (cheerT >= 0) {
+        cheerT += dt; const u = cheerT;
+        const w = sstep(0, 0.18, u) * (1 - sstep(cheerDur - 0.3, cheerDur, u)) * (1 - sstep(0.15, 0.6, move));
+        J.set(P); cheerPose(J, 1, 0, clock);
+        if (!reduced && !seated) { const hop = Math.abs(Math.sin(clamp(u - 0.1, 0, cheerDur) / cheerDur * Math.PI * 2)); J[C.bY] += 0.07 * hop; J[C.sL] += 0.25 * (1 - hop); J[C.sR] += 0.25 * (1 - hop); J[C.tLX] -= 0.12 * (1 - hop); J[C.tRX] -= 0.12 * (1 - hop); }
+        if (seated) for (const i of LEGS) J[i] = P[i];
+        for (let i = 0; i < NCH; i++) P[i] += (J[i] - P[i]) * w;
+        FT.grin = Math.max(FT.grin, w); FT.happy = Math.max(FT.happy, w); FT.blush = Math.max(FT.blush, 0.7 * w); FT.brow = Math.max(FT.brow, 0.5 * w);
+        if (u >= cheerDur) cheerT = -1;
+      }
+      // ---- el sallama (sağ kol) ----
+      if (waveT >= 0) {
+        waveT += dt; const u = waveT;
+        const w = sstep(0, 0.25, u) * (1 - sstep(waveDur - 0.3, waveDur, u));
+        const sway = reduced ? 0 : Math.sin(u * 9) * 0.32;
+        P[C.aRX] += (-0.12 - P[C.aRX]) * w; P[C.aRY] += (-0.2 - P[C.aRY]) * w; P[C.aRZ] += (-2.25 - P[C.aRZ]) * w;
+        P[C.fR] += (0.12 - P[C.fR]) * w; P[C.fRZ] += (-0.45 + sway - P[C.fRZ]) * w;
+        P[C.kRZ] += 0.06 * w; P[C.cRZ] += 0.04 * w;
+        FT.grin = Math.max(FT.grin, 0.8 * w); FT.blush = Math.max(FT.blush, 0.6 * w);
+        if (u >= waveDur) waveT = -1;
+      }
+      // ---- atma (simit vb.): kurma → bırakma (0.25 sn) → takip ----
+      if (throwT >= 0) {
+        throwT += dt; const u = throwT;
+        // anahtar pozlar: [aRX, aRY, aRZ, fR, cRY, kRX] — kurma, bırakma; sonra temel poza dönüş
+        let a, b, k;
+        if (u < 0.22) { k = sstep(0, 0.22, u); a = null; b = THROW_UP; }
+        else if (u < 0.34) { k = sstep(0.22, 0.34, u); a = THROW_UP; b = THROW_OUT; }
+        else { k = sstep(0.34, 0.62, u); a = THROW_OUT; b = null; }
+        for (let i = 0; i < 6; i++) { const ch = THROW_CH[i], from = a ? a[i] : P[ch], to = b ? b[i] : P[ch]; P[ch] = lerp(from, to, k); }
+        FT.grin = Math.max(FT.grin, 0.7); FT.brow = Math.max(FT.brow, 0.4);
+        if (u >= 0.62) { throwT = -1; throwTarget = null; }
+      }
+      // ---- yüz ifadesi (çağıranın isteği) ----
+      if (exprKind) {
+        exprT += dt; const w = sstep(0, 0.15, exprT) * (1 - sstep(exprDur - 0.25, exprDur, exprT));
+        if (exprKind === 'mutlu') { FT.happy = Math.max(FT.happy, w); FT.grin = Math.max(FT.grin, w); FT.blush = Math.max(FT.blush, 0.75 * w); }
+        else if (exprKind === 'saskin') { FT.ooh = Math.max(FT.ooh, w); FT.brow = Math.max(FT.brow, w); FT.grin *= 1 - w; FT.happy *= 1 - w; P[C.kRX] -= 0.06 * w; }
+        else if (exprKind === 'gulme') { FT.grin = Math.max(FT.grin, w); FT.happy = Math.max(FT.happy, 0.85 * w); FT.blush = Math.max(FT.blush, 0.8 * w); if (!reduced) { P[C.kRZ] += 0.07 * w * Math.sin(exprT * 13); P[C.bY] += 0.006 * w * Math.abs(Math.sin(exprT * 13)); } }
+        if (exprT >= exprDur) exprKind = null;
+      }
       applyPose(P);
-      // ---- face ----
+      // ---- yüz uniform'ları (hala'nın anlamlarıyla) ----
       const kf = 1 - Math.exp(-12 * dt), U = skinMat.userData.fz;
-      for (const k in FS) FS[k] = smoothPose(FS[k], FT[k], kf);
+      for (const k in FS) FS[k] += (FT[k] - FS[k]) * (dt === 0 ? 1 : kf);
       const blinkT = clock % 4.3, dbl = Math.floor(clock / 4.3) % 3 === 0 ? bump(blinkT - 0.34, 0.14) : 0;
       let blink = Math.max(bump(blinkT, 0.15), dbl); blink *= 1 - FS.happy;
       U.fzEye.value.set(blink, gazeX * 0.9, gazeY * 0.9, FS.squint);
       U.fzEyeW.value.set(1 - FS.happy, FS.happy, 0);
       const gr = FS.grin, oo = FS.ooh, sm = Math.max(0, 1 - gr - oo);
       U.fzMouth.value.set(sm, gr, oo, 0);
-      U.fzBrow.value.set(0.035 + FS.brow * 0.8, FS.tilt, FS.blush);
-      // ---- hair, fins, pigtails ----
-      const bobY = P[C.bY];
-      followY += (bobY - followY) * (1 - Math.exp(-9 * dt));
-      const fwd = move * (0.05 + fast * 0.03), inY = (followY - bobY) * 3.2;
-      const k1 = 70, c1 = 7;
-      if (!reduced) {
-        const tx = Math.sin(clock * 1.3) * 0.006 + P[C.hRY] * 0.05 + P[C.kRZ] * 0.15, ty = inY, tz = -fwd;
-        sw.vx += ((tx - sw.x) * k1 - sw.vx * c1) * dt; sw.vy += ((ty - sw.y) * k1 - sw.vy * c1) * dt; sw.vz += ((tz - sw.z) * k1 - sw.vz * c1) * dt;
-        sw.x += sw.vx * dt; sw.y += sw.vy * dt; sw.z += sw.vz * dt;
-        sw.x = clamp(sw.x + Math.sin(phase * 2) * 0.012 * move * 0.0, -0.1, 0.1); sw.y = clamp(sw.y, -0.12, 0.12); sw.z = clamp(sw.z, -0.15, 0.1);
+      U.fzBrow.value.set(FS.brow, FS.tilt, FS.blush);
+      // ---- saç: yaylı salınım (koşu rüzgârı + zıplama) ----
+      if (!reduced && dt > 0) {
+        const fwd = move * (0.016 + fast * 0.014), tx = -P[C.kRZ] * 0.02, ty = -move * 0.006, tz = -fwd;
+        hairVel.x += ((tx - hairOff.x) * 90 - hairVel.x * 9) * dt; hairVel.y += ((ty - hairOff.y) * 90 - hairVel.y * 9) * dt; hairVel.z += ((tz - hairOff.z) * 90 - hairVel.z * 9) * dt;
+        hairOff.addScaledVector(hairVel, dt);
+        hairOff.x = clamp(hairOff.x, -0.04, 0.04); hairOff.y = clamp(hairOff.y, -0.04, 0.04); hairOff.z = clamp(hairOff.z, -0.05, 0.03);
       }
-      hairMat.userData.offset.value.set(0, -move * 0.008, -move * (0.018 + fast * 0.016));
-      const fl = reduced ? 0 : 1;
-      for (const [fn, s] of [[B.finL, 1], [B.finR, -1]]) {
-        fn.rotation.set(fl * (0.07 * Math.sin(clock * 2.1 + s) - 0.14 * move - inY * 0.8 + 0.18 * (celT >= 0 ? 1 : 0)), fl * s * (0.12 * move + 0.03 * Math.sin(clock * 1.4)), 0);
-      }
+      hairMat.userData.fz.fzHOff.value.copy(hairOff); hairMat.userData.fz.fzHExp.value = celT >= 0 ? 0.01 : 0;
       goldMat.emissiveIntensity = 0.06 + fast * 0.32;
       glowU.value = 0.7 + (reduced ? 0 : 0.25 * Math.sin(clock * 2.6)) + fast * 0.5;
-      // ---- feet sparks: only when really running fast; none for reduced motion ----
-      if (!reduced) {
+      // ---- ayak kıvılcımları: yalnız gerçekten hızlı koşarken ----
+      if (!reduced && !seated) {
         const hot = (fast > 0.5 && move > 0.5) ? 1 : (move > 0.92 ? 0.35 : 0);
         if (hot > 0) {
           spAcc += dt * 38 * hot * move;
           const cs = Math.cos(ry), sn = Math.sin(ry);
           while (spAcc >= 1) {
             spAcc -= 1; spSide = -spSide;
-            const lx = spSide * 0.12 * BODY_WIDTH * sc, lz = -0.06 * sc;
+            const lx = spSide * 0.088 * SCALE * sc, lz = -0.06 * sc;
             const wx = rp.x + lx * cs + lz * sn, wz = rp.z - lx * sn + lz * cs, r = Math.random();
             spawn(wx, rp.y + 0.05 * sc, wz, -sn * 0.55 * sc * 2 + (r - 0.5) * 0.8, 0.5 + r * 0.8, -cs * 0.55 * sc * 2 + (Math.random() - 0.5) * 0.8,
               0.3 + Math.random() * 0.25, (0.1 + Math.random() * 0.07) * sc, Math.random() < 0.7 ? 0 : 1, 1, 0.82 + 0.15 * r, 0.3 + 0.4 * r);
@@ -994,18 +1130,26 @@
       }
       stepSparks(dt);
     }
-    function celebrate(seconds) { if (reduced) celDur = 1.4; else celDur = clamp(Number(seconds) || 2.3, 1.6, 4); celT = 0; landT = -1; spAcc = 0; }
-    function land() { if (!reduced) { landT = 0; celT = -1; } }
+    function celebrate(seconds) { celDur = reduced ? 1.4 : clamp(Number(seconds) || 2.3, 1.6, 4); celT = 0; landT = -1; spAcc = 0; }
+    function land() { if (!reduced && !seated) { landT = 0; celT = -1; } }
     function lookAt(p) { target = p && Number.isFinite(p.x) ? p : null; }
+    function wave(seconds = 2) { waveDur = clamp(Number(seconds) || 2, 0.8, 6); waveT = 0; }
+    function cheer(seconds = 1.6) { cheerDur = clamp(Number(seconds) || 1.6, 0.8, 4); cheerT = 0; }
+    function throwAt(p) { throwTarget = p && Number.isFinite(p.x) ? p.clone ? p.clone() : v3(p.x, p.y || 0, p.z) : null; throwT = 0; waveT = -1; return 0.25; }
+    function handWorld(out, side = 'R') { root.updateMatrixWorld(true); return (hands[side === 'L' ? 'L' : 'R']).getWorldPosition(out || v3()); }
+    function setSeated(on) { seated = !!on; if (seated) { landT = -1; move = 0; } }
+    function express(kind, seconds = 1.5) { if (kind !== 'mutlu' && kind !== 'saskin' && kind !== 'gulme') return; exprKind = kind; exprT = 0; exprDur = clamp(Number(seconds) || 1.5, 0.5, 6); }
     function dispose() {
       if (destroyed) return; destroyed = true;
       Object.values(body).forEach(g => g.dispose());
       [skinMat, suitMat, goldMat, hairMat, hairMat.userData.depth, spMat].forEach(m => m.dispose());
+      if (hairMat.normalMap) { hairMat.normalMap.dispose(); STRAND = null; }
       cloth.dispose(); sparkTex.dispose(); spGeo.dispose();
       skeleton.dispose(); root.removeFromParent();
     }
     update(0, 0, false, 0);
-    return { root, update, dispose, bones: B, skeleton, celebrate, land, lookAt };
+    return { root, update, dispose, bones: B, skeleton, celebrate, land, lookAt, wave, cheer, throwAt, handWorld, setSeated, express,
+      seatHeight: SEAT_Y * SCALE, height: 1.78, get seated() { return seated; } };
   }
-  window.FLASH_HERO = Object.freeze({ create });
-})();
+  window.FLASH_FEZA = Object.freeze({ create });
+}());

@@ -47,7 +47,10 @@
     countryPlaces[id].forEach(function (place) { keys.push('place-' + id + '-' + place); });
   });
 
-  function has(key) { return keys.indexOf(key) >= 0; }
+  function has(key) { return keys.indexOf(key) >= 0 || !!(window.FLASH_SES_LISTESI && window.FLASH_SES_LISTESI.indexOf(key) >= 0); }
+  // Kısa efektler (assets/sfx/<ad>.mp3): üç öğelik küçük havuz; yalnız ilk dokunuştan sonra ve sessiz değilse yaratılır.
+  var efektler = [], efektSira = 0;
+  function efektHazirla() { if (silent || efektler.length) return; for (var i = 0; i < 3; i++) { var a = new Audio(); a.preload = 'auto'; a.volume = .5; efektler.push(a); } }
   function clearPending() { queue.length = 0; }
 
   function readMusicVolume() {
@@ -258,6 +261,7 @@
       if (playing) resumeNarrator();
       else { next(); if (!playing) unlockNarrator(); }
     }
+    if (enabled || musicEnabled) efektHazirla();
     if (musicEnabled) {
       ensureMusic(); playMusic();
       if (!effect) {
@@ -334,6 +338,13 @@
       effect.src = 'assets/music/chime-' + (finale ? 'finale' : (Math.max(0, index || 0) % 5 + 1)) + '.wav';
       effect.volume = playing ? .18 : .36;
       try { var result = effect.play(); if (result && result.catch) result.catch(function () {}); } catch (_) { return false; }
+      return true;
+    },
+    efekt: function (ad, ses) {
+      if (silent || hidden || (!enabled && !musicEnabled) || !efektler.length) return false;
+      if (!window.FLASH_SFX_LISTESI || window.FLASH_SFX_LISTESI.indexOf(ad) < 0) return false;
+      var a = efektler[efektSira++ % efektler.length];
+      try { a.src = 'assets/sfx/' + ad + '.mp3'; a.volume = (ses == null ? .55 : ses) * (playing ? .6 : 1); var r = a.play(); if (r && r.catch) r.catch(function () {}); } catch (_) { return false; }
       return true;
     },
     clearPending: clearPending,

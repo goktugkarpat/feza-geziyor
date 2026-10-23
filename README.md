@@ -42,6 +42,21 @@ Oyunda **16 ülke, 48 keşif noktası, 12 çeşit koşu oyunu, 120 Türkçe ses 
 
 Her açılışta gezi sıfırdan başlar: ziyaret edilen yerler, albüm ve koşu oyunları yalnız o oturumda tutulur. Yalnızca ebeveyn tercihleri (anlatıcı, müzik, görüntü) cihazda kalır.
 
+## Canlı dünya turu (yeni)
+
+Feza artık köpeği **Bilbo** ile geziyor. Türkiye'de onları **Van kedisi Pamuk** karşılıyor: el sallıyor, kendini tanıtıyor
+ve sıradaki yere yürüyor. Pamuk'un başının üstündeki resme dokununca Feza oraya koşar.
+
+- **Galata Kulesi:** martılar acıkmış. Martıya dokununca Feza simit atar; martı kapar, takla atar, balkona konar.
+- **Vapur:** Galata iskelesinden Boğaz'a vapurla gidilir (iskeleye koşmak yeter, yolculuk kendiliğinden).
+- **İstanbul Boğazı:** suya dokununca yunuslar zıplar, sonra kıyıda yüzgeçleriyle el sallar.
+- **Sıcak hava balonu:** Boğaz'dan Kapadokya'ya uçulur.
+- **Kapadokya:** çarkta çömlek yapılır (parmak yukarı kaydırılır, sonra bir boyaya dokunulur).
+- Her oyun bitince yerin **çıkartması** pasaporta uçar; üç çıkartmada ülke **damgası** basılır. Pasaport (kitap düğmesi)
+  sayfaları çevrilen bir defterdir. Her açılışta gezi yine sıfırdan başlar.
+
+Diğer ülkeler şimdilik eski koşu oyunlarıyla oynanır; sırayla yeni sisteme geçecekler (geliştirme sözleşmesi: `TASARIM.md`).
+
 ## Uzay başlangıcı ve mekik inişi
 
 - Başlangıç uzayda geçer: yıldızlar ışıldar, arada kuyruklu yıldızlar ve minik meteorlar kayar. Hareketi azaltma tercihi açık olan cihazlarda yıldızlar sabit kalır.
@@ -172,7 +187,7 @@ Müziği yeniden üretmek için `python3 tools/gen_music.py` (numpy ve ffmpeg ge
 | Dosya / klasör | Ne işe yarar |
 |---|---|
 | `index.html` | Oyunun girişi; ekranların ve düğmelerin yapısı |
-| `src/` | Oyunun kodu: `app.js` (ana akış), `core.js` (3D sahne ve görüntü profili), `hero.js` (Feza), `countries.js` (ülkeler, yerler, mevsimler), `places.js` (yerlerin 3D modelleri), `activities.js` ve `activity-routes.js` (koşu oyunları ve hedef yerleşimi), `portal.js` (Dünya kapısı), `globe.js` ve `geography.js` (küre ve ülke sınırları), `space.js` (uzay), `shuttle.js` (mekik), `travel.js` (yolculuk sahnesi), `surfaces.js` (zemin dokuları), `weather.js` (kar, yağmur, yaprak), `audio.js` (ses ve müzik), `pictograms.js` (simgeler), `bootstrap.js`, `ui.css`, `playflow.css` |
+| `src/` | Oyunun kodu: `app.js` (ana akış), `core.js` (3D sahne ve görüntü profili), `feza.js` ve `bilbo.js` (Feza ve Bilbo), `tur.js`, `rehber*.js`, `tasit.js`, `mini-oyun.js`, `pasaport.js`, `ulke-kayit.js`, `ulke/` (yeni canlı dünya turu; bkz. TASARIM.md), `grafik.js` (ortak görüntü), `countries.js` (ülkeler, yerler, mevsimler), `places.js` (yerlerin 3D modelleri), `activities.js` ve `activity-routes.js` (koşu oyunları ve hedef yerleşimi), `portal.js` (Dünya kapısı), `globe.js` ve `geography.js` (küre ve ülke sınırları), `space.js` (uzay), `shuttle.js` (mekik), `travel.js` (yolculuk sahnesi), `surfaces.js` (zemin dokuları), `weather.js` (kar, yağmur, yaprak), `audio.js` (ses ve müzik), `pictograms.js` (simgeler), `bootstrap.js`, `ui.css`, `playflow.css` |
 | `assets/ui/` | 16 ülke ve 48 yer resmi (`country-xx.png`, `place-xx-yer.png`) |
 | `assets/voice/` | 120 anlatıcı kaydı (MP3) ve `lines.json` |
 | `assets/music/` | Müzik (`world-adventure.mp3`, notaları `world-adventure.json`) ve çan sesleri (`chime-*.wav`) |

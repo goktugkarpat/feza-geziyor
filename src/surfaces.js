@@ -287,6 +287,8 @@
     'float fzNoise(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(fzHash(i),fzHash(i+vec2(1,0)),f.x),mix(fzHash(i+vec2(0,1)),fzHash(i+vec2(1,1)),f.x),f.y); }',
     'float fzFbm(vec2 p){ return fzNoise(p)*.55+fzNoise(p*2.03+7.1)*.3+fzNoise(p*4.1+3.7)*.15; }'
   ].join('\n');
+  // Distance to the three "place" paths (start 0,23), widened like pathGeometry's flare.
+  var PATH_DIST='float fzPathD(vec2 p){ float d=1e3; for(int i=0;i<3;i++){ vec2 a=vec2(0.0,23.0); vec2 ab=uPathEnd[i]-a; float t=clamp(dot(p-a,ab)/dot(ab,ab),0.0,1.0); float s=t*length(ab); float fl=1.0+max(0.0,1.0-s/8.0)*.55; d=min(d,length(p-a-ab*t)/fl); } return d; }';
   function addWorldVarying(shader) {
     shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 fzWP;').replace('#include <begin_vertex>','#include <begin_vertex>\nfzWP=(modelMatrix*vec4(transformed,1.0)).xz;');
     shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 fzWP;\nuniform float uTime;\nfloat fzSpark=0.0;\n'+NOISE);
@@ -450,7 +452,7 @@
   }
 
   function scatter(country, density) {
-    var places=country.places,segs=places.map(function(p){return [0,23,p.x,p.z];});
+    var places=country.places,segs=places.map(function(p){return [0,23,p.x,p.z];}),free=Array.isArray(country.bosAlanlar)?country.bosAlanlar.filter(function(f){return f&&isFinite(f.x)&&isFinite(f.z);}):[];
     function dist(x,z,s){var dx=s[2]-s[0],dz=s[3]-s[1],t=Math.max(0,Math.min(1,((x-s[0])*dx+(z-s[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-s[0]-dx*t,z-s[1]-dz*t);}
     return function open(x,z,m,big){
       if(Math.abs(x)>59.5||Math.abs(z)>59.5)return false;
@@ -459,6 +461,8 @@
       if(Math.abs(x)<2.4+m&&z>-23-m&&z<39+m)return false;
       if(Math.abs(z+5)<2.4+m&&Math.abs(x)<38+m)return false;
       if(big&&(Math.abs(x)>51.5||z<-51.5||z>51.5))return false;
+      // TASARIM §13.1: a registered country can keep circles free for its own decor / vehicles.
+      for(var j=0;j<free.length;j++){var f=free[j];if(Math.hypot(x-f.x,z-f.z)<(f.r||0)+m)return false;}
       return true;
     };
   }
@@ -478,6 +482,24 @@
     sprinkle(Math.round(n.rock*scale),1.0,true,.8,function(x,z){rock(big,x,z,.8+r()*1.2,look.rock,r);});
     if(look.cactusN)sprinkle(look.cactusN,2,true,1,function(x,z){TREES.cactus(big,x,z,.8+r()*.5,look,r);});
     if(n.flower&&look.flower&&look.flower.length){sprinkle(Math.round(n.flower*scale),.4,false,.7,function(x,z){flowerPatch(small,x,z,look.flower,r,look.fkind);});}
+    // GRAFIK: little kerb stones and taller verge grass along each path.
+    var bos=Array.isArray(country.bosAlanlar)?country.bosAlanlar:[];
+    var avenue=function(x,z,m){for(var bi=0;bi<bos.length;bi++){var f=bos[bi];if(f&&Math.hypot(x-f.x,z-f.z)<(f.r||0)+m)return true;}return (Math.abs(x)<2.4+m&&z>-23-m&&z<39+m)||(Math.abs(z+5)<2.4+m&&Math.abs(x)<38+m)||(Math.abs(x)<5&&z>14&&z<32);};
+    var kerbCol=look.kerb||(g==='snow'?look.rock:shadeHex((look.pc||[0xcfc5b0])[1]||0xcfc5b0,.82)),soft=look.path==='dirt'||look.path==='gravel'||look.path==='stepping';
+    country.places.forEach(function(p){
+      var dx=p.x,dz=p.z-23,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,t,side;
+      for(side=-1;side<=1;side+=2)for(t=5.5+r();t<len;t+=(soft?1.6:1.05)+r()*.5){
+        var fl=1+Math.max(0,1-t/8)*.55,off=side*(1.5+r()*.18)*fl,x=ux*t-uz*off,z=23+uz*t+ux*off;
+        if(Math.hypot(x-p.x,z-p.z)<(p.radius||6)+.3||avenue(x,z,.2)||Math.abs(x)>59||Math.abs(z)>59)continue;
+        var sz=(soft?.11:.16)+r()*.08;small.geo(ICO0,M(x,.02,z,sz*1.3,sz*.62,sz,r()*3,r()*.3,r()*.3),tint(kerbCol,r,.22),{grad:.4});
+      }
+      if(g==='grass'||g==='sand')for(side=-1;side<=1;side+=2)for(t=6+r()*2;t<len;t+=1.1+r()*1.4){
+        var fl2=1+Math.max(0,1-t/8)*.55,off2=side*(1.95+r()*.7)*fl2,x2=ux*t-uz*off2,z2=23+uz*t+ux*off2;
+        if(Math.hypot(x2-p.x,z2-p.z)<(p.radius||6)+.5||avenue(x2,z2,.4))continue;
+        var tcv=look.tuftc?pick(look.tuftc,r):new T.Color(env.groundTint).multiplyScalar(.78).getHex();
+        tuft(small,x2,z2,tcv,r,1.7+r()*1.1);tuft(small,x2+(r()-.5)*.35,z2+(r()-.5)*.35,tcv,r,1.3+r()*.8);
+      }
+    });
     // Path edges: flowers and tufts line the way to each place.
     country.places.forEach(function(p,pi){
       var dx=p.x,dz=p.z-23,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,k;
@@ -492,53 +514,18 @@
   }
 
   // ------------------------------------------------------------- sky dome
-  var SKY_VERT='varying vec3 vDir;\nvoid main(){ vDir=normalize(position); vec4 wp=vec4(position+cameraPosition,1.0); gl_Position=projectionMatrix*viewMatrix*wp; gl_Position.z=gl_Position.w; }';
-  var SKY_FRAG=[
-    'uniform vec3 uHorizon,uZenith,uSunDir,uHill1,uHill2;',
-    'uniform float uTime,uCloud,uHillType,uSnow;',
-    'varying vec3 vDir;',
-    NOISE,
-    'float ridge(float a,float t,float k){',
-    '  float h;',
-    '  if(t<0.5) h=.5+.5*sin(a*3.0+1.2)*.6+.25*sin(a*7.0+k)+.15*sin(a*13.0+2.0*k);',
-    '  else if(t<1.5){ h=1.0-abs(sin(a*4.0+k)*.7+sin(a*9.0+k*2.0)*.3); h=h*h; }',
-    '  else if(t<2.5) h=.4+.3*sin(a*5.0+k)+.2*sin(a*11.0);',
-    '  else if(t<3.5){ float s=abs(sin(a*6.0+k)); h=pow(s,.45)*(.5+.5*sin(a*2.0+1.0)); }',
-    '  else if(t<4.5) h=clamp(.5+.9*sin(a*5.0+k)+.3*sin(a*13.0),0.25,0.62)*.9;',
-    '  else h=.12;',
-    '  return h; }',
-    'void main(){',
-    '  vec3 d=normalize(vDir); float h=d.y;',
-    '  vec3 col=mix(uHorizon,uZenith,smoothstep(0.0,.62,h));',
-    '  float s=max(dot(d,uSunDir),0.0);',
-    '  col+=vec3(1.0,.93,.75)*(pow(s,48.0)*.55+pow(s,5.0)*.10);',
-    '  col=mix(col,vec3(1.0,.98,.9),smoothstep(.9988,.9994,s)*step(0.0,h));',
-    '  if(h>0.015){',
-    '    vec2 cp=d.xz/(h+.22)*1.55+vec2(uTime*.012,uTime*.004);',
-    '    float n=fzFbm(cp*1.1);',
-    '    float cl=smoothstep(.50,.70,n)*smoothstep(.015,.16,h)*uCloud;',
-    '    vec3 cc=mix(vec3(1.0),vec3(.84,.9,.97),smoothstep(.55,.8,n));',
-    '    col=mix(col,cc,cl*.88);',
-    '  }',
-    '  float az=atan(d.x,d.z);',
-    '  float hh1=ridge(az,uHillType,1.3)*.095+.006, hh2=ridge(az*1.3+2.0,uHillType,3.1)*.07+.003;',
-    '  if(uHillType<5.5){',
-    '   float far=smoothstep(hh1+.004,hh1-.004,h)*smoothstep(-.02,.0,h);',
-    '   col=mix(col,mix(uHorizon,uHill2,.85),far);',
-    '   float near=smoothstep(hh2+.004,hh2-.004,h)*smoothstep(-.02,.0,h);',
-    '   vec3 nc=mix(uHorizon,uHill1,.75);',
-    '   if(uSnow>0.01 && uHillType>.5 && uHillType<1.5) nc=mix(nc,vec3(.96,.98,1.0),smoothstep(hh2*.62,hh2*.82,h)*uSnow);',
-    '   col=mix(col,nc,near);',
-    '  }',
-    '  if(h<0.0) col=uHorizon;',
-    '  gl_FragColor=vec4(col,1.0);',
-    '  #include <colorspace_fragment>',
-    '}'
-  ].join('\n');
+  // Sky, cloud puffs and the far horizon ring come from the shared GRAFIK
+  // library (src/grafik.js): three cheap draws behind everything else.
   var HILL_TYPES={0:0,1:1,2:2,3:3,4:4,5:5};
+  // Little skylines across the water for big-city countries (never trees).
+  var CITY={us:3,gb:2,jp:2,fr:1,cn:1,ru:1,tr:1,au:1,es:1,nl:0,it:1,be:1,br:1,'in':1,eg:0,ca:1};
 
   // -------------------------------------------------------------- stage
   function create(country,renderer) {
+    var G=window.FLASH_GRAFIK;
+    // GRAFIK ambience for this country: sky fill tinted by its sky, warm bounce tinted by its ground.
+    (function(){var C=window.FLASH_CORE,e=country.environment||{};if(!C||!C.setAmbience)return;var wet=e.weather==='rain'||e.weather==='mist',snow=e.ground==='snow';
+      C.setAmbience({sky:new T.Color(0xd4ebff).lerp(new T.Color(e.sky||0xc9e9f1),.35),ground:new T.Color(0x8c7a52).lerp(new T.Color(e.groundTint||0x8fb073),.5).multiplyScalar(snow?.85:.72),intensity:wet?1.25:snow?1.0:1.1,exposure:snow?1.1:wet?1.16:1.16});})();
     var environment=Object.assign({ground:'grass',weather:'clear',season:'ilkbahar',groundTint:0x8fb073,path:'paving',moisture:0,waterColor:0x54afbe},country.environment||{}),root=new T.Group(),disposed=false,look=lookFor(country,environment);
     if(look.tint)environment.groundTint=look.tint;
     var reduced=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -552,13 +539,17 @@
     var roughness=environment.ground==='snow'?.88:environment.ground==='sand'?.98:.96-environment.moisture*.20;
     var material=new T.MeshStandardMaterial({color:0xffffff,map:groundMap,bumpMap:bumpMap,bumpScale:environment.ground==='snow'?.09:environment.ground==='sand'?.045:.055,roughness:roughness});
     var cloudAmt=reduced?.07:.11,spark=look.spark?1:0;
+    var pathEnds=[0,1,2].map(function(i){var p=country.places[i]||country.places[0];return new T.Vector2(p.x,p.z);});
+    var worn=environment.ground==='snow'?new T.Vector3(.86,.9,.97):environment.ground==='sand'?new T.Vector3(.86,.8,.72):new T.Vector3(.86,.8,.6);
     material.onBeforeCompile=function(shader){
-      shader.uniforms.uTime=uni.uTime;shader.uniforms.uMacro={value:macro};shader.uniforms.uCloud={value:cloudAmt};
+      shader.uniforms.uTime=uni.uTime;shader.uniforms.uMacro={value:macro};shader.uniforms.uCloud={value:cloudAmt};shader.uniforms.uPathEnd={value:pathEnds};shader.uniforms.uWorn={value:worn};
       addWorldVarying(shader);
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uMacro;\nuniform float uCloud;').replace('#include <color_fragment>',[
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uMacro;\nuniform float uCloud;\nuniform vec2 uPathEnd[3];\nuniform vec3 uWorn;\n'+PATH_DIST).replace('#include <color_fragment>',[
         '#include <color_fragment>',
         'vec3 fzMac=texture2D(uMacro,fzWP*.0178+.5).rgb*2.0;',
         'diffuseColor.rgb*=mix(vec3(1.0),fzMac,.8);',
+        // GRAFIK: a softly worn verge along each path, darker right at the stone edge.
+        '{ float pd=fzPathD(fzWP); float worn=1.0-smoothstep(1.5,2.6,pd); diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*uWorn,worn*.6); diffuseColor.rgb*=1.0-.16*(1.0-smoothstep(1.32,1.75,pd)); }',
         'float fzCl=fzFbm(fzWP*.021+vec2(uTime*.012,uTime*.005));',
         'diffuseColor.rgb*=1.0-uCloud*smoothstep(.48,.72,fzCl);',
         spark?['{ vec2 cell=floor(fzWP*3.4); float hs=fzHash(cell); float tw=pow(max(0.0,sin(uTime*2.3+hs*60.0)),20.0);',
@@ -568,24 +559,9 @@
     material.customProgramCacheKey=function(){return 'fz-ground-'+spark;};
     var top=new T.Mesh(new T.PlaneGeometry(124,124),material);top.rotation.x=-Math.PI/2;top.position.y=-.05;top.receiveShadow=true;top.name='yürüme yüzeyi';top.onBeforeRender=clock;root.add(top);
     var sides=new T.Mesh(sidesGeometry(environment,look),new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1}));sides.name='toprak katmanları';root.add(sides);
-    // Shallow turquoise near the shore, a foam line that breathes, tiny glints.
-    var wmat=new T.MeshStandardMaterial({color:environment.waterColor,roughness:.45,metalness:.05});
-    wmat.onBeforeCompile=function(shader){
-      shader.uniforms.uTime=uni.uTime;shader.uniforms.uShallow={value:new T.Color(environment.waterColor).lerp(new T.Color(0xcff4ee),.45)};addWorldVarying(shader);
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uShallow;').replace('#include <color_fragment>',[
-        '#include <color_fragment>',
-        'float fzEdge=max(abs(fzWP.x),abs(fzWP.y))-62.0;',
-        'diffuseColor.rgb=mix(diffuseColor.rgb*.82,uShallow,exp(-max(fzEdge,0.0)*.11));',
-        'float fzRip=sin(fzWP.x*.8+uTime*.7+fzNoise(fzWP*.3)*6.0)*sin(fzWP.y*.7-uTime*.5);',
-        'diffuseColor.rgb*=1.0+fzRip*.045;',
-        'float fzWob=fzNoise(fzWP*.45+uTime*.15)*.9;',
-        'float fzFoam=1.0-smoothstep(.1,.9+fzWob*.6+.25*sin(uTime*.9),fzEdge);',
-        'float fzLine=smoothstep(.22,0.0,abs(fzEdge-(1.8+.5*sin(uTime*.8+fzWP.x*.2)+fzWob*.4)))*.5*step(0.0,fzEdge);',
-        'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(1.0),clamp(fzFoam*.8+fzLine,0.0,.9));',
-        '{ vec2 cell=floor(fzWP*1.6); float hs=fzHash(cell); vec2 fc=fract(fzWP*1.6)-.5; float dd=length(fc-(vec2(fzHash(cell+3.1),fzHash(cell+9.7))-.5)*.5); fzSpark=step(.9,hs)*pow(max(0.0,sin(uTime*2.1+hs*70.0)),10.0)*(1.0-smoothstep(30.0,80.0,length(vViewPosition)))*(1.0-smoothstep(.04,.14,dd)); }'
-      ].join('\n')).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(.9,.97,1.0)*fzSpark*.6;');
-    };
-    wmat.customProgramCacheKey=function(){return 'fz-water';};
+    // Shallow turquoise near the shore, breathing foam, crest lines, sun glints (GRAFIK water).
+    var wmat=new T.MeshStandardMaterial({color:environment.waterColor,roughness:.16,metalness:.05});
+    if(G)G.waterify(wmat,{edge:'island',island:62,shallow:.11,foam:1.1});
     var water=new T.Mesh(new T.PlaneGeometry(210,210),wmat);water.rotation.x=-Math.PI/2;water.position.y=-1.5;water.name='dış su yüzeyi';root.add(water);
     var pathMat=new T.MeshStandardMaterial({color:0xffffff,map:pathMap,roughness:environment.moisture>.5?.78:.96,alphaTest:.5,alphaToCoverage:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
     var paths=new T.Mesh(pathGeometry(country.places,3.5),pathMat);paths.receiveShadow=true;paths.name='üç keşif patikası';root.add(paths);
@@ -605,17 +581,17 @@
     var vfrag=T.ShaderChunk.normal_fragment_begin.replace(/gl_FrontFacing\s*\?\s*1\.0\s*:\s*-\s*1\.0/,'1.0');
     var vbase=vmat.onBeforeCompile;vmat.onBeforeCompile=function(shader){vbase(shader);shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_begin>',vfrag);};
     var bigMesh=veg.big.mesh(vmat,true,'büyük bitkiler'),smallMesh=veg.small.mesh(vmat,false,'çiçek ve çimler');root.add(bigMesh,smallMesh);
-    // Sky: gradient, drifting clouds, sun glow and misty hills, one far-plane draw.
+    // Sky: gradient dome, billboard cloud puffs and a far hill/skyline ring (GRAFIK).
     var hills=look.hills||{type:0,c:0x86b58f,c2:0xa4c9a8,zen:0x6bb6e6},skyCol=new T.Color(environment.sky);
     var zen=skyCol.clone().lerp(new T.Color(hills.zen||0x6bb6e6),environment.ground==='snow'?.5:.62);
-    var sun=new T.Vector3(-18,30,16).normalize();
-    var sky=new T.Mesh(new T.SphereGeometry(100,24,14),new T.ShaderMaterial({
-      uniforms:{uHorizon:{value:skyCol.clone()},uZenith:{value:zen},uSunDir:{value:sun},uHill1:{value:new T.Color(hills.c)},uHill2:{value:new T.Color(hills.c2)},uTime:uni.uTime,
-        uCloud:{value:environment.weather==='rain'||environment.weather==='mist'?.95:environment.ground==='snow'?.8:.85},uHillType:{value:HILL_TYPES[hills.type]||0},uSnow:{value:hills.snow||0}},
-      vertexShader:SKY_VERT,fragmentShader:SKY_FRAG,side:T.BackSide,depthWrite:false,depthTest:true,transparent:true,blending:T.NoBlending,fog:false,toneMapped:false}));
-    sky.frustumCulled=false;sky.renderOrder=-10;sky.name='gökyüzü';
-    sky.onBeforeRender=function(rend,scene){var h=sky.material.uniforms.uHorizon.value;if(scene.fog)h.copy(scene.fog.color);else if(scene.background&&scene.background.isColor)h.copy(scene.background);};
-    root.add(sky);
+    var sun=new T.Vector3(-18,30,16).normalize(),wet=environment.weather==='rain'||environment.weather==='mist';
+    if(G){
+      // The dome + cloud puffs are one shared outdoor sky (grafik.js, shown whenever the scene has fog,
+      // so the journey gets it too); this country only tints it. The far ring belongs to this stage.
+      G.gokyuzu({zenith:zen,sunColor:environment.sunColor||0xfff0c8,cloud:wet?.95:environment.ground==='snow'?.75:.6,haze:wet?.9:.6,
+        cloudShadow:wet?0xa9b8c6:environment.ground==='sand'?0xd8c8b0:0xb9cce0,cloudTop:wet?0xf2f5f7:0xfffdf6,clouds:wet?18:13});
+      root.add(G.horizon({type:HILL_TYPES[hills.type]||0,c:hills.c,c2:hills.c2,snow:hills.snow||0,city:CITY[country.id]||0,cityColor:shadeHex(hills.c2,1.0),seed:seed^0x777,air:wet?.62:.5,y:-1.5}));
+    }
     // Every map and buffer is owned by this one surface stage, including bump.
     function dispose(){if(disposed)return;disposed=true;root.removeFromParent();var geos=new Set(),mats=new Set(),maps=new Set(owned);root.traverse(function(o){if(o.isInstancedMesh)o.dispose();if(o.geometry)geos.add(o.geometry);var list=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];list.forEach(function(m){mats.add(m);['map','bumpMap','normalMap','roughnessMap'].forEach(function(key){if(m[key])maps.add(m[key]);});});});geos.forEach(function(g){g.dispose();});mats.forEach(function(m){m.dispose();});maps.forEach(function(t){t.dispose();});}
     return {root:root,environment:environment,look:look,dispose:dispose};

@@ -1,4 +1,5 @@
-/* A quiet illustrated sky: three fixed GPU draws, behind the Earth and Feza.
+/* A quiet illustrated sky: four fixed GPU draws (painted nebula backdrop, stars,
+ * shooting stars, meteors), behind the Earth and Feza.
  * Classic THREE r170 script. No textures, audio, timers or frame allocations. */
 (function () {
   'use strict';
@@ -95,14 +96,49 @@
     '}'
   ].join('\n');
 
+  // GRAFIK: a painted night-sky backdrop (deep blue gradient, soft pink/teal
+  // nebula clouds and a faint diagonal Milky Way) on one quad just behind the
+  // stars. Procedural, no texture; drifts very slowly, frozen for reduced motion.
+  var nebulaVertex = [
+    'uniform vec2 uHalf;',
+    'uniform float uDepth;',
+    'varying vec2 vP;',
+    'void main(){',
+    '  vP = position.xy * uHalf / max(uHalf.y, 1.0);',
+    '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xy * uHalf * 1.08, -uDepth - 2.0, 1.0);',
+    '}'
+  ].join('\n');
+  var nebulaFragment = [
+    'uniform float uTime;',
+    'varying vec2 vP;',
+    'float nh(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }',
+    'float nn(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(nh(i),nh(i+vec2(1,0)),f.x),mix(nh(i+vec2(0,1)),nh(i+vec2(1,1)),f.x),f.y); }',
+    'float fb(vec2 p){ return nn(p)*.5+nn(p*2.1+3.1)*.3+nn(p*4.3+7.7)*.2; }',
+    'void main(){',
+    '  vec2 p = vP; float t = uTime * 0.004;',
+    '  vec3 col = mix(vec3(0.016, 0.034, 0.115), vec3(0.008, 0.016, 0.07), smoothstep(-1.0, 1.1, p.y));',
+    '  col = mix(col, vec3(0.03, 0.022, 0.10), smoothstep(0.2, -1.1, p.y) * 0.55);',
+    '  float band = exp(-pow((p.y - p.x * 0.42 - 0.12) * 2.4, 2.0));',
+    '  float dust = fb(p * 2.2 + vec2(t, -t * 0.6));',
+    '  col += vec3(0.035, 0.045, 0.11) * band * (0.25 + 0.6 * dust);',
+    '  col -= vec3(0.01, 0.012, 0.025) * band * smoothstep(0.55, 0.8, fb(p * 5.0 + 9.0));',
+    '  float n1 = fb(p * 1.15 + vec2(t * 1.3, t * 0.4) + 4.0), n2 = fb(p * 1.6 - vec2(t, t * 0.8) + 11.0);',
+    '  col += vec3(0.11, 0.025, 0.10) * smoothstep(0.52, 0.86, n1) * 0.9 * smoothstep(1.5, 0.2, length(p - vec2(-0.9, 0.55)));',
+    '  col += vec3(0.015, 0.08, 0.10) * smoothstep(0.55, 0.88, n2) * 0.9 * smoothstep(1.6, 0.2, length(p - vec2(0.95, -0.45)));',
+    '  col += vec3(0.06, 0.04, 0.015) * smoothstep(0.62, 0.9, n2 * n1 * 1.6) * 0.3;',
+    '  gl_FragColor = vec4(max(col, 0.0), 1.0);',
+    '  #include <colorspace_fragment>',
+    '}'
+  ].join('\n');
+
   function create(options) {
     options = options || {};
     var touch = !!options.touch;
     var reduced = options.reduced === undefined ? typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches : !!options.reduced;
     var root = new T.Group(); root.name = 'sakin-uzay';
     var profile = Object.freeze({ stars: STAR_COUNT, shootingStars: reduced ? 0 : 2,
-      meteors: reduced ? 0 : 3, draws: reduced ? 1 : 3, geometries: reduced ? 1 : 3,
-      materials: reduced ? 1 : 3, textures: 0, cpuBufferUploadsPerFrame: 0,
+      meteors: reduced ? 0 : 3, draws: reduced ? 2 : 4, geometries: reduced ? 2 : 4,
+      materials: reduced ? 2 : 4, nebula: true, textures: 0, cpuBufferUploadsPerFrame: 0,
       backgroundDepth: DEPTH, reduced: !!reduced, touch: touch,
       starSizePixels: Object.freeze([1.1, 2.8]), meteorDiameterPixels: Object.freeze([5.4, 7.0, 4.8]),
       shootingTailPixels: Object.freeze([62, 72]), shootingPeriodsSeconds: Object.freeze([9, 13]),
@@ -129,6 +165,9 @@
     starGeometry.setAttribute('position', new T.BufferAttribute(positions, 3));
     starGeometry.setAttribute('aSeed', new T.BufferAttribute(seeds, 1));
     starGeometry.setAttribute('aSize', new T.BufferAttribute(sizes, 1));
+    var nebulaGeometry = new T.PlaneGeometry(2, 2); geometries.push(nebulaGeometry);
+    var nebula = new T.Mesh(nebulaGeometry, material(nebulaVertex, nebulaFragment, false));
+    nebula.material.depthWrite = false; nebula.renderOrder = -20; nebula.name = 'uzay-bulutsusu'; nebula.frustumCulled = false; root.add(nebula);
     var stars = new T.Points(starGeometry, material(starsVertex, starsFragment, true));
     stars.name = 'uzay-yıldızları'; stars.frustumCulled = false; root.add(stars);
     if (!reduced) {
@@ -161,6 +200,8 @@
       // The two shooting periods divide this wrap; long sessions retain small
       // GPU time values without accumulating floating-point jitter.
       common.uTime.value = reduced ? 0 : Math.max(0, clock) % 46800;
+      // 'Akıcı' (low) profile: plain background colour instead of the painted nebula.
+      nebula.visible = !(window.FLASH_CORE && window.FLASH_CORE.quality === 'low');
       if (!camera) return;
       // The caller positions the camera first. Keep every decorative fragment
       // ninety units away, so ordinary depth testing protects the foreground.

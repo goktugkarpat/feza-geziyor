@@ -62,7 +62,7 @@
 .welcome-pictures{display:flex;position:absolute;left:50%;top:calc(55% + 115px);transform:translateX(-50%);margin:0;gap:22px;color:#ffe4a0;filter:drop-shadow(0 3px 0 #324d76)}
 .welcome-pictures>span{width:37px;height:37px}
 .welcome-spark{position:absolute;pointer-events:none;color:#fff0a5;filter:drop-shadow(0 3px 0 #775173);width:37px;height:37px;animation:soft-star 4s ease-in-out infinite alternate}
-.welcome-spark.s1{left:30%;top:35%;transform:rotate(-13deg)}.welcome-spark.s2{right:30%;top:34%;width:25px;height:25px;animation-delay:-2s}.welcome-spark.s3{left:18%;bottom:16%;width:25px;height:25px;animation-delay:-1s}.welcome-spark.s4{right:15%;top:26%;transform:rotate(14deg);animation-delay:-3s}
+.welcome-spark.s1{left:30%;top:35%;transform:rotate(-13deg)}.welcome-spark.s2{right:30%;top:34%;width:25px;height:25px;animation-delay:-2s}.welcome-spark.s3{left:18%;bottom:16%;width:25px;height:25px;animation-delay:-1s}.welcome-spark.s4{right:4%;top:13%;transform:rotate(14deg);animation-delay:-3s}
 @keyframes soft-star{50%{opacity:.7;translate:0 -5px}}
 @media(max-width:620px){
   .welcome h1{top:10%;left:3%;right:3%;font-size:45px;letter-spacing:0;-webkit-text-stroke:1.5px #6f324c}.welcome h1>span{font-size:15px;letter-spacing:.7px;padding:7px 13px;margin-top:11px}
